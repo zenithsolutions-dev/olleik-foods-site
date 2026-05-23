@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
@@ -6,6 +7,7 @@ export default function Home() {
       <Hero />
       <LogoCloud />
       <WhyUs />
+      <SourcingStory />
       <Categories />
       <HowItWorks />
       <Testimonials />
@@ -13,6 +15,91 @@ export default function Home() {
       <FAQ />
       <FinalCta />
     </>
+  );
+}
+
+/* ---------------- SOURCING STORY ---------------- */
+
+function SourcingStory() {
+  return (
+    <section className="relative overflow-hidden">
+      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 md:py-32 lg:grid-cols-12 lg:items-center lg:gap-16">
+        <div className="lg:col-span-7">
+          <div className="relative">
+            <div
+              aria-hidden
+              className="absolute -inset-6 -z-10 rounded-[2.5rem] bg-brand/5 blur-2xl"
+            />
+            <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[2rem] border border-[var(--border-strong)] bg-brand-mist shadow-[0_40px_80px_-40px_rgba(20,53,39,0.45)]">
+              <Image
+                src="https://images.unsplash.com/photo-1606787366850-de6330128bfc?auto=format&fit=crop&w=1200&q=80"
+                alt="An abundance of fresh ingredients laid out — fruits, breads, eggs, herbs, and produce"
+                fill
+                sizes="(min-width: 1024px) 55vw, 100vw"
+                className="object-cover"
+                priority={false}
+              />
+            </div>
+            <div className="absolute -bottom-6 -right-4 hidden w-56 rotate-2 rounded-2xl border border-[var(--border-strong)] bg-surface p-4 shadow-xl md:block">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-accent-deep">
+                This morning's load
+              </p>
+              <p className="font-display mt-1.5 text-lg font-semibold leading-tight text-brand-deep">
+                42 cases of vine tomatoes
+              </p>
+              <p className="mt-1 text-xs text-muted">Picked yesterday · Local farm</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:col-span-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
+            From the source
+          </p>
+          <h2 className="font-display mt-4 text-4xl font-semibold leading-[1.05] tracking-tight text-brand-deep sm:text-5xl">
+            Ingredients <em className="italic text-accent">your chefs</em> will recognize.
+          </h2>
+          <p className="mt-5 text-lg leading-relaxed text-muted">
+            We work directly with regional farms, ranchers, and specialty
+            importers so the items on your invoice are the same ones a chef
+            would pick in person. Quality is checked at our dock — not at your
+            back door.
+          </p>
+
+          <ul className="mt-9 space-y-4">
+            {[
+              {
+                title: "Regional & specialty sourcing",
+                body: "Local where it makes sense, specialty importers where it matters.",
+              },
+              {
+                title: "Cold-chain integrity",
+                body: "Refrigerated trucks and dock-to-dock temperature logs on every delivery.",
+              },
+              {
+                title: "Quality guaranteed",
+                body: "If it doesn't meet spec, your rep credits the invoice — same day.",
+              },
+            ].map((p) => (
+              <li key={p.title} className="flex items-start gap-3">
+                <span
+                  aria-hidden
+                  className="mt-0.5 inline-grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand text-xs text-white"
+                >
+                  ✓
+                </span>
+                <div>
+                  <p className="font-display text-lg font-semibold tracking-tight text-brand-deep">
+                    {p.title}
+                  </p>
+                  <p className="mt-0.5 text-sm leading-relaxed text-muted">{p.body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -326,72 +413,56 @@ function WhyUs() {
 /* ---------------- CATEGORIES ---------------- */
 
 function Categories() {
-  const cats = [
+  const cats: Array<{
+    name: string;
+    note: string;
+    image?: { src: string; alt: string };
+    gradient?: string;
+  }> = [
     {
       name: "Fresh Produce",
       note: "Daily-sourced fruit and vegetables from regional growers.",
-      gradient: "from-emerald-100/80 via-brand-mist to-brand-soft/60",
-      icon: (
-        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="currentColor" aria-hidden>
-          <path d="M16 5c-1.5 2-4 3-7 3 0 9 4 16 11 18 7-2 11-9 11-18-3 0-5.5-1-7-3-2 1.2-5 1.2-8 0z" opacity=".25" />
-          <path d="M16 5c1.2 1.6 3 2.6 5 3-1 1.5-2.5 2.5-5 2.5S12.5 9.5 11 8c2-.4 3.8-1.4 5-3z" />
-        </svg>
-      ),
+      image: {
+        src: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=900&q=80",
+        alt: "Abundant market display of fresh fruits and vegetables",
+      },
     },
     {
       name: "Meat & Poultry",
       note: "Restaurant-grade cuts, portion control, halal & specialty.",
-      gradient: "from-rose-100/70 via-accent-soft/40 to-brand-mist",
-      icon: (
-        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="currentColor" aria-hidden>
-          <path d="M9 14c0-5 4-8 9-8s9 3 9 8c0 4-3 7-7 7l-1 5-5-2c-3-1-5-5-5-10z" opacity=".25" />
-          <circle cx="11" cy="14" r="2" />
-        </svg>
-      ),
+      image: {
+        src: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=900&q=80",
+        alt: "Assorted raw meats and cured meats on a wooden board",
+      },
     },
     {
       name: "Dairy & Eggs",
       note: "Cheese, butter, cream, cultured dairy, and farm-fresh eggs.",
-      gradient: "from-amber-50 via-brand-mist to-brand-soft/60",
-      icon: (
-        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="currentColor" aria-hidden>
-          <path d="M11 5h10l2 4v17a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V9l2-4z" opacity=".25" />
-          <path d="M11 5h10l2 4H9l2-4z" />
-        </svg>
-      ),
+      image: {
+        src: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=900&q=80",
+        alt: "Small jars of cream layered with fresh berries",
+      },
     },
     {
       name: "Dry Goods & Pantry",
       note: "Grains, oils, spices, canned goods, and baking essentials.",
-      gradient: "from-stone-100 via-brand-mist to-brand-soft/60",
-      icon: (
-        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="currentColor" aria-hidden>
-          <path d="M7 9h18l-2 18a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2L7 9z" opacity=".25" />
-          <path d="M7 9l1-4h16l1 4H7z" />
-        </svg>
-      ),
+      image: {
+        src: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=80",
+        alt: "Round artisan bread loaves with stalks of wheat",
+      },
     },
     {
       name: "Beverages",
       note: "Coffee, espresso, juices, bottled water, and soft drinks.",
-      gradient: "from-sky-100/70 via-brand-mist to-brand-soft/60",
-      icon: (
-        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="currentColor" aria-hidden>
-          <path d="M9 7h12l-1.5 18a3 3 0 0 1-3 2.5h-3a3 3 0 0 1-3-2.5L9 7z" opacity=".25" />
-          <path d="M9 7h12v3H9z" />
-        </svg>
-      ),
+      image: {
+        src: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80",
+        alt: "Three cups of latte art held together from above",
+      },
     },
     {
       name: "Paper & Cleaning",
       note: "Disposables, take-out packaging, sanitation, and PPE.",
-      gradient: "from-lime-50 via-brand-mist to-brand-soft/60",
-      icon: (
-        <svg viewBox="0 0 32 32" className="h-7 w-7" fill="currentColor" aria-hidden>
-          <rect x="6" y="6" width="20" height="20" rx="2" opacity=".25" />
-          <path d="M6 12h20M12 6v20" strokeWidth="2" stroke="currentColor" fill="none" />
-        </svg>
-      ),
+      gradient: "from-brand-mist via-brand-soft to-accent-soft/60",
     },
   ];
   return (
@@ -419,26 +490,46 @@ function Categories() {
 
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {cats.map((c) => (
-            <div
+            <article
               key={c.name}
-              className={`group relative overflow-hidden rounded-3xl border border-[var(--border)] bg-gradient-to-br ${c.gradient} p-7 transition hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_30px_60px_-30px_rgba(20,53,39,0.3)]`}
+              className="group relative aspect-[4/5] overflow-hidden rounded-3xl border border-[var(--border)] shadow-sm transition hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_30px_60px_-30px_rgba(20,53,39,0.4)]"
             >
-              <div className="flex items-start justify-between">
-                <span className="inline-grid h-14 w-14 place-items-center rounded-2xl bg-white/80 text-brand-deep shadow-sm">
-                  {c.icon}
-                </span>
-                <span
+              {c.image ? (
+                <Image
+                  src={c.image.src}
+                  alt={c.image.alt}
+                  fill
+                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover transition duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${c.gradient}`}
                   aria-hidden
-                  className="text-brand/30 transition group-hover:translate-x-0.5 group-hover:text-brand"
-                >
-                  →
-                </span>
+                />
+              )}
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-t from-brand-deep/85 via-brand-deep/35 to-transparent"
+              />
+              <div className="relative flex h-full flex-col justify-end p-6">
+                <h3 className="font-display text-2xl font-semibold tracking-tight text-white">
+                  {c.name}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-white/80">
+                  {c.note}
+                </p>
+                <div className="mt-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-accent-soft">
+                  Explore
+                  <span
+                    aria-hidden
+                    className="transition group-hover:translate-x-0.5"
+                  >
+                    →
+                  </span>
+                </div>
               </div>
-              <h3 className="font-display mt-8 text-2xl font-semibold tracking-tight text-brand-deep">
-                {c.name}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{c.note}</p>
-            </div>
+            </article>
           ))}
         </div>
       </div>
