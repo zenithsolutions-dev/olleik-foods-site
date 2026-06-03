@@ -48,11 +48,12 @@ function SiteHeader() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 text-sm font-medium text-foreground/80 md:flex">
-          <Link href="/#why" className="transition hover:text-brand">Why Olleik</Link>
-          <Link href="/#categories" className="transition hover:text-brand">Categories</Link>
-          <Link href="/#how-it-works" className="transition hover:text-brand">How it works</Link>
-          <Link href="/#testimonials" className="transition hover:text-brand">Customers</Link>
+        <nav className="hidden items-center gap-6 text-sm font-medium text-foreground/80 lg:flex">
+          <Link href="/who-we-serve" className="transition hover:text-brand">Who we serve</Link>
+          <Link href="/catalog" className="transition hover:text-brand">Catalog</Link>
+          <Link href="/delivery" className="transition hover:text-brand">Delivery</Link>
+          <Link href="/about" className="transition hover:text-brand">About</Link>
+          <Link href="/contact" className="transition hover:text-brand">Contact</Link>
           <Link href="/login" className="transition hover:text-brand">Sign in</Link>
         </nav>
 
@@ -74,7 +75,7 @@ function SiteFooter() {
       <div className="absolute inset-0 grain" aria-hidden />
       <div className="relative mx-auto max-w-7xl px-6 py-16">
         <div className="grid gap-12 md:grid-cols-12">
-          <div className="md:col-span-5">
+          <div className="md:col-span-4">
             <div className="flex items-center gap-2.5">
               <span
                 aria-hidden
@@ -117,11 +118,23 @@ function SiteFooter() {
               Explore
             </h4>
             <ul className="mt-5 space-y-2.5 text-sm text-white/70">
-              <li><Link href="/#why" className="hover:text-white">Why Olleik</Link></li>
-              <li><Link href="/#categories" className="hover:text-white">Categories</Link></li>
-              <li><Link href="/#how-it-works" className="hover:text-white">How it works</Link></li>
-              <li><Link href="/#testimonials" className="hover:text-white">Customers</Link></li>
-              <li><Link href="/#faq" className="hover:text-white">FAQ</Link></li>
+              <li><Link href="/who-we-serve" className="hover:text-white">Who we serve</Link></li>
+              <li><Link href="/catalog" className="hover:text-white">Catalog</Link></li>
+              <li><Link href="/delivery" className="hover:text-white">Delivery</Link></li>
+              <li><Link href="/resources" className="hover:text-white">Resources</Link></li>
+              <li><Link href="/faq" className="hover:text-white">FAQ</Link></li>
+            </ul>
+          </div>
+
+          <div className="md:col-span-2">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-accent-soft">
+              Company
+            </h4>
+            <ul className="mt-5 space-y-2.5 text-sm text-white/70">
+              <li><Link href="/about" className="hover:text-white">About</Link></li>
+              <li><Link href="/careers" className="hover:text-white">Careers</Link></li>
+              <li><Link href="/suppliers" className="hover:text-white">Become a vendor</Link></li>
+              <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
             </ul>
           </div>
 
@@ -135,13 +148,21 @@ function SiteFooter() {
             </ul>
           </div>
 
-          <div className="md:col-span-3">
+          <div className="md:col-span-2">
             <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-accent-soft">
               Get in touch
             </h4>
             <ul className="mt-5 space-y-2.5 text-sm text-white/70">
-              <li>sales@olleikfoods.com</li>
-              <li>(000) 000-0000</li>
+              <li>
+                <a href="mailto:sales@olleikfoods.com" className="hover:text-white">
+                  sales@olleikfoods.com
+                </a>
+              </li>
+              <li>
+                <a href="tel:+10000000000" className="hover:text-white">
+                  (000) 000-0000
+                </a>
+              </li>
               <li className="text-white/50">Mon – Sat · 7am – 5pm</li>
             </ul>
           </div>
