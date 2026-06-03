@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { getAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
   title: "Contact | Olleik Foods — Ottawa Wholesale Food Supply",
@@ -13,15 +14,25 @@ export const metadata: Metadata = {
 async function submitContact(formData: FormData) {
   "use server";
   const payload = {
-    name: formData.get("name"),
-    email: formData.get("email"),
-    phone: formData.get("phone"),
-    business: formData.get("business"),
-    topic: formData.get("topic"),
-    message: formData.get("message"),
-    receivedAt: new Date().toISOString(),
+    name: String(formData.get("name") ?? "").trim(),
+    email: String(formData.get("email") ?? "").trim(),
+    phone: String(formData.get("phone") ?? "").trim(),
+    business: String(formData.get("business") ?? "").trim(),
+    topic: String(formData.get("topic") ?? "").trim(),
+    message: String(formData.get("message") ?? "").trim(),
   };
-  console.log("[contact] new submission", payload);
+
+  const admin = getAdminClient();
+  if (admin) {
+    const { error } = await admin.from("contact_messages").insert(payload);
+    if (error) {
+      console.error("[contact] supabase insert failed:", error.message);
+      console.log("[contact] new submission", payload);
+    }
+  } else {
+    console.log("[contact] new submission", payload);
+  }
+
   redirect("/contact?sent=1");
 }
 

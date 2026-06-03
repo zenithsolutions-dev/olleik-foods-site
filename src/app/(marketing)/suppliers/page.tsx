@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { getAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
   title: "Become a Vendor | Supplier Partnerships — Olleik Foods",
@@ -13,15 +14,25 @@ export const metadata: Metadata = {
 async function submitVendor(formData: FormData) {
   "use server";
   const payload = {
-    company: formData.get("company"),
-    contact: formData.get("contact"),
-    email: formData.get("email"),
-    phone: formData.get("phone"),
-    categories: formData.get("categories"),
-    about: formData.get("about"),
-    receivedAt: new Date().toISOString(),
+    company: String(formData.get("company") ?? "").trim(),
+    contact: String(formData.get("contact") ?? "").trim(),
+    email: String(formData.get("email") ?? "").trim(),
+    phone: String(formData.get("phone") ?? "").trim(),
+    categories: String(formData.get("categories") ?? "").trim(),
+    about: String(formData.get("about") ?? "").trim(),
   };
-  console.log("[vendor] new submission", payload);
+
+  const admin = getAdminClient();
+  if (admin) {
+    const { error } = await admin.from("vendor_submissions").insert(payload);
+    if (error) {
+      console.error("[vendor] supabase insert failed:", error.message);
+      console.log("[vendor] new submission", payload);
+    }
+  } else {
+    console.log("[vendor] new submission", payload);
+  }
+
   redirect("/suppliers?sent=1");
 }
 
