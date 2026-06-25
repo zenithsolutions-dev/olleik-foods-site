@@ -26,8 +26,10 @@ async function submitVendor(formData: FormData) {
   if (admin) {
     const { error } = await admin.from("vendor_submissions").insert(payload);
     if (error) {
+      // Surface a real failure instead of a false success (see /apply).
       console.error("[vendor] supabase insert failed:", error.message);
       console.log("[vendor] new submission", payload);
+      redirect("/suppliers?error=1");
     }
   } else {
     console.log("[vendor] new submission", payload);
@@ -39,9 +41,9 @@ async function submitVendor(formData: FormData) {
 export default async function SuppliersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sent?: string }>;
+  searchParams: Promise<{ sent?: string; error?: string }>;
 }) {
-  const { sent } = await searchParams;
+  const { sent, error } = await searchParams;
 
   return (
     <>
@@ -119,6 +121,12 @@ export default async function SuppliersPage({
             action={submitVendor}
             className="rounded-3xl border border-[var(--border)] bg-surface p-7 md:p-8"
           >
+            {error && (
+              <p className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+                Sorry — we couldn&apos;t submit your details just now. Please try
+                again, or email us at sales@olleikfoods.com.
+              </p>
+            )}
             <h2 className="font-display text-2xl font-semibold tracking-tight text-brand-deep">
               Submit your products
             </h2>
