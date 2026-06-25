@@ -46,9 +46,16 @@ export async function submitApplication(
       message: data.notes || null,
     });
     if (error) {
-      // Don't lose the submission — log it so it's recoverable from Vercel logs.
+      // The insert failed (e.g. RLS rejection, schema mismatch, wrong key).
+      // Log it so the submission is recoverable, and surface a real failure to
+      // the user instead of falsely reporting success.
       console.error("[olleik-apply] supabase insert failed:", error.message);
       console.log("[olleik-apply]", JSON.stringify(data));
+      return {
+        status: "error",
+        message:
+          "Sorry — we couldn't submit your application just now. Please try again in a moment, or email us and we'll set you up.",
+      };
     }
   } else {
     // Supabase not configured yet — log so submissions are captured meanwhile.
