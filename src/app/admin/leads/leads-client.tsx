@@ -1,33 +1,56 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useAdmin, formatDate } from "@/lib/admin/store";
-import type { LeadStatus } from "@/lib/admin/types";
+import { useMemo, useState, useTransition } from "react";
+import { formatDate } from "@/lib/admin/store";
+import type { Lead, LeadStatus } from "@/lib/admin/types";
+import { updateLeadStatus, deleteLead } from "./actions";
 
 const STATUSES: LeadStatus[] = ["new", "contacted", "approved", "rejected"];
 
-export function LeadsClient() {
-  const { state, dispatch, hydrated } = useAdmin();
+export function LeadsClient({
+  initialLeads,
+  live,
+}: {
+  initialLeads: Lead[];
+  live: boolean;
+}) {
   const [filter, setFilter] = useState<LeadStatus | "all">("all");
+  const [pending, startTransition] = useTransition();
+
+  // Source of truth is the server prop. After a mutation, the action calls
+  // revalidatePath("/admin/leads") so this component re-renders with fresh rows.
+  const leads = initialLeads;
 
   const filtered = useMemo(
-    () =>
-      filter === "all"
-        ? state.leads
-        : state.leads.filter((l) => l.status === filter),
-    [state.leads, filter]
+    () => (filter === "all" ? leads : leads.filter((l) => l.status === filter)),
+    [leads, filter],
   );
 
   const counts: Record<LeadStatus | "all", number> = useMemo(() => {
-    const m: Record<string, number> = { all: state.leads.length };
-    for (const s of STATUSES) m[s] = state.leads.filter((l) => l.status === s).length;
+    const m: Record<string, number> = { all: leads.length };
+    for (const s of STATUSES) m[s] = leads.filter((l) => l.status === s).length;
     return m as Record<LeadStatus | "all", number>;
-  }, [state.leads]);
+  }, [leads]);
 
-  if (!hydrated) return <p className="text-sm text-muted">Loading…</p>;
+  function onStatusChange(id: string, status: LeadStatus) {
+    startTransition(() => updateLeadStatus(id, status));
+  }
+
+  function onDelete(id: string, businessName: string) {
+    if (window.confirm(`Delete lead from ${businessName}?`)) {
+      startTransition(() => deleteLead(id));
+    }
+  }
 
   return (
     <div className="space-y-5">
+      {!live && (
+        <p className="rounded-lg bg-amber-50 px-4 py-2.5 text-xs text-amber-800">
+          Showing demo seed data — Supabase isn&apos;t configured, so changes
+          won&apos;t persist.
+        </p>
+      )}
+
       {/* Filter tabs */}
       <div className="flex flex-wrap gap-1.5 rounded-full border border-[var(--border)] bg-surface p-1.5">
         {(["all", ...STATUSES] as const).map((s) => (
@@ -49,10 +72,12 @@ export function LeadsClient() {
       {/* List */}
       {filtered.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-[var(--border)] bg-surface p-12 text-center text-sm text-muted">
-          No leads match.
+          {leads.length === 0 ? "No leads yet." : "No leads match."}
         </p>
       ) : (
-        <ul className="space-y-3">
+        <ul
+          className={`space-y-3 transition-opacity ${pending ? "opacity-60" : ""}`}
+        >
           {filtered.map((l) => (
             <li
               key={l.id}
@@ -85,14 +110,11 @@ export function LeadsClient() {
                 <div className="flex shrink-0 flex-col items-end gap-2">
                   <select
                     value={l.status}
+                    disabled={pending}
                     onChange={(e) =>
-                      dispatch({
-                        type: "lead/updateStatus",
-                        id: l.id,
-                        status: e.target.value as LeadStatus,
-                      })
+                      onStatusChange(l.id, e.target.value as LeadStatus)
                     }
-                    className="rounded-full border border-[var(--border)] bg-background px-3 py-1.5 text-xs font-medium"
+                    className="rounded-full border border-[var(--border)] bg-background px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                   >
                     {STATUSES.map((s) => (
                       <option key={s} value={s}>
@@ -102,12 +124,9 @@ export function LeadsClient() {
                   </select>
                   <button
                     type="button"
-                    onClick={() => {
-                      if (window.confirm(`Delete lead from ${l.businessName}?`)) {
-                        dispatch({ type: "lead/delete", id: l.id });
-                      }
-                    }}
-                    className="text-[11px] text-red-700 hover:text-red-900"
+                    disabled={pending}
+                    onClick={() => onDelete(l.id, l.businessName)}
+                    className="text-[11px] text-red-700 hover:text-red-900 disabled:opacity-50"
                   >
                     Delete
                   </button>
