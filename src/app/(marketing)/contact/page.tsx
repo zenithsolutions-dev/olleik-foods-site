@@ -26,8 +26,10 @@ async function submitContact(formData: FormData) {
   if (admin) {
     const { error } = await admin.from("contact_messages").insert(payload);
     if (error) {
+      // Surface a real failure instead of a false success (see /apply).
       console.error("[contact] supabase insert failed:", error.message);
       console.log("[contact] new submission", payload);
+      redirect("/contact?error=1");
     }
   } else {
     console.log("[contact] new submission", payload);
@@ -39,9 +41,9 @@ async function submitContact(formData: FormData) {
 export default async function ContactPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sent?: string }>;
+  searchParams: Promise<{ sent?: string; error?: string }>;
 }) {
-  const { sent } = await searchParams;
+  const { sent, error } = await searchParams;
 
   return (
     <>
@@ -97,6 +99,12 @@ export default async function ContactPage({
                 action={submitContact}
                 className="rounded-3xl border border-[var(--border)] bg-surface p-7 md:p-8"
               >
+                {error && (
+                  <p className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+                    Sorry — we couldn&apos;t send your message just now. Please
+                    try again, or email us at sales@olleikfoods.com.
+                  </p>
+                )}
                 <h2 className="font-display text-2xl font-semibold tracking-tight text-brand-deep">
                   Send us a message
                 </h2>
