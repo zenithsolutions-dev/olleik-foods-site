@@ -1,6 +1,11 @@
 import { LeadsClient } from "./leads-client";
+import { fetchAdminLeads } from "@/lib/admin/leads-data";
 
-export default function LeadsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function LeadsPage() {
+  const { leads, live } = await fetchAdminLeads();
+
   return (
     <div>
       <header className="mb-8">
@@ -14,7 +19,7 @@ export default function LeadsPage() {
           Restaurants who submitted the /apply form. Triage and convert to customers.
         </p>
       </header>
-      <LeadsClient />
+      <LeadsClient initialLeads={leads} live={live} />
     </div>
   );
 }

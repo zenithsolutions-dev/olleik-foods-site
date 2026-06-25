@@ -2,8 +2,15 @@
 
 import Link from "next/link";
 import { useAdmin, formatMoney } from "@/lib/admin/store";
+import type { Lead } from "@/lib/admin/types";
 
-export function DashboardClient() {
+export function DashboardClient({
+  leads,
+  live,
+}: {
+  leads: Lead[];
+  live: boolean;
+}) {
   const { state, hydrated, reset } = useAdmin();
 
   if (!hydrated) {
@@ -14,7 +21,9 @@ export function DashboardClient() {
   const activeCustomers = state.customers.filter(
     (c) => c.status === "active"
   ).length;
-  const newLeads = state.leads.filter((l) => l.status === "new").length;
+  // Leads come from the DB (real rows) via props; products/customers are still
+  // the local demo store.
+  const newLeads = leads.filter((l) => l.status === "new").length;
   const avgPrice =
     state.products.length === 0
       ? 0
@@ -28,7 +37,7 @@ export function DashboardClient() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Products in catalog" value={`${state.products.length}`} sub={`${activeProducts} active`} href="/admin/products" />
         <Stat label="Customers" value={`${state.customers.length}`} sub={`${activeCustomers} active`} href="/admin/customers" />
-        <Stat label="New leads" value={`${newLeads}`} sub={`${state.leads.length} total`} href="/admin/leads" highlight={newLeads > 0} />
+        <Stat label="New leads" value={`${newLeads}`} sub={`${leads.length} total`} href="/admin/leads" highlight={newLeads > 0} />
         <Stat label="Avg. list price" value={formatMoney(avgPrice)} sub="per unit" />
       </div>
 
@@ -37,11 +46,11 @@ export function DashboardClient() {
           Recent leads
         </h2>
         <p className="mt-1 text-xs text-muted">From the public /apply form.</p>
-        {state.leads.length === 0 ? (
+        {leads.length === 0 ? (
           <p className="mt-4 text-sm text-muted">No leads yet.</p>
         ) : (
           <ul className="mt-4 divide-y divide-[var(--border)]">
-            {state.leads.slice(0, 5).map((l) => (
+            {leads.slice(0, 5).map((l) => (
               <li key={l.id} className="flex items-center justify-between gap-4 py-3 text-sm">
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-foreground">{l.businessName}</p>
@@ -62,26 +71,29 @@ export function DashboardClient() {
         </Link>
       </section>
 
-      <section className="rounded-2xl border border-[var(--border)] bg-surface p-6">
-        <h2 className="font-display text-lg font-semibold text-brand-deep">
-          Demo controls
-        </h2>
-        <p className="mt-1 text-xs text-muted">
-          All data is stored locally in this browser. Use the reset button to
-          restore the seed sample data after experimenting.
-        </p>
-        <button
-          type="button"
-          onClick={() => {
-            if (window.confirm("Reset all admin data to the seed sample? This wipes any changes.")) {
-              reset();
-            }
-          }}
-          className="mt-4 rounded-full border border-[var(--border-strong)] bg-background px-4 py-2 text-xs font-medium text-foreground/80 hover:border-accent hover:text-accent-deep"
-        >
-          Reset demo data
-        </button>
-      </section>
+      {!live && (
+        <section className="rounded-2xl border border-[var(--border)] bg-surface p-6">
+          <h2 className="font-display text-lg font-semibold text-brand-deep">
+            Demo controls
+          </h2>
+          <p className="mt-1 text-xs text-muted">
+            Supabase isn&apos;t configured, so catalog, customers, and leads are
+            local demo data. Use the reset button to restore the seed sample
+            after experimenting.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm("Reset all admin data to the seed sample? This wipes any changes.")) {
+                reset();
+              }
+            }}
+            className="mt-4 rounded-full border border-[var(--border-strong)] bg-background px-4 py-2 text-xs font-medium text-foreground/80 hover:border-accent hover:text-accent-deep"
+          >
+            Reset demo data
+          </button>
+        </section>
+      )}
     </div>
   );
 }

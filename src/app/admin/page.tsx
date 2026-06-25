@@ -1,6 +1,11 @@
 import { DashboardClient } from "./dashboard-client";
+import { fetchAdminLeads } from "@/lib/admin/leads-data";
 
-export default function AdminDashboardPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminDashboardPage() {
+  const { leads, live } = await fetchAdminLeads();
+
   return (
     <div>
       <header className="mb-8">
@@ -14,7 +19,7 @@ export default function AdminDashboardPage() {
           Quick view of your catalog, customer base, and incoming leads.
         </p>
       </header>
-      <DashboardClient />
+      <DashboardClient leads={leads} live={live} />
     </div>
   );
 }
