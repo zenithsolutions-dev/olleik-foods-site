@@ -1,14 +1,20 @@
 import Link from "next/link";
 import { AdminProvider } from "@/lib/admin/store";
 import { AdminNav } from "./admin-nav";
+import { requireAdmin } from "@/lib/admin/require-admin";
+import { signOutAdmin } from "./actions";
 
 export const metadata = {
   title: "Olleik Admin",
 };
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Authoritative gate — redirects non-admins when Supabase is configured;
+  // returns null (no-op) in mock mode before Supabase is provisioned.
+  const adminEmail = await requireAdmin();
+
   return (
     <AdminProvider>
       <div className="flex min-h-screen bg-[#f7f4eb]">
@@ -36,7 +42,23 @@ export default function AdminLayout({
           <AdminNav />
 
           <div className="mt-auto border-t border-[var(--border)] px-6 py-5 text-[11px] text-muted-soft">
-            <p>Demo mode — data lives in this browser only.</p>
+            {adminEmail ? (
+              <>
+                <p className="truncate text-foreground/70" title={adminEmail}>
+                  {adminEmail}
+                </p>
+                <form action={signOutAdmin} className="mt-2">
+                  <button
+                    type="submit"
+                    className="text-brand hover:text-accent"
+                  >
+                    Sign out
+                  </button>
+                </form>
+              </>
+            ) : (
+              <p>Demo mode — data lives in this browser only.</p>
+            )}
             <Link href="/" className="mt-2 inline-block text-brand hover:text-accent">
               ← Back to site
             </Link>
