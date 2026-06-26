@@ -26,7 +26,7 @@ export type Product = {
   sku: string;
   name: string;
   description?: string;
-  categoryId: ID;
+  categoryId: ID | null; // null = uncategorized (e.g. after its category was deleted)
   unit: ProductUnit;
   unitSize: string;      // e.g. "25 lb", "50 ct", "1 gal"
   listPriceCents: number; // default/list price (per unit). Per-customer overrides on CustomerPricing.

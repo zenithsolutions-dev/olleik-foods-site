@@ -1,10 +1,14 @@
 import { DashboardClient } from "./dashboard-client";
 import { fetchAdminLeads } from "@/lib/admin/leads-data";
+import { fetchAdminProducts } from "@/lib/admin/products-data";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const { leads, live } = await fetchAdminLeads();
+  const [{ leads, live }, { products }] = await Promise.all([
+    fetchAdminLeads(),
+    fetchAdminProducts(),
+  ]);
 
   return (
     <div>
@@ -19,7 +23,7 @@ export default async function AdminDashboardPage() {
           Quick view of your catalog, customer base, and incoming leads.
         </p>
       </header>
-      <DashboardClient leads={leads} live={live} />
+      <DashboardClient leads={leads} products={products} live={live} />
     </div>
   );
 }

@@ -2,40 +2,100 @@
 
 import { useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
-import { useAdmin, formatMoney } from "@/lib/admin/store";
-import type { Product, ProductUnit } from "@/lib/admin/types";
+import { formatMoney } from "@/lib/admin/store";
+import type { Category, Product, ProductUnit } from "@/lib/admin/types";
+import {
+  createProduct,
+  updateProduct,
+  deactivateProduct,
+  type ProductInput,
+} from "./actions";
 
 const UNITS: ProductUnit[] = ["case", "bag", "lb", "kg", "gal", "L", "ea", "box"];
 
-export function ProductsClient() {
-  const { state, dispatch, hydrated } = useAdmin();
+export function ProductsClient({
+  products,
+  categories,
+  live,
+}: {
+  products: Product[];
+  categories: Category[];
+  live: boolean;
+}) {
   const [query, setQuery] = useState("");
   const [activeCat, setActiveCat] = useState<string>("all");
   const [editing, setEditing] = useState<Product | null>(null);
   const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const catLookup = useMemo(
-    () => Object.fromEntries(state.categories.map((c) => [c.id, c.name])),
-    [state.categories]
+    () => Object.fromEntries(categories.map((c) => [c.id, c.name])),
+    [categories],
   );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return state.products.filter((p) => {
+    return products.filter((p) => {
       if (activeCat !== "all" && p.categoryId !== activeCat) return false;
       if (!q) return true;
       return (
         p.name.toLowerCase().includes(q) ||
         p.sku.toLowerCase().includes(q) ||
-        (catLookup[p.categoryId] ?? "").toLowerCase().includes(q)
+        (p.categoryId ? (catLookup[p.categoryId] ?? "") : "").toLowerCase().includes(q)
       );
     });
-  }, [state.products, query, activeCat, catLookup]);
+  }, [products, query, activeCat, catLookup]);
 
-  if (!hydrated) return <p className="text-sm text-muted">Loading…</p>;
+  function openCreate() {
+    setFormError(null);
+    setCreating(true);
+  }
+  function openEdit(p: Product) {
+    setFormError(null);
+    setEditing(p);
+  }
+  function closeModal() {
+    setCreating(false);
+    setEditing(null);
+    setFormError(null);
+  }
+
+  async function handleSave(values: ProductInput) {
+    setSaving(true);
+    setFormError(null);
+    const result = editing
+      ? await updateProduct(editing.id, values)
+      : await createProduct(values);
+    setSaving(false);
+    if (!result.ok) {
+      setFormError(result.message);
+      return;
+    }
+    closeModal();
+  }
+
+  async function handleDeactivate(id: string) {
+    setSaving(true);
+    setFormError(null);
+    const result = await deactivateProduct(id);
+    setSaving(false);
+    if (!result.ok) {
+      setFormError(result.message);
+      return;
+    }
+    closeModal();
+  }
 
   return (
     <div className="space-y-5">
+      {!live && (
+        <p className="rounded-lg bg-amber-50 px-4 py-2.5 text-xs text-amber-800">
+          Showing demo seed data — Supabase isn&apos;t configured, so changes
+          won&apos;t persist.
+        </p>
+      )}
+
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[220px]">
@@ -54,7 +114,7 @@ export function ProductsClient() {
           className="rounded-full border border-[var(--border)] bg-surface px-4 py-2 text-sm"
         >
           <option value="all">All categories</option>
-          {state.categories.map((c) => (
+          {categories.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
             </option>
@@ -62,7 +122,7 @@ export function ProductsClient() {
         </select>
         <button
           type="button"
-          onClick={() => setCreating(true)}
+          onClick={openCreate}
           className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(200,122,42,0.6)] hover:bg-accent-deep"
         >
           <Plus size={14} /> Add product
@@ -100,7 +160,7 @@ export function ProductsClient() {
                     <p className="text-xs text-muted">{p.description}</p>
                   )}
                 </td>
-                <td className="px-4 py-3 text-muted">{catLookup[p.categoryId] ?? "—"}</td>
+                <td className="px-4 py-3 text-muted">{p.categoryId ? (catLookup[p.categoryId] ?? "—") : "—"}</td>
                 <td className="px-4 py-3 text-muted">
                   {p.unitSize} <span className="text-muted-soft">/ {p.unit}</span>
                 </td>
@@ -119,7 +179,7 @@ export function ProductsClient() {
                 <td className="px-4 py-3 text-right">
                   <button
                     type="button"
-                    onClick={() => setEditing(p)}
+                    onClick={() => openEdit(p)}
                     className="text-xs font-medium text-brand hover:text-accent"
                   >
                     Edit
@@ -135,29 +195,16 @@ export function ProductsClient() {
       {(creating || editing) && (
         <ProductFormModal
           initial={editing}
-          categories={state.categories}
-          onClose={() => {
-            setCreating(false);
-            setEditing(null);
-          }}
-          onSave={(values) => {
-            if (editing) {
-              dispatch({ type: "product/update", id: editing.id, patch: values });
-            } else {
-              dispatch({
-                type: "product/add",
-                input: { ...values, isActive: values.isActive ?? true },
-              });
-            }
-            setCreating(false);
-            setEditing(null);
-          }}
-          onDelete={
-            editing
+          categories={categories}
+          saving={saving}
+          error={formError}
+          onClose={closeModal}
+          onSave={handleSave}
+          onDeactivate={
+            editing && editing.isActive
               ? () => {
-                  if (window.confirm(`Delete "${editing.name}"? Removes from all customer catalogs.`)) {
-                    dispatch({ type: "product/delete", id: editing.id });
-                    setEditing(null);
+                  if (window.confirm(`Deactivate "${editing.name}"? It will be hidden from customers; their pricing is kept.`)) {
+                    handleDeactivate(editing.id);
                   }
                 }
               : undefined
@@ -171,24 +218,30 @@ export function ProductsClient() {
 function ProductFormModal({
   initial,
   categories,
+  saving,
+  error,
   onClose,
   onSave,
-  onDelete,
+  onDeactivate,
 }: {
   initial: Product | null;
-  categories: Array<{ id: string; name: string }>;
+  categories: Category[];
+  saving: boolean;
+  error: string | null;
   onClose: () => void;
-  onSave: (values: Omit<Product, "id" | "createdAt">) => void;
-  onDelete?: () => void;
+  onSave: (values: ProductInput) => void;
+  onDeactivate?: () => void;
 }) {
   const [name, setName] = useState(initial?.name ?? "");
   const [sku, setSku] = useState(initial?.sku ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
-  const [categoryId, setCategoryId] = useState(initial?.categoryId ?? categories[0]?.id ?? "");
+  const [categoryId, setCategoryId] = useState<string>(
+    initial?.categoryId ?? categories[0]?.id ?? "",
+  );
   const [unit, setUnit] = useState<ProductUnit>(initial?.unit ?? "case");
   const [unitSize, setUnitSize] = useState(initial?.unitSize ?? "");
   const [listPriceDollars, setListPriceDollars] = useState(
-    initial ? (initial.listPriceCents / 100).toFixed(2) : ""
+    initial ? (initial.listPriceCents / 100).toFixed(2) : "",
   );
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
 
@@ -199,7 +252,7 @@ function ProductFormModal({
       sku: sku.trim(),
       name: name.trim(),
       description: description.trim() || undefined,
-      categoryId,
+      categoryId: categoryId || null,
       unit,
       unitSize: unitSize.trim(),
       listPriceCents: cents,
@@ -224,12 +277,19 @@ function ProductFormModal({
         </h3>
         <p className="mt-1 text-xs text-muted">All fields except description are required.</p>
 
+        {error && (
+          <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
+          </p>
+        )}
+
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <Field label="SKU">
             <input value={sku} onChange={(e) => setSku(e.target.value)} required className={inputCls} placeholder="PRD-005" />
           </Field>
           <Field label="Category">
             <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className={inputCls}>
+              <option value="">Uncategorized</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -269,13 +329,14 @@ function ProductFormModal({
         </div>
 
         <div className="mt-6 flex items-center justify-between gap-3">
-          {onDelete ? (
+          {onDeactivate ? (
             <button
               type="button"
-              onClick={onDelete}
-              className="text-xs font-medium text-red-700 hover:text-red-900"
+              onClick={onDeactivate}
+              disabled={saving}
+              className="text-xs font-medium text-red-700 hover:text-red-900 disabled:opacity-50"
             >
-              Delete product
+              Deactivate product
             </button>
           ) : (
             <span />
@@ -284,15 +345,17 @@ function ProductFormModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-[var(--border-strong)] px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent"
+              disabled={saving}
+              className="rounded-full border border-[var(--border-strong)] px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep"
+              disabled={saving}
+              className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
             >
-              {initial ? "Save changes" : "Create product"}
+              {saving ? "Saving…" : initial ? "Save changes" : "Create product"}
             </button>
           </div>
         </div>

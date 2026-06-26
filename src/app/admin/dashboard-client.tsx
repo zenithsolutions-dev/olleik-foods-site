@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useAdmin, formatMoney } from "@/lib/admin/store";
-import type { Lead } from "@/lib/admin/types";
+import type { Lead, Product } from "@/lib/admin/types";
 
 export function DashboardClient({
   leads,
+  products,
   live,
 }: {
   leads: Lead[];
+  products: Product[];
   live: boolean;
 }) {
   const { state, hydrated, reset } = useAdmin();
@@ -17,25 +19,24 @@ export function DashboardClient({
     return <p className="text-sm text-muted">Loading…</p>;
   }
 
-  const activeProducts = state.products.filter((p) => p.isActive).length;
+  // Leads + products come from the DB (real rows) via props; customers are
+  // still the local demo store (Phase C).
+  const activeProducts = products.filter((p) => p.isActive).length;
   const activeCustomers = state.customers.filter(
     (c) => c.status === "active"
   ).length;
-  // Leads come from the DB (real rows) via props; products/customers are still
-  // the local demo store.
   const newLeads = leads.filter((l) => l.status === "new").length;
   const avgPrice =
-    state.products.length === 0
+    products.length === 0
       ? 0
       : Math.round(
-          state.products.reduce((s, p) => s + p.listPriceCents, 0) /
-            state.products.length
+          products.reduce((s, p) => s + p.listPriceCents, 0) / products.length
         );
 
   return (
     <div className="space-y-8">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Products in catalog" value={`${state.products.length}`} sub={`${activeProducts} active`} href="/admin/products" />
+        <Stat label="Products in catalog" value={`${products.length}`} sub={`${activeProducts} active`} href="/admin/products" />
         <Stat label="Customers" value={`${state.customers.length}`} sub={`${activeCustomers} active`} href="/admin/customers" />
         <Stat label="New leads" value={`${newLeads}`} sub={`${leads.length} total`} href="/admin/leads" highlight={newLeads > 0} />
         <Stat label="Avg. list price" value={formatMoney(avgPrice)} sub="per unit" />

@@ -1,6 +1,15 @@
 import { ProductsClient } from "./products-client";
+import { fetchAdminProducts } from "@/lib/admin/products-data";
+import { fetchAdminCategories } from "@/lib/admin/categories-data";
 
-export default function ProductsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ProductsPage() {
+  const [{ products, live }, { categories }] = await Promise.all([
+    fetchAdminProducts(),
+    fetchAdminCategories(),
+  ]);
+
   return (
     <div>
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -16,7 +25,7 @@ export default function ProductsPage() {
           </p>
         </div>
       </header>
-      <ProductsClient />
+      <ProductsClient products={products} categories={categories} live={live} />
     </div>
   );
 }
