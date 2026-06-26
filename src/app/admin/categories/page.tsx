@@ -1,6 +1,11 @@
 import { CategoriesClient } from "./categories-client";
+import { fetchAdminCategories } from "@/lib/admin/categories-data";
 
-export default function CategoriesPage() {
+export const dynamic = "force-dynamic";
+
+export default async function CategoriesPage() {
+  const { categories, counts, live } = await fetchAdminCategories();
+
   return (
     <div>
       <header className="mb-8">
@@ -14,7 +19,7 @@ export default function CategoriesPage() {
           High-level groupings used to organize products in the customer portal.
         </p>
       </header>
-      <CategoriesClient />
+      <CategoriesClient categories={categories} counts={counts} live={live} />
     </div>
   );
 }

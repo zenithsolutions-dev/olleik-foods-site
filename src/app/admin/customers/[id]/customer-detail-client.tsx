@@ -133,7 +133,7 @@ export function CustomerDetailClient({ customerId }: { customerId: string }) {
                     productName={p.name}
                     sku={p.sku}
                     unitSize={p.unitSize}
-                    categoryName={catById[p.categoryId]?.name ?? "—"}
+                    categoryName={(p.categoryId ? catById[p.categoryId]?.name : undefined) ?? "—"}
                     listPriceCents={p.listPriceCents}
                     customerPriceCents={cp.priceCents}
                     onSet={(cents) =>
@@ -178,7 +178,7 @@ export function CustomerDetailClient({ customerId }: { customerId: string }) {
       {addProductPickerOpen && (
         <AddProductsPicker
           unassigned={unassigned}
-          categoryName={(id) => catById[id]?.name ?? "—"}
+          categoryName={(id) => (id ? catById[id]?.name : undefined) ?? "—"}
           onClose={() => setAddProductPickerOpen(false)}
           onAdd={(productIds) => {
             for (const pid of productIds) {
@@ -313,8 +313,8 @@ function AddProductsPicker({
   onClose,
   onAdd,
 }: {
-  unassigned: Array<{ id: string; sku: string; name: string; unitSize: string; categoryId: string; listPriceCents: number }>;
-  categoryName: (catId: string) => string;
+  unassigned: Array<{ id: string; sku: string; name: string; unitSize: string; categoryId: string | null; listPriceCents: number }>;
+  categoryName: (catId: string | null) => string;
   onClose: () => void;
   onAdd: (productIds: string[]) => void;
 }) {
