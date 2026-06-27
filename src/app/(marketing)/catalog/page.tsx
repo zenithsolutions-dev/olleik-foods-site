@@ -1,15 +1,23 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { categories } from "@/lib/catalog";
+import { getCategoryChrome } from "@/lib/catalog";
+import { fetchPublicCatalog, visibleCategories } from "@/lib/catalog-data";
 
 export const metadata: Metadata = {
   title: "Catalog | Olleik Foods Wholesale Categories",
   description:
-    "Browse Olleik Foods wholesale categories — fresh produce, meat & poultry, dairy & eggs, dry goods & pantry, beverages, and paper & cleaning — delivered across the Ottawa region.",
+    "Browse Olleik Foods wholesale categories — produce, meat & poultry, dairy & eggs, dry goods, beverages, and packaging — delivered across the Ottawa region.",
 };
 
-export default function CatalogPage() {
+// Live, price-free read from Supabase on every request so the catalog reflects
+// admin changes immediately.
+export const dynamic = "force-dynamic";
+
+export default async function CatalogPage() {
+  const catalog = await fetchPublicCatalog();
+  const categories = visibleCategories(catalog);
+
   return (
     <>
       {/* Hero */}
@@ -35,46 +43,54 @@ export default function CatalogPage() {
 
       {/* Category grid */}
       <section className="mx-auto max-w-7xl px-6 pb-20">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/catalog/${c.slug}`}
-              className="group relative aspect-[4/5] overflow-hidden rounded-3xl border border-[var(--border)] shadow-sm transition hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_30px_60px_-30px_rgba(20,53,39,0.4)]"
-            >
-              {c.image ? (
-                <Image
-                  src={c.image}
-                  alt={c.imageAlt ?? c.name}
-                  fill
-                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
-                  className="object-cover transition duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${c.gradient}`}
-                  aria-hidden
-                />
-              )}
-              <div
-                aria-hidden
-                className="absolute inset-0 bg-gradient-to-t from-brand-deep/85 via-brand-deep/35 to-transparent"
-              />
-              <div className="relative flex h-full flex-col justify-end p-6">
-                <h2 className="font-display text-2xl font-semibold tracking-tight text-white">
-                  {c.name}
-                </h2>
-                <p className="mt-2 text-sm leading-relaxed text-white/80">{c.blurb}</p>
-                <div className="mt-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-accent-soft">
-                  Explore
-                  <span aria-hidden className="transition group-hover:translate-x-0.5">
-                    →
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {categories.length > 0 && (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {categories.map((c) => {
+              const chrome = getCategoryChrome(c.slug);
+              const blurb = chrome.blurb ?? c.description ?? undefined;
+              return (
+                <Link
+                  key={c.slug}
+                  href={`/catalog/${c.slug}`}
+                  className="group relative aspect-[4/5] overflow-hidden rounded-3xl border border-[var(--border)] shadow-sm transition hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_30px_60px_-30px_rgba(20,53,39,0.4)]"
+                >
+                  {chrome.image ? (
+                    <Image
+                      src={chrome.image}
+                      alt={chrome.imageAlt ?? c.name}
+                      fill
+                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${chrome.gradient}`}
+                      aria-hidden
+                    />
+                  )}
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-gradient-to-t from-brand-deep/85 via-brand-deep/35 to-transparent"
+                  />
+                  <div className="relative flex h-full flex-col justify-end p-6">
+                    <h2 className="font-display text-2xl font-semibold tracking-tight text-white">
+                      {c.name}
+                    </h2>
+                    {blurb && (
+                      <p className="mt-2 text-sm leading-relaxed text-white/80">{blurb}</p>
+                    )}
+                    <div className="mt-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-accent-soft">
+                      Explore
+                      <span aria-hidden className="transition group-hover:translate-x-0.5">
+                        →
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
 
         <div className="mt-12 rounded-3xl border border-[var(--border)] bg-brand-mist/40 p-8 text-center md:p-10">
           <p className="font-display text-2xl font-semibold tracking-tight text-brand-deep">

@@ -1,14 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getCategoryChrome } from "@/lib/catalog";
+import {
+  fetchPublicCatalog,
+  visibleCategories,
+  type PublicCategory,
+} from "@/lib/catalog-data";
 
-export default function Home() {
+// The Categories section reads live data; render dynamically so it reflects
+// admin changes (matches the /catalog routes).
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const catalog = await fetchPublicCatalog();
+  const categories = visibleCategories(catalog);
+
   return (
     <>
       <Hero />
       <LogoCloud />
       <WhyUs />
       <SourcingStory />
-      <Categories />
+      <Categories categories={categories} />
       <HowItWorks />
       <Testimonials />
       <Comparison />
@@ -412,59 +425,10 @@ function WhyUs() {
 
 /* ---------------- CATEGORIES ---------------- */
 
-function Categories() {
-  const cats: Array<{
-    name: string;
-    note: string;
-    image?: { src: string; alt: string };
-    gradient?: string;
-  }> = [
-    {
-      name: "Fresh Produce",
-      note: "Daily-sourced fruit and vegetables from regional growers.",
-      image: {
-        src: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=900&q=80",
-        alt: "Abundant market display of fresh fruits and vegetables",
-      },
-    },
-    {
-      name: "Meat & Poultry",
-      note: "Restaurant-grade cuts, portion control, halal & specialty.",
-      image: {
-        src: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=900&q=80",
-        alt: "Assorted raw meats and cured meats on a wooden board",
-      },
-    },
-    {
-      name: "Dairy & Eggs",
-      note: "Cheese, butter, cream, cultured dairy, and farm-fresh eggs.",
-      image: {
-        src: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=900&q=80",
-        alt: "Small jars of cream layered with fresh berries",
-      },
-    },
-    {
-      name: "Dry Goods & Pantry",
-      note: "Grains, oils, spices, canned goods, and baking essentials.",
-      image: {
-        src: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=80",
-        alt: "Round artisan bread loaves with stalks of wheat",
-      },
-    },
-    {
-      name: "Beverages",
-      note: "Coffee, espresso, juices, bottled water, and soft drinks.",
-      image: {
-        src: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80",
-        alt: "Three cups of latte art held together from above",
-      },
-    },
-    {
-      name: "Paper & Cleaning",
-      note: "Disposables, take-out packaging, sanitation, and PPE.",
-      gradient: "from-brand-mist via-brand-soft to-accent-soft/60",
-    },
-  ];
+function Categories({ categories }: { categories: PublicCategory[] }) {
+  if (categories.length === 0) return null;
+  // Show up to 6 categories on the homepage; the full set lives on /catalog.
+  const cats = categories.slice(0, 6);
   return (
     <section id="categories" className="relative overflow-hidden bg-brand-mist/40 py-24 md:py-32">
       <div
@@ -489,48 +453,55 @@ function Categories() {
         </div>
 
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {cats.map((c) => (
-            <article
-              key={c.name}
-              className="group relative aspect-[4/5] overflow-hidden rounded-3xl border border-[var(--border)] shadow-sm transition hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_30px_60px_-30px_rgba(20,53,39,0.4)]"
-            >
-              {c.image ? (
-                <Image
-                  src={c.image.src}
-                  alt={c.image.alt}
-                  fill
-                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
-                  className="object-cover transition duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${c.gradient}`}
-                  aria-hidden
-                />
-              )}
-              <div
-                aria-hidden
-                className="absolute inset-0 bg-gradient-to-t from-brand-deep/85 via-brand-deep/35 to-transparent"
-              />
-              <div className="relative flex h-full flex-col justify-end p-6">
-                <h3 className="font-display text-2xl font-semibold tracking-tight text-white">
-                  {c.name}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/80">
-                  {c.note}
-                </p>
-                <div className="mt-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-accent-soft">
-                  Explore
-                  <span
+          {cats.map((c) => {
+            const chrome = getCategoryChrome(c.slug);
+            const note = chrome.blurb ?? c.description ?? undefined;
+            return (
+              <Link
+                key={c.id}
+                href={`/catalog/${c.slug}`}
+                className="group relative aspect-[4/5] overflow-hidden rounded-3xl border border-[var(--border)] shadow-sm transition hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_30px_60px_-30px_rgba(20,53,39,0.4)]"
+              >
+                {chrome.image ? (
+                  <Image
+                    src={chrome.image}
+                    alt={chrome.imageAlt ?? c.name}
+                    fill
+                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${chrome.gradient}`}
                     aria-hidden
-                    className="transition group-hover:translate-x-0.5"
-                  >
-                    →
-                  </span>
+                  />
+                )}
+                <div
+                  aria-hidden
+                  className="absolute inset-0 bg-gradient-to-t from-brand-deep/85 via-brand-deep/35 to-transparent"
+                />
+                <div className="relative flex h-full flex-col justify-end p-6">
+                  <h3 className="font-display text-2xl font-semibold tracking-tight text-white">
+                    {c.name}
+                  </h3>
+                  {note && (
+                    <p className="mt-2 text-sm leading-relaxed text-white/80">
+                      {note}
+                    </p>
+                  )}
+                  <div className="mt-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.13em] text-accent-soft">
+                    Explore
+                    <span
+                      aria-hidden
+                      className="transition group-hover:translate-x-0.5"
+                    >
+                      →
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>
