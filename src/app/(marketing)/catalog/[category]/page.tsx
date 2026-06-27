@@ -2,11 +2,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { categories, getCategory } from "@/lib/catalog";
+import { getCategoryChrome } from "@/lib/catalog";
+import {
+  fetchPublicCatalog,
+  findCategoryBySlug,
+  type PublicProduct,
+} from "@/lib/catalog-data";
 
-export function generateStaticParams() {
-  return categories.map((c) => ({ category: c.slug }));
-}
+// Live, price-free read on every request.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -14,11 +18,14 @@ export async function generateMetadata({
   params: Promise<{ category: string }>;
 }): Promise<Metadata> {
   const { category } = await params;
-  const data = getCategory(category);
+  const catalog = await fetchPublicCatalog();
+  const data = findCategoryBySlug(catalog, category);
   if (!data) return { title: "Catalog | Olleik Foods" };
+  const chrome = getCategoryChrome(data.slug);
+  const desc = data.description ?? chrome.blurb ?? "";
   return {
     title: `${data.name} — Wholesale | Olleik Foods`,
-    description: `${data.description} Wholesale supply across the Ottawa region from Olleik Foods.`,
+    description: `${desc} Wholesale supply across the Ottawa region from Olleik Foods.`.trim(),
   };
 }
 
@@ -28,8 +35,12 @@ export default async function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category } = await params;
-  const data = getCategory(category);
-  if (!data) notFound();
+  const catalog = await fetchPublicCatalog();
+  const data = findCategoryBySlug(catalog, category);
+  if (!data) notFound(); // unknown slug → 404; real-but-empty falls through to empty state
+
+  const chrome = getCategoryChrome(data.slug);
+  const description = data.description ?? chrome.blurb ?? null;
 
   return (
     <>
@@ -46,31 +57,23 @@ export default async function CategoryPage({
             <h1 className="font-display mt-6 text-4xl font-semibold leading-[1.04] tracking-tight text-brand-deep sm:text-5xl">
               {data.name}
             </h1>
-            <p className="mt-5 text-lg leading-relaxed text-muted">{data.description}</p>
-            <div className="mt-7 flex flex-wrap gap-2.5">
-              {data.highlights.map((h) => (
-                <span
-                  key={h}
-                  className="inline-flex items-center rounded-full border border-[var(--border-strong)] bg-brand-mist/50 px-4 py-2 text-sm font-medium text-brand-deep"
-                >
-                  {h}
-                </span>
-              ))}
-            </div>
+            {description && (
+              <p className="mt-5 text-lg leading-relaxed text-muted">{description}</p>
+            )}
           </div>
           <div className="lg:col-span-6">
             <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[2rem] border border-[var(--border-strong)] bg-brand-mist shadow-[0_40px_80px_-40px_rgba(20,53,39,0.45)]">
-              {data.image ? (
+              {chrome.image ? (
                 <Image
-                  src={data.image}
-                  alt={data.imageAlt ?? data.name}
+                  src={chrome.image}
+                  alt={chrome.imageAlt ?? data.name}
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
                   className="object-cover"
                 />
               ) : (
                 <div
-                  className={`absolute inset-0 bg-gradient-to-br ${data.gradient}`}
+                  className={`absolute inset-0 bg-gradient-to-br ${chrome.gradient}`}
                   aria-hidden
                 />
               )}
@@ -79,37 +82,38 @@ export default async function CategoryPage({
         </div>
       </section>
 
-      {/* Representative items */}
+      {/* Products */}
       <section className="bg-brand-mist/40 py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
-              Representative of the range
+              In this category
             </p>
             <h2 className="font-display mt-4 text-3xl font-semibold leading-[1.08] tracking-tight text-brand-deep sm:text-4xl">
-              A sample of what&apos;s available.
+              {data.products.length > 0
+                ? "What we carry here."
+                : "Items coming soon."}
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-muted">
-              A snapshot, not the full list. Your signed-in catalog shows the
-              specific items and pack sizes set up for your account.
+              Pack sizes shown are typical. Your signed-in catalog shows the
+              specific items and negotiated pricing set up for your account.
             </p>
           </div>
-          <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {data.examples.map((item) => (
-              <li
-                key={item}
-                className="flex items-center gap-3 rounded-2xl border border-[var(--border)] bg-surface px-5 py-4"
-              >
-                <span
-                  aria-hidden
-                  className="inline-grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-mist text-brand-deep"
-                >
-                  •
-                </span>
-                <span className="text-[15px] font-medium text-foreground">{item}</span>
-              </li>
-            ))}
-          </ul>
+
+          {data.products.length > 0 ? (
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {data.products.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-10 rounded-3xl border border-dashed border-[var(--border-strong)] bg-surface p-8 text-center">
+              <p className="text-[15px] leading-relaxed text-muted">
+                We&apos;re still loading items into this category online. Tell us
+                what you need and we&apos;ll quote it within one business day.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -145,5 +149,43 @@ export default async function CategoryPage({
         </div>
       </section>
     </>
+  );
+}
+
+function ProductCard({ product: p }: { product: PublicProduct }) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-surface">
+      <div className="relative aspect-[4/3] w-full bg-brand-mist">
+        {p.imageUrl ? (
+          <Image
+            src={p.imageUrl}
+            alt={p.name}
+            fill
+            sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover"
+          />
+        ) : (
+          <div
+            aria-hidden
+            className="absolute inset-0 grid place-items-center bg-gradient-to-br from-brand-mist to-accent-soft/50 text-brand-deep/35"
+          >
+            <span className="font-display text-4xl font-semibold">
+              {p.name.charAt(0).toUpperCase()}
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="p-5">
+        <h3 className="font-medium leading-snug text-foreground">{p.name}</h3>
+        {p.description && (
+          <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted">
+            {p.description}
+          </p>
+        )}
+        <p className="mt-3 text-xs font-medium uppercase tracking-wider text-muted-soft">
+          {p.unitSize} · {p.unit}
+        </p>
+      </div>
+    </div>
   );
 }
