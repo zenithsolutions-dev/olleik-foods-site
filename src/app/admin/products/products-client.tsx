@@ -1,13 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus, Search } from "lucide-react";
+import Image from "next/image";
+import { Plus, Search, ImagePlus } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
 import type { Category, Product, ProductUnit } from "@/lib/admin/types";
 import {
   createProduct,
   updateProduct,
   deactivateProduct,
+  uploadProductImageAction,
   type ProductInput,
 } from "./actions";
 
@@ -244,6 +246,39 @@ function ProductFormModal({
     initial ? (initial.listPriceCents / 100).toFixed(2) : "",
   );
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
+  const [imageUrl, setImageUrl] = useState<string | null>(initial?.imageUrl ?? null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const ACCEPTED = ["image/jpeg", "image/png", "image/webp"];
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-picking the same file after an error
+    if (!file) return;
+
+    // Friendly client-side pre-checks; the server action re-validates both.
+    if (!ACCEPTED.includes(file.type)) {
+      setUploadError("Please use a JPG, PNG, or WebP file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Image is too large. Maximum size is 5 MB.");
+      return;
+    }
+
+    setUploadError(null);
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const result = await uploadProductImageAction(fd);
+    setUploading(false);
+    if (!result.ok) {
+      setUploadError(result.message);
+      return;
+    }
+    setImageUrl(result.url);
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -257,6 +292,7 @@ function ProductFormModal({
       unitSize: unitSize.trim(),
       listPriceCents: cents,
       isActive,
+      imageUrl,
     });
   }
 
@@ -301,6 +337,53 @@ function ProductFormModal({
           <Field label="Description (optional)" full>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className={inputCls} />
           </Field>
+
+          {/* Product photo — not wrapped in <Field> because that renders a
+              <label>, and the file picker + buttons here are their own controls. */}
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
+            <span className="text-xs font-medium uppercase tracking-wider text-muted">
+              Product photo (optional)
+            </span>
+            <div className="flex items-center gap-4">
+              {imageUrl ? (
+                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-[var(--border)] bg-background">
+                  <Image src={imageUrl} alt="Product photo" fill sizes="96px" className="object-cover" />
+                </div>
+              ) : (
+                <div className="grid h-24 w-24 shrink-0 place-items-center rounded-lg border border-dashed border-[var(--border-strong)] bg-background text-muted-soft">
+                  <ImagePlus size={20} />
+                </div>
+              )}
+              <div className="flex flex-col items-start gap-2">
+                <label
+                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-[var(--border-strong)] px-3 py-1.5 text-xs font-semibold text-foreground/80 hover:border-accent ${
+                    uploading || saving ? "pointer-events-none opacity-50" : ""
+                  }`}
+                >
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleFile}
+                    disabled={uploading || saving}
+                    className="hidden"
+                  />
+                  {uploading ? "Uploading…" : imageUrl ? "Replace photo" : "Upload photo"}
+                </label>
+                {imageUrl && !uploading && (
+                  <button
+                    type="button"
+                    onClick={() => setImageUrl(null)}
+                    className="text-xs font-medium text-red-700 hover:text-red-900"
+                  >
+                    Remove photo
+                  </button>
+                )}
+                <span className="text-[11px] text-muted-soft">JPG, PNG, or WebP · up to 5 MB</span>
+              </div>
+            </div>
+            {uploadError && <p className="text-xs text-red-700">{uploadError}</p>}
+          </div>
+
           <Field label="Unit">
             <select value={unit} onChange={(e) => setUnit(e.target.value as ProductUnit)} className={inputCls}>
               {UNITS.map((u) => <option key={u}>{u}</option>)}
@@ -352,7 +435,7 @@ function ProductFormModal({
             </button>
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || uploading}
               className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
             >
               {saving ? "Saving…" : initial ? "Save changes" : "Create product"}
