@@ -1,6 +1,10 @@
 import { CustomersClient } from "./customers-client";
+import { fetchAdminCustomers } from "@/lib/admin/customers-data";
 
-export default function CustomersPage() {
+export const dynamic = "force-dynamic";
+
+export default async function CustomersPage() {
+  const { customers, counts, live } = await fetchAdminCustomers();
   return (
     <div>
       <header className="mb-8">
@@ -14,7 +18,7 @@ export default function CustomersPage() {
           Each customer sees their own assigned product list with negotiated pricing.
         </p>
       </header>
-      <CustomersClient />
+      <CustomersClient customers={customers} counts={counts} live={live} />
     </div>
   );
 }

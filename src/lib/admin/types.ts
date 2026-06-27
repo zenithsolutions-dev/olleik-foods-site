@@ -35,7 +35,11 @@ export type Product = {
   createdAt: string;     // ISO 8601
 };
 
-export type CustomerStatus = "active" | "pending" | "suspended";
+// "archived" = soft-deleted: hidden from the main list and dashboard count, but
+// the row + its customer_products + customer_offers are preserved and restorable.
+export type CustomerStatus = "active" | "pending" | "suspended" | "archived";
+
+export type PaymentTerms = "net-15" | "net-30" | "card-on-file" | "cod";
 
 export type Customer = {
   id: ID;
@@ -45,8 +49,29 @@ export type Customer = {
   phone: string;
   address: string;       // single-line for demo
   status: CustomerStatus;
-  paymentTerms: "net-15" | "net-30" | "card-on-file" | "cod";
+  paymentTerms: PaymentTerms;
   notes?: string;
+  createdAt: string;
+};
+
+// How an offer's discount_value is interpreted (informational in Phase C —
+// stored but not applied to pricing yet):
+//   percent     -> whole percent off          (10   = 10% off)
+//   fixed_price -> flat replacement price, cents (1999 = $19.99)
+//   amount_off  -> fixed amount off, cents     (500  = $5.00 off)
+export type OfferDiscountKind = "percent" | "fixed_price" | "amount_off";
+
+export type Offer = {
+  id: ID;
+  customerId: ID;
+  title: string;
+  description?: string;
+  productId?: ID | null;          // optional linked product (null = account-wide)
+  discountKind?: OfferDiscountKind | null;
+  discountValue?: number | null;
+  startsAt?: string | null;       // ISO 8601 or null = open start
+  endsAt?: string | null;         // ISO 8601 or null = open end
+  isActive: boolean;
   createdAt: string;
 };
 

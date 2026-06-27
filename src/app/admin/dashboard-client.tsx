@@ -2,29 +2,26 @@
 
 import Link from "next/link";
 import { useAdmin, formatMoney } from "@/lib/admin/store";
-import type { Lead, Product } from "@/lib/admin/types";
+import type { Customer, Lead, Product } from "@/lib/admin/types";
 
 export function DashboardClient({
   leads,
   products,
+  customers,
   live,
 }: {
   leads: Lead[];
   products: Product[];
+  customers: Customer[];
   live: boolean;
 }) {
-  const { state, hydrated, reset } = useAdmin();
+  const { reset } = useAdmin();
 
-  if (!hydrated) {
-    return <p className="text-sm text-muted">Loading…</p>;
-  }
-
-  // Leads + products come from the DB (real rows) via props; customers are
-  // still the local demo store (Phase C).
+  // Leads, products, and customers all come from the DB via props. Archived
+  // customers are soft-deleted, so they're excluded from both counts.
   const activeProducts = products.filter((p) => p.isActive).length;
-  const activeCustomers = state.customers.filter(
-    (c) => c.status === "active"
-  ).length;
+  const visibleCustomers = customers.filter((c) => c.status !== "archived");
+  const activeCustomers = visibleCustomers.filter((c) => c.status === "active").length;
   const newLeads = leads.filter((l) => l.status === "new").length;
   const avgPrice =
     products.length === 0
@@ -37,7 +34,7 @@ export function DashboardClient({
     <div className="space-y-8">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Products in catalog" value={`${products.length}`} sub={`${activeProducts} active`} href="/admin/products" />
-        <Stat label="Customers" value={`${state.customers.length}`} sub={`${activeCustomers} active`} href="/admin/customers" />
+        <Stat label="Customers" value={`${visibleCustomers.length}`} sub={`${activeCustomers} active`} href="/admin/customers" />
         <Stat label="New leads" value={`${newLeads}`} sub={`${leads.length} total`} href="/admin/leads" highlight={newLeads > 0} />
         <Stat label="Avg. list price" value={formatMoney(avgPrice)} sub="per unit" />
       </div>
