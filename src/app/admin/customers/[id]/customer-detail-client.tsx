@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Pencil, Plus, X, RotateCcw, Lock } from "lucide-react";
+import { ArrowLeft, Pencil, Plus, X, RotateCcw, Mail, Check } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
 import type { Category, Offer, Product } from "@/lib/admin/types";
 import type { AssignedProduct, CustomerDetail } from "@/lib/admin/customers-data";
@@ -18,6 +18,7 @@ import {
   updateOffer,
   deleteOffer,
   toggleOfferActive,
+  inviteCustomerToPortal,
   type CustomerInput,
   type OfferInput,
 } from "../actions";
@@ -43,6 +44,7 @@ export function CustomerDetailClient({
     offer: null,
   });
   const [busy, setBusy] = useState(false);
+  const [inviting, setInviting] = useState(false);
 
   const catById = useMemo(
     () => Object.fromEntries(categories.map((c) => [c.id, c.name])),
@@ -66,6 +68,13 @@ export function CustomerDetailClient({
     setBusy(false);
     if (!result.ok) window.alert(result.message ?? "Something went wrong.");
     return result.ok;
+  }
+
+  async function handleInvite() {
+    setInviting(true);
+    const result = await inviteCustomerToPortal(customer.id);
+    setInviting(false);
+    window.alert(result.message);
   }
 
   async function handleEditSave(values: CustomerInput) {
@@ -105,14 +114,23 @@ export function CustomerDetailClient({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {/* Invite-to-portal is wired up in Phase D (customer login). */}
             <button
               type="button"
-              disabled
-              title="Available with the customer portal (Phase D)"
-              className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full border border-[var(--border)] bg-surface px-4 py-2 text-sm font-medium text-muted-soft"
+              onClick={handleInvite}
+              disabled={inviting || isArchived}
+              title={
+                customer.userId
+                  ? "Re-send the set-password email"
+                  : "Create a portal login and email a set-password link"
+              }
+              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-surface px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent hover:text-accent-deep disabled:opacity-50"
             >
-              <Lock size={13} /> Invite to portal
+              {customer.userId ? <Check size={14} /> : <Mail size={14} />}
+              {inviting
+                ? "Sending…"
+                : customer.userId
+                  ? "Invited · Resend"
+                  : "Invite to portal"}
             </button>
             <button
               type="button"

@@ -52,6 +52,9 @@ export type Customer = {
   paymentTerms: PaymentTerms;
   notes?: string;
   createdAt: string;
+  // Linked Supabase Auth user once the customer is invited to the portal
+  // (Phase D). null/undefined = not yet invited. Admin-only field.
+  userId?: string | null;
 };
 
 // How an offer's discount_value is interpreted (informational in Phase C —
