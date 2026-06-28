@@ -58,3 +58,60 @@ export async function fetchAdminLeads(): Promise<AdminLeads> {
 
   return { leads, live: true };
 }
+
+// Approved-but-not-yet-converted leads, with the extra fields needed to prefill
+// a new customer. Used by the lead -> customer conversion screen (Phase E).
+// Kept separate from fetchAdminLeads so the main leads page is unaffected by the
+// 0004 columns.
+type ConvertLeadRow = {
+  id: string;
+  business_name: string;
+  contact_name: string;
+  email: string;
+  phone: string;
+  address: string | null;
+  business_type: string | null;
+  monthly_volume: string | null;
+  status: LeadStatus;
+  converted_customer_id: string | null;
+  submitted_at: string;
+};
+
+export async function fetchApprovedLeadsForConversion(): Promise<{ leads: Lead[]; live: boolean }> {
+  const admin = getAdminClient();
+  if (!admin) {
+    const leads = SEED_DATA.leads.filter((l) => l.status === "approved");
+    return { leads, live: false };
+  }
+
+  const { data, error } = await admin
+    .from("leads")
+    .select(
+      "id, business_name, contact_name, email, phone, address, business_type, monthly_volume, status, converted_customer_id, submitted_at",
+    )
+    .eq("status", "approved")
+    .is("converted_customer_id", null)
+    .order("submitted_at", { ascending: false });
+
+  if (error) {
+    console.error("[admin] failed to load approved leads:", error.message);
+    return { leads: [], live: true };
+  }
+
+  const leads: Lead[] = (data as ConvertLeadRow[]).map((r) => ({
+    id: r.id,
+    businessName: r.business_name,
+    contactName: r.contact_name,
+    email: r.email,
+    phone: r.phone,
+    message: undefined,
+    status: r.status,
+    submittedAt: r.submitted_at,
+    address: r.address ?? undefined,
+    businessType: r.business_type ?? undefined,
+    monthlyVolume: r.monthly_volume ?? undefined,
+    convertedCustomerId: r.converted_customer_id,
+  }));
+
+  return { leads, live: true };
+}

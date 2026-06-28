@@ -4,11 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Plus, Search, RotateCcw } from "lucide-react";
 import type { Customer, CustomerStatus, PaymentTerms } from "@/lib/admin/types";
-import {
-  createCustomer,
-  restoreCustomer,
-  type CustomerInput,
-} from "./actions";
+import { restoreCustomer, type CustomerInput } from "./actions";
 
 const STATUSES: CustomerStatus[] = ["active", "pending", "suspended"];
 
@@ -23,9 +19,6 @@ export function CustomersClient({
 }) {
   const [query, setQuery] = useState("");
   const [view, setView] = useState<"active" | "archived">("active");
-  const [creating, setCreating] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
   const [restoringId, setRestoringId] = useState<string | null>(null);
 
   const archivedCount = useMemo(
@@ -46,18 +39,6 @@ export function CustomersClient({
       );
     });
   }, [customers, query, view]);
-
-  async function handleCreate(values: CustomerInput) {
-    setSaving(true);
-    setFormError(null);
-    const result = await createCustomer(values);
-    setSaving(false);
-    if (!result.ok) {
-      setFormError(result.message);
-      return;
-    }
-    setCreating(false);
-  }
 
   async function handleRestore(c: Customer) {
     setRestoringId(c.id);
@@ -105,16 +86,12 @@ export function CustomersClient({
             className="w-full rounded-full border border-[var(--border)] bg-surface py-2 pl-9 pr-4 text-sm focus:border-accent focus:outline-none"
           />
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setFormError(null);
-            setCreating(true);
-          }}
+        <Link
+          href="/admin/customers/new"
           className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(200,122,42,0.6)] hover:bg-accent-deep"
         >
           <Plus size={14} /> Add customer
-        </button>
+        </Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -170,15 +147,6 @@ export function CustomersClient({
           </div>
         ))}
       </div>
-
-      {creating && (
-        <CustomerFormModal
-          saving={saving}
-          error={formError}
-          onClose={() => setCreating(false)}
-          onSave={handleCreate}
-        />
-      )}
     </div>
   );
 }
@@ -203,6 +171,8 @@ export function CustomerFormModal({
   initial,
   saving,
   error,
+  title,
+  submitLabel,
   onClose,
   onSave,
   onArchive,
@@ -210,6 +180,8 @@ export function CustomerFormModal({
   initial?: Customer | null;
   saving?: boolean;
   error?: string | null;
+  title?: string;
+  submitLabel?: string;
   onClose: () => void;
   onSave: (values: CustomerInput) => void;
   onArchive?: () => void;
@@ -252,7 +224,7 @@ export function CustomerFormModal({
         className="my-10 w-full max-w-xl rounded-2xl border border-[var(--border)] bg-surface p-6 shadow-2xl"
       >
         <h3 className="font-display text-xl font-semibold text-brand-deep">
-          {initial ? "Edit customer" : "New customer"}
+          {title ?? (initial ? "Edit customer" : "New customer")}
         </h3>
 
         {error && (
@@ -324,7 +296,7 @@ export function CustomerFormModal({
               disabled={saving}
               className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
             >
-              {saving ? "Saving…" : initial ? "Save changes" : "Create customer"}
+              {saving ? "Saving…" : submitLabel ?? (initial ? "Save changes" : "Create customer")}
             </button>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useAdmin, formatMoney } from "@/lib/admin/store";
-import type { Customer, Lead, Product } from "@/lib/admin/types";
+import type { Customer, Lead, LeadStatus, Product } from "@/lib/admin/types";
 
 export function DashboardClient({
   leads,
@@ -129,7 +129,7 @@ function Stat({
   return href ? <Link href={href}>{inner}</Link> : inner;
 }
 
-function LeadStatusBadge({ status }: { status: "new" | "contacted" | "approved" | "rejected" }) {
+function LeadStatusBadge({ status }: { status: LeadStatus }) {
   const cls =
     status === "new"
       ? "bg-accent-soft text-accent-deep"
@@ -137,7 +137,9 @@ function LeadStatusBadge({ status }: { status: "new" | "contacted" | "approved" 
         ? "bg-brand-mist text-brand-deep"
         : status === "approved"
           ? "bg-brand text-white"
-          : "bg-zinc-200 text-zinc-600";
+          : status === "converted"
+            ? "bg-brand/15 text-brand-deep"
+            : "bg-zinc-200 text-zinc-600";
   return (
     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${cls}`}>
       {status}

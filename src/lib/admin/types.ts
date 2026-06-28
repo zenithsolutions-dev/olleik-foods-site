@@ -55,6 +55,10 @@ export type Customer = {
   // Linked Supabase Auth user once the customer is invited to the portal
   // (Phase D). null/undefined = not yet invited. Admin-only field.
   userId?: string | null;
+  // Phase E provenance: which lead this customer came from, and when an invite
+  // was last generated/sent. Admin-only; never read by the portal.
+  sourceLeadId?: string | null;
+  invitedAt?: string | null;
 };
 
 // How an offer's discount_value is interpreted (informational in Phase C —
@@ -87,7 +91,7 @@ export type CustomerProduct = {
   priceCents: number | null; // null = use product.listPriceCents
 };
 
-export type LeadStatus = "new" | "contacted" | "approved" | "rejected";
+export type LeadStatus = "new" | "contacted" | "approved" | "rejected" | "converted";
 
 export type Lead = {
   id: ID;
@@ -98,6 +102,12 @@ export type Lead = {
   message?: string;
   status: LeadStatus;
   submittedAt: string;
+  // Extra fields used when converting a lead into a customer (prefill) and to
+  // hide already-converted leads. Optional — the base leads list omits them.
+  address?: string;
+  businessType?: string;
+  monthlyVolume?: string;
+  convertedCustomerId?: ID | null;
 };
 
 export type AdminState = {
