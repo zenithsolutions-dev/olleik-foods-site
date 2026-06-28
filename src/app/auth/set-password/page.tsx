@@ -20,7 +20,14 @@ export default function SetPasswordPage() {
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    (async () => {
+      // The session is set by /auth/confirm just before redirecting here. On some
+      // mobile browsers the cookie can lag a tick — retry once before bouncing.
+      let session = (await supabase.auth.getSession()).data.session;
+      if (!session) {
+        await new Promise((r) => setTimeout(r, 400));
+        session = (await supabase.auth.getSession()).data.session;
+      }
       if (!session) {
         router.replace("/login?error=auth");
         return;
@@ -29,7 +36,7 @@ export default function SetPasswordPage() {
       const { data } = await supabase.from("customers").select("business_name").maybeSingle();
       if (data?.business_name) setBusinessName(data.business_name);
       setReady(true);
-    });
+    })();
   }, [router]);
 
   async function submit(e: React.FormEvent) {
@@ -48,7 +55,14 @@ export default function SetPasswordPage() {
       const supabase = createSupabaseBrowserClient();
       const { error } = await supabase.auth.updateUser({ password });
       if (error) {
-        setError("Could not set your password. The link may have expired — request a new one from the login page.");
+        // Surface the ACTUAL reason (e.g. a password-policy 422) instead of a
+        // misleading "expired" message; log status + message for diagnosis.
+        console.error("[auth/set-password] updateUser failed:", error.status, error.message);
+        setError(
+          error.message
+            ? `Couldn't set your password: ${error.message}`
+            : "Could not set your password. Request a new link from the login page.",
+        );
         return;
       }
       const dest = await resolveLandingRoute();

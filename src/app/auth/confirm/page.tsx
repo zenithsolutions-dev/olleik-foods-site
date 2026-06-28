@@ -26,20 +26,24 @@ export default function AuthConfirmPage() {
 
     (async () => {
       try {
-        if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
-          if (error) throw error;
-        } else if (tokenHash && type) {
+        // Prefer the token_hash flow (our invite/reset links use it): verifyOtp
+        // needs no PKCE code verifier and no URL hash, so it's reliable on every
+        // device. exchangeCodeForSession is only for genuine in-browser PKCE
+        // flows; the implicit-hash fallback covers default email templates.
+        if (tokenHash && type) {
           const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
           if (error) throw error;
+        } else if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) throw error;
         }
-        // Implicit flow: the browser client auto-detected the hash session.
         const {
           data: { session },
         } = await supabase.auth.getSession();
-        if (!session) throw new Error("no session");
+        if (!session) throw new Error("no session established from link");
         router.replace(next);
-      } catch {
+      } catch (err) {
+        console.error("[auth/confirm] could not establish session:", (err as Error)?.message);
         setFailed(true);
         setTimeout(() => router.replace("/login?error=auth"), 1800);
       }
