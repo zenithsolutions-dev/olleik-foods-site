@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CustomerDetailClient } from "./customer-detail-client";
-import { fetchAdminCustomer } from "@/lib/admin/customers-data";
+import { fetchAdminCustomer, fetchCustomerActivation } from "@/lib/admin/customers-data";
 import { fetchAdminProducts } from "@/lib/admin/products-data";
 import { fetchAdminCategories } from "@/lib/admin/categories-data";
 
@@ -17,6 +17,9 @@ export default async function CustomerDetailPage({
     fetchAdminProducts(),
     fetchAdminCategories(),
   ]);
+
+  // Derive the portal activation badge from Supabase Auth (admin API).
+  const activation = await fetchCustomerActivation(detail?.customer.userId);
 
   if (!detail) {
     return (
@@ -36,6 +39,7 @@ export default async function CustomerDetailPage({
       detail={detail}
       allProducts={products}
       categories={categories}
+      activation={activation}
       live={live}
     />
   );

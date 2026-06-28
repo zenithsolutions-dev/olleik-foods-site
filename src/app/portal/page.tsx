@@ -4,13 +4,29 @@ import { fetchMyCatalog, fetchMyOffers } from "@/lib/portal/portal-data";
 
 export const dynamic = "force-dynamic";
 
-export default async function PortalDashboardPage() {
+export default async function PortalDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ welcome?: string }>;
+}) {
   const customer = await requireCustomer();
+  const { welcome } = await searchParams;
   const [catalog, offers] = await Promise.all([fetchMyCatalog(), fetchMyOffers()]);
   const productCount = catalog.reduce((n, g) => n + g.products.length, 0);
 
   return (
     <div className="space-y-8">
+      {welcome && (
+        <div className="rounded-2xl border border-brand/30 bg-brand-mist/50 px-5 py-4">
+          <p className="font-display text-lg font-semibold text-brand-deep">
+            Welcome to your Olleik Foods account 🎉
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            Your password is set. Below is your catalog with your contract pricing, plus any offers
+            set up for you.
+          </p>
+        </div>
+      )}
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
           Welcome back

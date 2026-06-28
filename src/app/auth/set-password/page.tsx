@@ -12,6 +12,7 @@ import { resolveLandingRoute } from "@/app/(marketing)/login/actions";
 export default function SetPasswordPage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
+  const [businessName, setBusinessName] = useState<string | null>(null);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -19,11 +20,14 @@ export default function SetPasswordPage() {
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) {
         router.replace("/login?error=auth");
         return;
       }
+      // Greet by business name (own row only, via RLS).
+      const { data } = await supabase.from("customers").select("business_name").maybeSingle();
+      if (data?.business_name) setBusinessName(data.business_name);
       setReady(true);
     });
   }, [router]);
@@ -48,7 +52,8 @@ export default function SetPasswordPage() {
         return;
       }
       const dest = await resolveLandingRoute();
-      router.replace(dest);
+      // First-run welcome on the portal dashboard.
+      router.replace(dest === "/portal" ? "/portal?welcome=1" : dest);
       router.refresh();
     } finally {
       setPending(false);
@@ -59,10 +64,12 @@ export default function SetPasswordPage() {
     <section className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-16">
       <div className="rounded-xl border border-[var(--border)] bg-surface p-8 shadow-sm">
         <h1 className="font-display text-2xl font-semibold tracking-tight text-brand-deep">
-          Set your password
+          {businessName ? `Welcome, ${businessName}` : "Set your password"}
         </h1>
         <p className="mt-1 text-sm text-muted">
-          Choose a password to finish setting up your account.
+          {businessName
+            ? "You've been approved — choose a password to access your account."
+            : "Choose a password to finish setting up your account."}
         </p>
 
         {error && (

@@ -16,7 +16,7 @@ import { SEED_DATA } from "./mock-data";
 // whether it's real rows or the demo seed (Supabase not configured).
 
 const CUSTOMER_COLUMNS =
-  "id, business_name, contact_name, email, phone, address, status, payment_terms, notes, created_at, user_id";
+  "id, business_name, contact_name, email, phone, address, status, payment_terms, notes, created_at, user_id, source_lead_id, invited_at";
 
 type CustomerRow = {
   id: string;
@@ -30,6 +30,8 @@ type CustomerRow = {
   notes: string | null;
   created_at: string;
   user_id: string | null;
+  source_lead_id: string | null;
+  invited_at: string | null;
 };
 
 function toCustomer(r: CustomerRow): Customer {
@@ -45,6 +47,8 @@ function toCustomer(r: CustomerRow): Customer {
     notes: r.notes ?? undefined,
     createdAt: r.created_at,
     userId: r.user_id,
+    sourceLeadId: r.source_lead_id,
+    invitedAt: r.invited_at,
   };
 }
 
@@ -131,6 +135,22 @@ function toOffer(r: OfferRow): Offer {
     isActive: r.is_active,
     createdAt: r.created_at,
   };
+}
+
+// Portal activation state for the admin detail badge, DERIVED from Supabase Auth
+// (no stored column, no RLS write):
+//   "none"    -> not invited (no linked user)
+//   "invited" -> linked + invite generated, but never signed in
+//   "active"  -> has signed in at least once
+export type Activation = "none" | "invited" | "active";
+
+export async function fetchCustomerActivation(userId: string | null | undefined): Promise<Activation> {
+  if (!userId) return "none";
+  const admin = getAdminClient();
+  if (!admin) return "invited";
+  const { data, error } = await admin.auth.admin.getUserById(userId);
+  if (error || !data?.user) return "invited";
+  return data.user.last_sign_in_at ? "active" : "invited";
 }
 
 export async function fetchAdminCustomer(

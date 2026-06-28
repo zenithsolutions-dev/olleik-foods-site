@@ -149,6 +149,11 @@ async function findAuthUserIdByEmail(
   return match?.id ?? null;
 }
 
+// Stamp when an invite was last generated/sent (drives the admin "Invited" badge).
+async function stampInvited(admin: SupabaseClient, customerId: string): Promise<void> {
+  await admin.from("customers").update({ invited_at: new Date().toISOString() }).eq("id", customerId);
+}
+
 // Invite a customer to the portal: create (or link) a Supabase Auth user, set
 // customers.user_id atomically, and email them a set-password link. Admin-only,
 // service-role — this is admin context, so service-role is correct here. The
@@ -176,6 +181,8 @@ export async function inviteCustomerToPortal(customerId: string): Promise<Invite
       console.error("[admin] resend invite failed:", error.message);
       return { ok: false, message: "Could not resend the invite. Please try again." };
     }
+    await stampInvited(admin, customerId);
+    revalidate(customerId);
     return { ok: true, message: `Invite re-sent to ${email}.` };
   }
 
@@ -200,6 +207,7 @@ export async function inviteCustomerToPortal(customerId: string): Promise<Invite
           : "Could not link the invite. Please try again.";
       return { ok: false, message: msg };
     }
+    await stampInvited(admin, customerId);
     revalidate(customerId);
     return { ok: true, message: `Invite sent to ${email}.` };
   }
@@ -231,12 +239,259 @@ export async function inviteCustomerToPortal(customerId: string): Promise<Invite
     }
     const { error: mailErr } = await admin.auth.resetPasswordForEmail(email, { redirectTo });
     if (mailErr) console.error("[admin] linked existing user but email failed:", mailErr.message);
+    await stampInvited(admin, customerId);
     revalidate(customerId);
     return { ok: true, message: `Linked an existing login and emailed ${email}.` };
   }
 
   console.error("[admin] invite failed:", inviteErr?.message);
   return { ok: false, message: "Could not send the invite. Please try again." };
+}
+
+export type InviteLinkResult =
+  | { ok: true; message: string; link: string }
+  | { ok: false; message: string };
+
+// Generate a one-time set-password link WITHOUT sending an email (the WhatsApp
+// path). The link is a BEARER credential: it is generated on demand, returned
+// once for the admin to copy, never stored, and regenerated fresh on re-click.
+// Service-role under /admin only; the admin never learns the password.
+export async function generateInviteLink(customerId: string): Promise<InviteLinkResult> {
+  await requireAdmin();
+  const admin = getAdminClient();
+  if (!admin) return { ok: false, message: "Supabase is not configured." };
+
+  const { data: cust, error: cErr } = await admin
+    .from("customers")
+    .select("id, email, user_id")
+    .eq("id", customerId)
+    .maybeSingle();
+  if (cErr || !cust) return { ok: false, message: "Customer not found." };
+
+  const email = cust.email as string;
+  const origin = await requestOrigin();
+  const redirectTo = `${origin}/auth/confirm?next=/auth/set-password`;
+
+  const linkFrom = (data: { properties?: { action_link?: string } | null } | null) =>
+    data?.properties?.action_link ?? null;
+
+  // Already linked → fresh recovery link.
+  if (cust.user_id) {
+    const { data, error } = await admin.auth.admin.generateLink({ type: "recovery", email, options: { redirectTo } });
+    const link = linkFrom(data);
+    if (error || !link) {
+      console.error("[admin] recovery link failed:", error?.message);
+      return { ok: false, message: "Could not generate the link. Please try again." };
+    }
+    await stampInvited(admin, customerId);
+    revalidate(customerId);
+    return { ok: true, message: "Set-password link generated.", link };
+  }
+
+  // New → invite link CREATES the auth user and returns a link without emailing.
+  const { data, error } = await admin.auth.admin.generateLink({ type: "invite", email, options: { redirectTo } });
+  if (!error && data?.user && linkFrom(data)) {
+    const userId = data.user.id;
+    const { error: linkErr } = await admin.from("customers").update({ user_id: userId }).eq("id", customerId);
+    if (linkErr) {
+      await admin.auth.admin.deleteUser(userId); // roll back so we never half-link
+      const msg = linkErr.code === "23505" ? "That login is already linked to another customer." : "Could not link the invite.";
+      return { ok: false, message: msg };
+    }
+    await stampInvited(admin, customerId);
+    revalidate(customerId);
+    return { ok: true, message: "Invite link generated.", link: linkFrom(data)! };
+  }
+
+  // Email already has an auth user → auto-link, then a recovery link.
+  const alreadyExists =
+    error && ((error as { code?: string }).code === "email_exists" || /already.*regist/i.test(error.message));
+  if (alreadyExists) {
+    const existingId = await findAuthUserIdByEmail(admin, email);
+    if (!existingId) return { ok: false, message: "This email already has a login that couldn't be located." };
+    const { error: linkErr } = await admin.from("customers").update({ user_id: existingId }).eq("id", customerId);
+    if (linkErr) {
+      const msg = linkErr.code === "23505" ? "That login is already linked to another customer." : "Could not link the existing login.";
+      return { ok: false, message: msg };
+    }
+    const { data: rec, error: recErr } = await admin.auth.admin.generateLink({ type: "recovery", email, options: { redirectTo } });
+    const link = linkFrom(rec);
+    if (recErr || !link) return { ok: false, message: "Linked the login but could not generate a link." };
+    await stampInvited(admin, customerId);
+    revalidate(customerId);
+    return { ok: true, message: "Linked an existing login; link generated.", link };
+  }
+
+  console.error("[admin] generateInviteLink failed:", error?.message);
+  return { ok: false, message: "Could not generate the invite link." };
+}
+
+// ---------------- Lead -> customer conversion (Phase E) ----------------
+
+export type ConvertOutcome = {
+  leadId: string;
+  result: "created" | "linked" | "skipped";
+  customerId?: string;
+  message?: string;
+};
+
+function revalidateConversions(customerId?: string) {
+  revalidate(customerId);
+  revalidatePath("/admin/leads");
+  revalidatePath("/admin/customers/new");
+}
+
+// A non-archived customer with the same email (case-insensitive), if any.
+async function findActiveCustomerByEmail(admin: SupabaseClient, email: string): Promise<string | null> {
+  const { data } = await admin
+    .from("customers")
+    .select("id")
+    .neq("status", "archived")
+    .ilike("email", email)
+    .limit(1);
+  return data?.[0]?.id ?? null;
+}
+
+// Link a lead to an already-existing customer instead of creating a duplicate.
+export async function linkLeadToExistingCustomer(
+  leadId: string,
+  customerId: string,
+): Promise<ConvertOutcome> {
+  await requireAdmin();
+  const admin = getAdminClient();
+  if (!admin) return { leadId, result: "skipped", message: "Supabase is not configured." };
+
+  const { error: leadErr } = await admin
+    .from("leads")
+    .update({ status: "converted", converted_customer_id: customerId })
+    .eq("id", leadId);
+  if (leadErr) {
+    console.error("[admin] link lead failed:", leadErr.message);
+    return { leadId, result: "skipped", message: "Could not link the lead." };
+  }
+  // Best-effort backfill of provenance on the customer (only if not already set).
+  await admin.from("customers").update({ source_lead_id: leadId }).eq("id", customerId).is("source_lead_id", null);
+  revalidateConversions(customerId);
+  return { leadId, result: "linked", customerId };
+}
+
+// Core: convert one lead using an explicit customer payload (the edited review
+// form for single convert, or the lead's own fields for bulk).
+async function convertOne(
+  admin: SupabaseClient,
+  leadId: string,
+  payload: {
+    businessName: string;
+    contactName: string;
+    email: string;
+    phone: string;
+    address: string;
+  },
+): Promise<ConvertOutcome> {
+  // Already converted? skip (idempotent).
+  const { data: lead } = await admin
+    .from("leads")
+    .select("id, converted_customer_id")
+    .eq("id", leadId)
+    .maybeSingle();
+  if (!lead) return { leadId, result: "skipped", message: "Lead not found." };
+  if (lead.converted_customer_id) {
+    return { leadId, result: "skipped", customerId: lead.converted_customer_id, message: "Already converted." };
+  }
+
+  // Dedup by email → link to the existing customer instead of duplicating.
+  const existingId = await findActiveCustomerByEmail(admin, payload.email);
+  if (existingId) {
+    return linkLeadToExistingCustomer(leadId, existingId);
+  }
+
+  // Create the customer (active), with provenance, then stamp the lead.
+  const { data: created, error: insErr } = await admin
+    .from("customers")
+    .insert({
+      business_name: payload.businessName.trim(),
+      contact_name: payload.contactName.trim(),
+      email: payload.email.trim(),
+      phone: payload.phone.trim(),
+      address: payload.address.trim(),
+      status: "active",
+      payment_terms: "cod",
+      source_lead_id: leadId,
+    })
+    .select("id")
+    .single();
+
+  if (insErr || !created) {
+    // Unique-email race → fall back to linking.
+    if (insErr?.code === "23505") {
+      const dupId = await findActiveCustomerByEmail(admin, payload.email);
+      if (dupId) return linkLeadToExistingCustomer(leadId, dupId);
+    }
+    console.error("[admin] convert insert failed:", insErr?.message);
+    return { leadId, result: "skipped", message: "Could not create the customer." };
+  }
+
+  const { error: leadErr } = await admin
+    .from("leads")
+    .update({ status: "converted", converted_customer_id: created.id })
+    .eq("id", leadId);
+  if (leadErr) {
+    // Customer exists and is linked via source_lead_id; only the lead stamp
+    // failed. Surface it — trivial to reconcile, no orphan.
+    console.error("[admin] convert: lead stamp failed:", leadErr.message);
+  }
+  revalidateConversions(created.id);
+  return { leadId, result: "created", customerId: created.id };
+}
+
+// Single convert with the (possibly edited) review-form values.
+export async function convertLeadWithDetails(
+  leadId: string,
+  input: CustomerInput,
+): Promise<ConvertOutcome> {
+  await requireAdmin();
+  const admin = getAdminClient();
+  if (!admin) return { leadId, result: "skipped", message: "Supabase is not configured." };
+  if (!input.businessName.trim() || !input.email.trim()) {
+    return { leadId, result: "skipped", message: "Business name and email are required." };
+  }
+  return convertOne(admin, leadId, {
+    businessName: input.businessName,
+    contactName: input.contactName,
+    email: input.email,
+    phone: input.phone,
+    address: input.address,
+  });
+}
+
+// Bulk convert directly from lead data (no review).
+export async function convertLeadsToCustomers(leadIds: string[]): Promise<ConvertOutcome[]> {
+  await requireAdmin();
+  const admin = getAdminClient();
+  if (!admin) return leadIds.map((id) => ({ leadId: id, result: "skipped" as const, message: "Supabase is not configured." }));
+
+  const outcomes: ConvertOutcome[] = [];
+  for (const leadId of leadIds) {
+    const { data: lead } = await admin
+      .from("leads")
+      .select("business_name, contact_name, email, phone, address")
+      .eq("id", leadId)
+      .maybeSingle();
+    if (!lead) {
+      outcomes.push({ leadId, result: "skipped", message: "Lead not found." });
+      continue;
+    }
+    outcomes.push(
+      await convertOne(admin, leadId, {
+        businessName: lead.business_name ?? "",
+        contactName: lead.contact_name ?? "",
+        email: lead.email ?? "",
+        phone: lead.phone ?? "",
+        address: lead.address ?? "",
+      }),
+    );
+  }
+  return outcomes;
 }
 
 // ---------------- Per-customer pricing (customer_products) ----------------

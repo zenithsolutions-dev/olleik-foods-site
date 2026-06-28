@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Pencil, Plus, X, RotateCcw, Mail, Check } from "lucide-react";
+import { ArrowLeft, Pencil, Plus, X, RotateCcw } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
 import type { Category, Offer, Product } from "@/lib/admin/types";
-import type { AssignedProduct, CustomerDetail } from "@/lib/admin/customers-data";
+import type { AssignedProduct, CustomerDetail, Activation } from "@/lib/admin/customers-data";
 import { CustomerFormModal } from "../customers-client";
+import { InviteControls } from "../invite-controls";
 import {
   updateCustomer,
   archiveCustomer,
@@ -18,7 +19,6 @@ import {
   updateOffer,
   deleteOffer,
   toggleOfferActive,
-  inviteCustomerToPortal,
   type CustomerInput,
   type OfferInput,
 } from "../actions";
@@ -27,11 +27,13 @@ export function CustomerDetailClient({
   detail,
   allProducts,
   categories,
+  activation,
   live,
 }: {
   detail: CustomerDetail;
   allProducts: Product[];
   categories: Category[];
+  activation: Activation;
   live: boolean;
 }) {
   const { customer, assigned, offers } = detail;
@@ -44,7 +46,6 @@ export function CustomerDetailClient({
     offer: null,
   });
   const [busy, setBusy] = useState(false);
-  const [inviting, setInviting] = useState(false);
 
   const catById = useMemo(
     () => Object.fromEntries(categories.map((c) => [c.id, c.name])),
@@ -68,13 +69,6 @@ export function CustomerDetailClient({
     setBusy(false);
     if (!result.ok) window.alert(result.message ?? "Something went wrong.");
     return result.ok;
-  }
-
-  async function handleInvite() {
-    setInviting(true);
-    const result = await inviteCustomerToPortal(customer.id);
-    setInviting(false);
-    window.alert(result.message);
   }
 
   async function handleEditSave(values: CustomerInput) {
@@ -106,32 +100,17 @@ export function CustomerDetailClient({
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
               Account
             </p>
-            <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight text-brand-deep sm:text-4xl">
-              {customer.businessName}
-            </h1>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <h1 className="font-display text-3xl font-semibold tracking-tight text-brand-deep sm:text-4xl">
+                {customer.businessName}
+              </h1>
+              <ActivationBadge activation={activation} />
+            </div>
             <p className="mt-1 text-sm text-muted">
               {customer.contactName} · {customer.email} · {customer.phone}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleInvite}
-              disabled={inviting || isArchived}
-              title={
-                customer.userId
-                  ? "Re-send the set-password email"
-                  : "Create a portal login and email a set-password link"
-              }
-              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-surface px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent hover:text-accent-deep disabled:opacity-50"
-            >
-              {customer.userId ? <Check size={14} /> : <Mail size={14} />}
-              {inviting
-                ? "Sending…"
-                : customer.userId
-                  ? "Invited · Resend"
-                  : "Invite to portal"}
-            </button>
             <button
               type="button"
               onClick={() => {
@@ -145,6 +124,27 @@ export function CustomerDetailClient({
           </div>
         </div>
       </div>
+
+      {/* Portal invite */}
+      {!isArchived && (
+        <section className="rounded-2xl border border-[var(--border)] bg-surface p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="font-display text-base font-semibold text-brand-deep">Portal access</h2>
+              <p className="mt-0.5 text-xs text-muted">
+                {activation === "active"
+                  ? "This customer has signed in. Send a fresh link only if they need to reset."
+                  : activation === "invited"
+                    ? "Invited — waiting for them to set a password. Resend or copy a fresh link."
+                    : "Invite this customer to the portal. They set their own password — you never see it."}
+              </p>
+            </div>
+          </div>
+          <div className="mt-3">
+            <InviteControls customerId={customer.id} invited={!!customer.userId} compact />
+          </div>
+        </section>
+      )}
 
       {isArchived && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--border)] bg-zinc-50 px-5 py-4">
@@ -330,6 +330,20 @@ export function CustomerDetailClient({
         />
       )}
     </div>
+  );
+}
+
+function ActivationBadge({ activation }: { activation: Activation }) {
+  const map = {
+    none: { label: "Not invited", cls: "bg-zinc-100 text-zinc-500" },
+    invited: { label: "Invited", cls: "bg-accent-soft text-accent-deep" },
+    active: { label: "Active", cls: "bg-brand text-white" },
+  } as const;
+  const { label, cls } = map[activation];
+  return (
+    <span className={`inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${cls}`}>
+      {label}
+    </span>
   );
 }
 
