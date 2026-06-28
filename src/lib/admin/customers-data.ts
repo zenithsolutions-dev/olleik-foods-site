@@ -16,7 +16,7 @@ import { SEED_DATA } from "./mock-data";
 // whether it's real rows or the demo seed (Supabase not configured).
 
 const CUSTOMER_COLUMNS =
-  "id, business_name, contact_name, email, phone, address, status, payment_terms, notes, created_at";
+  "id, business_name, contact_name, email, phone, address, status, payment_terms, notes, created_at, user_id";
 
 type CustomerRow = {
   id: string;
@@ -29,6 +29,7 @@ type CustomerRow = {
   payment_terms: PaymentTerms;
   notes: string | null;
   created_at: string;
+  user_id: string | null;
 };
 
 function toCustomer(r: CustomerRow): Customer {
@@ -43,6 +44,7 @@ function toCustomer(r: CustomerRow): Customer {
     paymentTerms: r.payment_terms,
     notes: r.notes ?? undefined,
     createdAt: r.created_at,
+    userId: r.user_id,
   };
 }
 

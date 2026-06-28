@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import type {
@@ -120,6 +122,121 @@ async function setCustomerStatus(
   }
   revalidate(id);
   return { ok: true };
+}
+
+// ---------------- Portal invite (Phase D) ----------------
+
+export type InviteResult = { ok: boolean; message: string };
+
+// Derive the request origin so invite/reset redirect links work on localhost,
+// Vercel preview, and prod without hardcoding.
+async function requestOrigin(): Promise<string> {
+  const h = await headers();
+  const origin = h.get("origin");
+  if (origin) return origin;
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  return host ? `${proto}://${host}` : "";
+}
+
+async function findAuthUserIdByEmail(
+  admin: SupabaseClient,
+  email: string,
+): Promise<string | null> {
+  const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  if (error) return null;
+  const match = data.users.find((u) => (u.email ?? "").toLowerCase() === email.toLowerCase());
+  return match?.id ?? null;
+}
+
+// Invite a customer to the portal: create (or link) a Supabase Auth user, set
+// customers.user_id atomically, and email them a set-password link. Admin-only,
+// service-role — this is admin context, so service-role is correct here. The
+// PORTAL never does any of this; it only reads via the session client.
+export async function inviteCustomerToPortal(customerId: string): Promise<InviteResult> {
+  await requireAdmin();
+  const admin = getAdminClient();
+  if (!admin) return { ok: false, message: "Supabase is not configured." };
+
+  const { data: cust, error: cErr } = await admin
+    .from("customers")
+    .select("id, email, user_id")
+    .eq("id", customerId)
+    .maybeSingle();
+  if (cErr || !cust) return { ok: false, message: "Customer not found." };
+
+  const email = cust.email as string;
+  const origin = await requestOrigin();
+  const redirectTo = `${origin}/auth/confirm?next=/auth/set-password`;
+
+  // Already linked → resend a set-password / recovery email.
+  if (cust.user_id) {
+    const { error } = await admin.auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) {
+      console.error("[admin] resend invite failed:", error.message);
+      return { ok: false, message: "Could not resend the invite. Please try again." };
+    }
+    return { ok: true, message: `Invite re-sent to ${email}.` };
+  }
+
+  // New invite — create the auth user and send the set-password email.
+  const { data: invited, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(email, {
+    redirectTo,
+  });
+
+  if (!inviteErr && invited?.user) {
+    const userId = invited.user.id;
+    const { error: linkErr } = await admin
+      .from("customers")
+      .update({ user_id: userId })
+      .eq("id", customerId);
+    if (linkErr) {
+      // Roll back the just-created auth user so we never half-link.
+      await admin.auth.admin.deleteUser(userId);
+      console.error("[admin] link after invite failed, rolled back:", linkErr.message);
+      const msg =
+        linkErr.code === "23505"
+          ? "That login is already linked to another customer."
+          : "Could not link the invite. Please try again.";
+      return { ok: false, message: msg };
+    }
+    revalidate(customerId);
+    return { ok: true, message: `Invite sent to ${email}.` };
+  }
+
+  // Email already has an auth user → auto-link the existing user (Decision 2).
+  const alreadyExists =
+    inviteErr &&
+    ((inviteErr as { code?: string }).code === "email_exists" ||
+      /already.*regist/i.test(inviteErr.message));
+  if (alreadyExists) {
+    const existingId = await findAuthUserIdByEmail(admin, email);
+    if (!existingId) {
+      return {
+        ok: false,
+        message: "This email already has a login, but it couldn't be located in Supabase Auth.",
+      };
+    }
+    const { error: linkErr } = await admin
+      .from("customers")
+      .update({ user_id: existingId })
+      .eq("id", customerId);
+    if (linkErr) {
+      const msg =
+        linkErr.code === "23505"
+          ? "That login is already linked to another customer."
+          : "Could not link the existing login.";
+      console.error("[admin] link existing user failed:", linkErr.message);
+      return { ok: false, message: msg };
+    }
+    const { error: mailErr } = await admin.auth.resetPasswordForEmail(email, { redirectTo });
+    if (mailErr) console.error("[admin] linked existing user but email failed:", mailErr.message);
+    revalidate(customerId);
+    return { ok: true, message: `Linked an existing login and emailed ${email}.` };
+  }
+
+  console.error("[admin] invite failed:", inviteErr?.message);
+  return { ok: false, message: "Could not send the invite. Please try again." };
 }
 
 // ---------------- Per-customer pricing (customer_products) ----------------

@@ -44,6 +44,22 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const path = request.nextUrl.pathname;
+  const isPortal = path === "/portal" || path.startsWith("/portal/");
+
+  if (isPortal) {
+    // OPTIMISTIC gate for the customer portal: just require a session here.
+    // The authoritative check (customers row exists + status='active', scoped by
+    // RLS) lives in requireCustomer() in the /portal layout — keep both.
+    if (!user) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/login";
+      return NextResponse.redirect(redirectUrl);
+    }
+    return response;
+  }
+
+  // /admin*: require a signed-in, allowlisted admin.
   if (!isAllowedAdmin(user?.email)) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/admin-login";
@@ -54,6 +70,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // /admin-login lives OUTSIDE this matcher so the redirect target is reachable.
-  matcher: ["/admin", "/admin/:path*"],
+  // /admin-login and /login live OUTSIDE this matcher so the redirect targets
+  // (and the /auth/* invite + reset routes) are always reachable.
+  matcher: ["/admin", "/admin/:path*", "/portal", "/portal/:path*"],
 };

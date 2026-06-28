@@ -17,8 +17,11 @@ export function adminEmailAllowlist(): string[] {
 export function isAllowedAdmin(email: string | null | undefined): boolean {
   if (!email) return false;
   const allow = adminEmailAllowlist();
-  // Empty allowlist => any authenticated user is admin. Safe while the customer
-  // portal doesn't exist yet, but you MUST set ADMIN_EMAILS before launching it.
-  if (allow.length === 0) return true;
+  // FAIL CLOSED: an empty allowlist grants NO ONE admin. Now that customers can
+  // sign in to the same Supabase project (the portal), an open default would
+  // make every customer an admin. ADMIN_EMAILS is therefore REQUIRED in any
+  // environment where Supabase is configured (Vercel prod + preview, local).
+  // The safe failure if it's ever unset is admin lockout, never escalation.
+  if (allow.length === 0) return false;
   return allow.includes(email.toLowerCase());
 }
