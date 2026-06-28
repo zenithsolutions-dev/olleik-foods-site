@@ -272,13 +272,24 @@ export async function generateInviteLink(customerId: string): Promise<InviteLink
   const origin = await requestOrigin();
   const redirectTo = `${origin}/auth/confirm?next=/auth/set-password`;
 
-  const linkFrom = (data: { properties?: { action_link?: string } | null } | null) =>
-    data?.properties?.action_link ?? null;
+  // Build OUR OWN link from the generated token_hash, pointing at /auth/confirm.
+  // This uses verifyOtp (token_hash) — no PKCE code verifier, no URL hash — so it
+  // works identically on desktop and mobile. We deliberately do NOT hand out
+  // data.properties.action_link (the Supabase /auth/v1/verify URL), whose
+  // verify→hash/code redirect is what broke the flow.
+  const confirmLink = (
+    data: { properties?: { hashed_token?: string } | null } | null,
+    type: "invite" | "recovery",
+  ): string | null => {
+    const token = data?.properties?.hashed_token;
+    if (!token) return null;
+    return `${origin}/auth/confirm?token_hash=${encodeURIComponent(token)}&type=${type}&next=${encodeURIComponent("/auth/set-password")}`;
+  };
 
   // Already linked → fresh recovery link.
   if (cust.user_id) {
     const { data, error } = await admin.auth.admin.generateLink({ type: "recovery", email, options: { redirectTo } });
-    const link = linkFrom(data);
+    const link = confirmLink(data, "recovery");
     if (error || !link) {
       console.error("[admin] recovery link failed:", error?.message);
       return { ok: false, message: "Could not generate the link. Please try again." };
@@ -288,9 +299,9 @@ export async function generateInviteLink(customerId: string): Promise<InviteLink
     return { ok: true, message: "Set-password link generated.", link };
   }
 
-  // New → invite link CREATES the auth user and returns a link without emailing.
+  // New → invite link CREATES the auth user and returns a token without emailing.
   const { data, error } = await admin.auth.admin.generateLink({ type: "invite", email, options: { redirectTo } });
-  if (!error && data?.user && linkFrom(data)) {
+  if (!error && data?.user && confirmLink(data, "invite")) {
     const userId = data.user.id;
     const { error: linkErr } = await admin.from("customers").update({ user_id: userId }).eq("id", customerId);
     if (linkErr) {
@@ -300,7 +311,7 @@ export async function generateInviteLink(customerId: string): Promise<InviteLink
     }
     await stampInvited(admin, customerId);
     revalidate(customerId);
-    return { ok: true, message: "Invite link generated.", link: linkFrom(data)! };
+    return { ok: true, message: "Invite link generated.", link: confirmLink(data, "invite")! };
   }
 
   // Email already has an auth user → auto-link, then a recovery link.
@@ -315,7 +326,7 @@ export async function generateInviteLink(customerId: string): Promise<InviteLink
       return { ok: false, message: msg };
     }
     const { data: rec, error: recErr } = await admin.auth.admin.generateLink({ type: "recovery", email, options: { redirectTo } });
-    const link = linkFrom(rec);
+    const link = confirmLink(rec, "recovery");
     if (recErr || !link) return { ok: false, message: "Linked the login but could not generate a link." };
     await stampInvited(admin, customerId);
     revalidate(customerId);
