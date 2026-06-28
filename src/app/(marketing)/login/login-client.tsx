@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { resolveLandingRoute } from "./actions";
 
 export function LoginClient() {
-  const router = useRouter();
   const params = useSearchParams();
   const configured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
 
@@ -33,15 +32,19 @@ export function LoginClient() {
       });
       if (error) {
         setError("Invalid email or password.");
+        setPending(false);
         return;
       }
-      // Session cookie is set; ask the server where this user should land.
+      // Session cookie is now set. Ask the server where this user should land,
+      // then do a HARD navigation (not router.replace): a full page load forces
+      // the browser to re-send the freshly-written auth cookie so the proxy and
+      // server components render authenticated. A soft nav + router.refresh()
+      // races the cookie write and can leave the user stuck on /login.
       const dest = await resolveLandingRoute();
-      router.replace(dest);
-      router.refresh();
+      window.location.assign(dest);
+      return; // keep the spinner up until the new page takes over
     } catch {
       setError("Something went wrong. Please try again.");
-    } finally {
       setPending(false);
     }
   }

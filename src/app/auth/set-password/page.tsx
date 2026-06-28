@@ -55,23 +55,37 @@ export default function SetPasswordPage() {
       const supabase = createSupabaseBrowserClient();
       const { error } = await supabase.auth.updateUser({ password });
       if (error) {
-        // Surface the ACTUAL reason (e.g. a password-policy 422) instead of a
-        // misleading "expired" message; log status + message for diagnosis.
+        // "New password should be different from the old password" means this
+        // exact password is ALREADY set (e.g. they retried after a stalled
+        // redirect). The account is ready — don't show a scary error, just take
+        // them in. Any other error is surfaced verbatim.
+        const alreadySet = /should be different/i.test(error.message);
+        if (alreadySet) {
+          await goToDestination();
+          return;
+        }
         console.error("[auth/set-password] updateUser failed:", error.status, error.message);
         setError(
           error.message
             ? `Couldn't set your password: ${error.message}`
             : "Could not set your password. Request a new link from the login page.",
         );
+        setPending(false);
         return;
       }
-      const dest = await resolveLandingRoute();
-      // First-run welcome on the portal dashboard.
-      router.replace(dest === "/portal" ? "/portal?welcome=1" : dest);
-      router.refresh();
-    } finally {
+      await goToDestination();
+    } catch {
+      setError("Something went wrong. Please try again.");
       setPending(false);
     }
+  }
+
+  // HARD navigation (not router.replace): a full page load sends the freshly
+  // written auth cookie so the portal renders authenticated. A soft nav +
+  // router.refresh() races the cookie and can stall on this page.
+  async function goToDestination() {
+    const dest = await resolveLandingRoute();
+    window.location.assign(dest === "/portal" ? "/portal?welcome=1" : dest);
   }
 
   return (
