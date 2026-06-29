@@ -37,11 +37,19 @@ export default function AuthConfirmPage() {
           const { error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) throw error;
         }
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+        // The implicit (#access_token) email flow is parsed asynchronously on
+        // load, and on mobile the cookie write can lag a tick — poll briefly
+        // before giving up instead of failing on the first read.
+        let session = (await supabase.auth.getSession()).data.session;
+        for (let i = 0; i < 5 && !session; i++) {
+          await new Promise((r) => setTimeout(r, 200));
+          session = (await supabase.auth.getSession()).data.session;
+        }
         if (!session) throw new Error("no session established from link");
-        router.replace(next);
+        // HARD navigation so the just-set auth cookie is sent with the request
+        // for `next` (set-password). A soft router.replace can land there before
+        // the cookie is readable, which on mobile bounced the user to /login.
+        window.location.assign(next);
       } catch (err) {
         console.error("[auth/confirm] could not establish session:", (err as Error)?.message);
         setFailed(true);
