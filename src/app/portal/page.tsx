@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireCustomer } from "@/lib/portal/require-customer";
 import { fetchMyCatalog, fetchMyOffers } from "@/lib/portal/portal-data";
+import { WelcomeBanner } from "./welcome-banner";
 
 export const dynamic = "force-dynamic";
 
@@ -16,17 +17,7 @@ export default async function PortalDashboardPage({
 
   return (
     <div className="space-y-8">
-      {welcome && (
-        <div className="rounded-2xl border border-brand/30 bg-brand-mist/50 px-5 py-4">
-          <p className="font-display text-lg font-semibold text-brand-deep">
-            Welcome to your Olleik Foods account 🎉
-          </p>
-          <p className="mt-1 text-sm text-muted">
-            Your password is set. Below is your catalog with your contract pricing, plus any offers
-            set up for you.
-          </p>
-        </div>
-      )}
+      {welcome && <WelcomeBanner />}
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
           Welcome back
