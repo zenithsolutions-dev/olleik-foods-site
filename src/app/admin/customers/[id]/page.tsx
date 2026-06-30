@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { CustomerDetailClient } from "./customer-detail-client";
-import { fetchAdminCustomer, fetchCustomerActivation } from "@/lib/admin/customers-data";
+import {
+  fetchAdminCustomer,
+  fetchAdminCustomers,
+  fetchCustomerActivation,
+} from "@/lib/admin/customers-data";
 import { fetchAdminProducts } from "@/lib/admin/products-data";
 import { fetchAdminCategories } from "@/lib/admin/categories-data";
 
 export const dynamic = "force-dynamic";
+
+export type CopySource = { id: string; businessName: string; assignedCount: number };
 
 export default async function CustomerDetailPage({
   params,
@@ -12,11 +18,19 @@ export default async function CustomerDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [{ detail, live }, { products }, { categories }] = await Promise.all([
+  const [{ detail, live }, { products }, { categories }, { customers, counts }] = await Promise.all([
     fetchAdminCustomer(id),
     fetchAdminProducts(),
     fetchAdminCategories(),
+    fetchAdminCustomers(),
   ]);
+
+  // Copy-catalog source candidates: other non-archived customers, with their
+  // assigned-product count (so the picker can show "N products").
+  const copySources: CopySource[] = customers
+    .filter((c) => c.id !== id && c.status !== "archived")
+    .map((c) => ({ id: c.id, businessName: c.businessName, assignedCount: counts[c.id] ?? 0 }))
+    .sort((a, b) => a.businessName.localeCompare(b.businessName));
 
   // Derive the portal activation badge from Supabase Auth (admin API).
   const activation = await fetchCustomerActivation(detail?.customer.userId);
@@ -40,6 +54,7 @@ export default async function CustomerDetailPage({
       allProducts={products}
       categories={categories}
       activation={activation}
+      copySources={copySources}
       live={live}
     />
   );

@@ -584,6 +584,179 @@ export async function removeCustomerProduct(
   return { ok: true };
 }
 
+// Copy ALL of another customer's assignments (and optionally their custom
+// prices) onto this customer. Inactive/deleted products are always skipped.
+//   mode "merge"     -> add products the target lacks; keep existing rows + prices
+//   mode "overwrite" -> DESTRUCTIVE: replace the target's entire catalog
+//   prices "copy"    -> bring the source's custom prices; "list" -> null (list price)
+export type CopyCatalogResult =
+  | { ok: true; copied: number; skipped: number; mode: "merge" | "overwrite" }
+  | { ok: false; message: string };
+
+export async function copyCatalogFromCustomer(
+  targetCustomerId: string,
+  sourceCustomerId: string,
+  options: { mode: "merge" | "overwrite"; prices: "copy" | "list" },
+): Promise<CopyCatalogResult> {
+  await requireAdmin();
+  if (sourceCustomerId === targetCustomerId) {
+    return { ok: false, message: "Choose a different customer to copy from." };
+  }
+
+  const admin = getAdminClient();
+  if (!admin) return { ok: false, message: "Supabase is not configured." };
+
+  // Source assignments joined to product activity — skip inactive/deleted.
+  const { data: srcRows, error: srcErr } = await admin
+    .from("customer_products")
+    .select("product_id, price_cents, products(is_active)")
+    .eq("customer_id", sourceCustomerId);
+  if (srcErr) {
+    console.error("[admin] copy catalog: read source failed:", srcErr.message);
+    return { ok: false, message: "Could not read the source customer's catalog." };
+  }
+
+  type SrcRow = {
+    product_id: string;
+    price_cents: number | null;
+    products: { is_active: boolean } | null;
+  };
+  const all = (srcRows as unknown as SrcRow[]) ?? [];
+  const eligible = all.filter((r) => r.products && r.products.is_active);
+  const skipped = all.length - eligible.length;
+
+  const mapRow = (r: SrcRow) => ({
+    customer_id: targetCustomerId,
+    product_id: r.product_id,
+    price_cents: options.prices === "copy" ? r.price_cents : null,
+  });
+
+  if (options.mode === "overwrite") {
+    // Destructive: wipe the target's catalog (and its custom prices) first.
+    const { error: delErr } = await admin
+      .from("customer_products")
+      .delete()
+      .eq("customer_id", targetCustomerId);
+    if (delErr) {
+      console.error("[admin] copy catalog: clear target failed:", delErr.message);
+      return { ok: false, message: "Could not clear the target catalog. Nothing was changed." };
+    }
+    if (eligible.length > 0) {
+      const { error: insErr } = await admin.from("customer_products").insert(eligible.map(mapRow));
+      if (insErr) {
+        console.error("[admin] copy catalog: insert failed:", insErr.message);
+        return { ok: false, message: "Cleared the catalog but the copy failed. Please re-copy." };
+      }
+    }
+    revalidate(targetCustomerId);
+    return { ok: true, copied: eligible.length, skipped, mode: "overwrite" };
+  }
+
+  // Merge: only add products the target doesn't already have (existing rows and
+  // their prices are preserved). Compute the new set for an accurate count.
+  const { data: tgtRows, error: tgtErr } = await admin
+    .from("customer_products")
+    .select("product_id")
+    .eq("customer_id", targetCustomerId);
+  if (tgtErr) {
+    console.error("[admin] copy catalog: read target failed:", tgtErr.message);
+    return { ok: false, message: "Could not read the target customer's catalog." };
+  }
+  const existing = new Set(((tgtRows as { product_id: string }[]) ?? []).map((r) => r.product_id));
+  const fresh = eligible.filter((r) => !existing.has(r.product_id));
+
+  if (fresh.length > 0) {
+    const { error: upErr } = await admin
+      .from("customer_products")
+      .upsert(fresh.map(mapRow), { onConflict: "customer_id,product_id", ignoreDuplicates: true });
+    if (upErr) {
+      console.error("[admin] copy catalog: merge failed:", upErr.message);
+      return { ok: false, message: "Could not copy the products. Please try again." };
+    }
+  }
+  revalidate(targetCustomerId);
+  return { ok: true, copied: fresh.length, skipped, mode: "merge" };
+}
+
+// Apply one pricing operation to many of a customer's assigned products at once.
+// The effective-price rule is unchanged (COALESCE(custom, list)); this only
+// writes price_cents (a flat value, a %-off-list value, or null = revert).
+export type BulkPriceOp =
+  | { kind: "set"; priceCents: number } // flat price for all selected
+  | { kind: "percentOff"; percent: number } // % off EACH product's own list price
+  | { kind: "clear" }; // revert to list price (price_cents = null)
+
+export type BulkPriceResult = { ok: true; updated: number } | { ok: false; message: string };
+
+export async function bulkUpdateCustomerPrices(
+  customerId: string,
+  productIds: string[],
+  op: BulkPriceOp,
+): Promise<BulkPriceResult> {
+  await requireAdmin();
+  if (productIds.length === 0) return { ok: true, updated: 0 };
+
+  const admin = getAdminClient();
+  if (!admin) return { ok: false, message: "Supabase is not configured." };
+
+  let rows: { customer_id: string; product_id: string; price_cents: number | null }[];
+
+  if (op.kind === "set") {
+    if (!Number.isInteger(op.priceCents) || op.priceCents < 0) {
+      return { ok: false, message: "Price must be a valid non-negative amount." };
+    }
+    rows = productIds.map((product_id) => ({
+      customer_id: customerId,
+      product_id,
+      price_cents: op.priceCents,
+    }));
+  } else if (op.kind === "clear") {
+    rows = productIds.map((product_id) => ({
+      customer_id: customerId,
+      product_id,
+      price_cents: null,
+    }));
+  } else {
+    if (
+      typeof op.percent !== "number" ||
+      Number.isNaN(op.percent) ||
+      op.percent < 0 ||
+      op.percent > 100
+    ) {
+      return { ok: false, message: "Discount must be between 0 and 100 percent." };
+    }
+    // Authoritative: compute from the DB list price, never a client-sent value.
+    const { data: prods, error: pErr } = await admin
+      .from("products")
+      .select("id, list_price_cents")
+      .in("id", productIds);
+    if (pErr) {
+      console.error("[admin] bulk percentOff: read products failed:", pErr.message);
+      return { ok: false, message: "Could not read product prices. Please try again." };
+    }
+    const listById = new Map(
+      (prods as { id: string; list_price_cents: number }[]).map((p) => [p.id, p.list_price_cents]),
+    );
+    rows = productIds
+      .filter((id) => listById.has(id))
+      .map((product_id) => ({
+        customer_id: customerId,
+        product_id,
+        price_cents: Math.max(0, Math.round(listById.get(product_id)! * (1 - op.percent / 100))),
+      }));
+  }
+
+  const { error } = await admin
+    .from("customer_products")
+    .upsert(rows, { onConflict: "customer_id,product_id" });
+  if (error) {
+    console.error("[admin] bulk price update failed:", error.message);
+    return { ok: false, message: "Could not update the prices. Please try again." };
+  }
+  revalidate(customerId);
+  return { ok: true, updated: rows.length };
+}
+
 // ---------------- Offers (customer_offers) ----------------
 
 export type OfferInput = {
