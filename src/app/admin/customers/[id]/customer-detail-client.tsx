@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Pencil, Plus, X, RotateCcw } from "lucide-react";
+import { ArrowLeft, Pencil, Plus, X, RotateCcw, Copy, Search } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
 import type { Category, Offer, Product } from "@/lib/admin/types";
 import type { AssignedProduct, CustomerDetail, Activation } from "@/lib/admin/customers-data";
 import { CustomerFormModal } from "../customers-client";
 import { InviteControls } from "../invite-controls";
+import { OnboardingChecklist } from "./onboarding-checklist";
+import { CopyCatalogModal } from "./copy-catalog-modal";
+import type { CopySource } from "./page";
 import {
   updateCustomer,
   archiveCustomer,
@@ -15,12 +18,15 @@ import {
   assignProducts,
   setCustomerProductPrice,
   removeCustomerProduct,
+  copyCatalogFromCustomer,
+  bulkUpdateCustomerPrices,
   createOffer,
   updateOffer,
   deleteOffer,
   toggleOfferActive,
   type CustomerInput,
   type OfferInput,
+  type BulkPriceOp,
 } from "../actions";
 
 export function CustomerDetailClient({
@@ -28,12 +34,14 @@ export function CustomerDetailClient({
   allProducts,
   categories,
   activation,
+  copySources,
   live,
 }: {
   detail: CustomerDetail;
   allProducts: Product[];
   categories: Category[];
   activation: Activation;
+  copySources: CopySource[];
   live: boolean;
 }) {
   const { customer, assigned, offers } = detail;
@@ -41,6 +49,9 @@ export function CustomerDetailClient({
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [addProductPickerOpen, setAddProductPickerOpen] = useState(false);
+  const [copyOpen, setCopyOpen] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [notice, setNotice] = useState<string | null>(null);
   const [offerModal, setOfferModal] = useState<{ open: boolean; offer: Offer | null }>({
     open: false,
     offer: null,
@@ -81,6 +92,58 @@ export function CustomerDetailClient({
       return;
     }
     setEditing(false);
+  }
+
+  // ---- bulk selection + pricing ----
+  function toggleSelected(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+  function toggleSelectAll() {
+    setSelected((prev) =>
+      prev.size === assigned.length ? new Set() : new Set(assigned.map((a) => a.productId)),
+    );
+  }
+
+  async function runBulk(op: BulkPriceOp) {
+    const ids = Array.from(selected);
+    if (ids.length === 0) return;
+    setBusy(true);
+    const res = await bulkUpdateCustomerPrices(customer.id, ids, op);
+    setBusy(false);
+    if (!res.ok) {
+      window.alert(res.message);
+      return;
+    }
+    setSelected(new Set());
+    setNotice(`Updated ${res.updated} product${res.updated === 1 ? "" : "s"}.`);
+  }
+
+  // Mode-specific window.confirm for Overwrite is enforced inside CopyCatalogModal
+  // before this runs, so nothing is deleted without an explicit confirmation.
+  async function handleCopy(
+    sourceId: string,
+    mode: "merge" | "overwrite",
+    prices: "copy" | "list",
+  ) {
+    setBusy(true);
+    const res = await copyCatalogFromCustomer(customer.id, sourceId, { mode, prices });
+    setBusy(false);
+    if (!res.ok) {
+      window.alert(res.message);
+      return;
+    }
+    setCopyOpen(false);
+    setSelected(new Set());
+    setNotice(
+      `Copied ${res.copied} product${res.copied === 1 ? "" : "s"}` +
+        (res.skipped > 0 ? ` (${res.skipped} skipped — inactive/removed)` : "") +
+        ".",
+    );
   }
 
   return (
@@ -163,6 +226,13 @@ export function CustomerDetailClient({
         </div>
       )}
 
+      {/* Onboarding checklist — fully derived from data already loaded */}
+      <OnboardingChecklist
+        activation={activation}
+        assigned={assigned}
+        onAssignClick={() => setAddProductPickerOpen(true)}
+      />
+
       {/* Quick info cards */}
       <div className="grid gap-4 sm:grid-cols-4">
         <InfoCard label="Status" value={customer.status} />
@@ -177,6 +247,21 @@ export function CustomerDetailClient({
         </p>
       )}
 
+      {/* Transient success notice (copy / bulk results) */}
+      {notice && (
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-brand/30 bg-brand-mist/50 px-4 py-2.5 text-sm text-brand-deep">
+          <span>{notice}</span>
+          <button
+            type="button"
+            onClick={() => setNotice(null)}
+            aria-label="Dismiss"
+            className="rounded p-1 text-muted hover:text-foreground"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
       {/* Assigned catalog */}
       <section className="rounded-2xl border border-[var(--border)] bg-surface">
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] px-6 py-4">
@@ -188,14 +273,33 @@ export function CustomerDetailClient({
               Only these products are visible to this customer in their portal. Override pricing per product as needed.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setAddProductPickerOpen(true)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(200,122,42,0.6)] hover:bg-accent-deep"
-          >
-            <Plus size={14} /> Add product
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCopyOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-surface px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent hover:text-accent-deep"
+            >
+              <Copy size={14} /> Copy from customer
+            </button>
+            <button
+              type="button"
+              onClick={() => setAddProductPickerOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(200,122,42,0.6)] hover:bg-accent-deep"
+            >
+              <Plus size={14} /> Add product
+            </button>
+          </div>
         </header>
+
+        {/* Bulk price toolbar — appears when ≥1 product is selected */}
+        {selected.size > 0 && (
+          <BulkPriceBar
+            count={selected.size}
+            busy={busy}
+            onApply={runBulk}
+            onClear={() => setSelected(new Set())}
+          />
+        )}
 
         {assigned.length === 0 ? (
           <p className="px-6 py-12 text-center text-sm text-muted">
@@ -205,6 +309,18 @@ export function CustomerDetailClient({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--border)] bg-brand-mist/40 text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
+                <th className="w-10 px-6 py-3">
+                  <input
+                    type="checkbox"
+                    aria-label="Select all"
+                    className="accent-accent"
+                    checked={selected.size > 0 && selected.size === assigned.length}
+                    ref={(el) => {
+                      if (el) el.indeterminate = selected.size > 0 && selected.size < assigned.length;
+                    }}
+                    onChange={toggleSelectAll}
+                  />
+                </th>
                 <th className="px-6 py-3">Product</th>
                 <th className="px-6 py-3">Category</th>
                 <th className="px-6 py-3 text-right">List price</th>
@@ -219,6 +335,8 @@ export function CustomerDetailClient({
                   row={a}
                   categoryName={(a.categoryId ? catById[a.categoryId] : undefined) ?? "—"}
                   busy={busy}
+                  selected={selected.has(a.productId)}
+                  onToggleSelect={() => toggleSelected(a.productId)}
                   onSet={(cents) =>
                     run(() => setCustomerProductPrice(customer.id, a.productId, cents))
                   }
@@ -303,12 +421,24 @@ export function CustomerDetailClient({
       {addProductPickerOpen && (
         <AddProductsPicker
           unassigned={unassigned}
+          categories={categories}
           categoryName={(id) => (id ? catById[id] : undefined) ?? "—"}
           onClose={() => setAddProductPickerOpen(false)}
           onAdd={async (productIds) => {
             const ok = await run(() => assignProducts(customer.id, productIds));
             if (ok) setAddProductPickerOpen(false);
           }}
+        />
+      )}
+
+      {copyOpen && (
+        <CopyCatalogModal
+          targetName={customer.businessName}
+          targetAssignedCount={assigned.length}
+          sources={copySources}
+          busy={busy}
+          onClose={() => setCopyOpen(false)}
+          onCopy={handleCopy}
         />
       )}
 
@@ -360,12 +490,16 @@ function CustomerProductRow({
   row,
   categoryName,
   busy,
+  selected,
+  onToggleSelect,
   onSet,
   onRemove,
 }: {
   row: AssignedProduct;
   categoryName: string;
   busy: boolean;
+  selected: boolean;
+  onToggleSelect: () => void;
   onSet: (cents: number | null) => void;
   onRemove: () => void;
 }) {
@@ -378,7 +512,20 @@ function CustomerProductRow({
   const delta = row.priceCents != null ? effective - row.listPriceCents : 0;
 
   return (
-    <tr className="border-b border-[var(--border)] last:border-0 hover:bg-brand-mist/30">
+    <tr
+      className={`border-b border-[var(--border)] last:border-0 hover:bg-brand-mist/30 ${
+        selected ? "bg-brand-mist/40" : ""
+      }`}
+    >
+      <td className="px-6 py-3">
+        <input
+          type="checkbox"
+          aria-label={`Select ${row.name}`}
+          className="accent-accent"
+          checked={selected}
+          onChange={onToggleSelect}
+        />
+      </td>
       <td className="px-6 py-3">
         <p className="font-medium text-foreground">{row.name}</p>
         <p className="text-xs text-muted">
@@ -451,6 +598,89 @@ function CustomerProductRow({
         </button>
       </td>
     </tr>
+  );
+}
+
+// Bulk pricing toolbar shown when ≥1 assigned product is selected. Builds a
+// BulkPriceOp and hands it up; the effective price stays COALESCE(custom, list).
+function BulkPriceBar({
+  count,
+  busy,
+  onApply,
+  onClear,
+}: {
+  count: number;
+  busy: boolean;
+  onApply: (op: BulkPriceOp) => void;
+  onClear: () => void;
+}) {
+  const [kind, setKind] = useState<"set" | "percentOff" | "clear">("set");
+  const [value, setValue] = useState("");
+
+  function apply() {
+    if (kind === "set") {
+      const cents = Math.round(parseFloat(value) * 100);
+      if (!Number.isFinite(cents) || cents < 0) {
+        window.alert("Enter a valid price (0 or more).");
+        return;
+      }
+      onApply({ kind: "set", priceCents: cents });
+    } else if (kind === "percentOff") {
+      const pct = parseFloat(value);
+      if (!Number.isFinite(pct) || pct < 0 || pct > 100) {
+        window.alert("Enter a percent between 0 and 100.");
+        return;
+      }
+      onApply({ kind: "percentOff", percent: pct });
+    } else {
+      onApply({ kind: "clear" });
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-3 border-b border-[var(--border)] bg-accent-soft/40 px-6 py-3">
+      <span className="text-sm font-medium text-brand-deep">{count} selected</span>
+      <select
+        value={kind}
+        onChange={(e) => setKind(e.target.value as typeof kind)}
+        className="rounded-lg border border-[var(--border)] bg-background px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none"
+      >
+        <option value="set">Set flat price</option>
+        <option value="percentOff">% off list</option>
+        <option value="clear">Clear custom price</option>
+      </select>
+      {kind !== "clear" && (
+        <div className="inline-flex items-center gap-1">
+          {kind === "set" && <span className="text-xs text-muted">$</span>}
+          <input
+            type="number"
+            step={kind === "set" ? "0.01" : "1"}
+            min="0"
+            max={kind === "percentOff" ? "100" : undefined}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder={kind === "set" ? "0.00" : "0"}
+            className="w-24 rounded-md border border-[var(--border)] bg-background px-2 py-1 text-right text-sm font-mono"
+          />
+          {kind === "percentOff" && <span className="text-xs text-muted">%</span>}
+        </div>
+      )}
+      <button
+        type="button"
+        disabled={busy}
+        onClick={apply}
+        className="rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
+      >
+        Apply
+      </button>
+      <button
+        type="button"
+        onClick={onClear}
+        className="text-sm font-medium text-muted hover:text-foreground"
+      >
+        Clear selection
+      </button>
+    </div>
   );
 }
 
@@ -618,22 +848,59 @@ function OfferModal({
 
 function AddProductsPicker({
   unassigned,
+  categories,
   categoryName,
   onClose,
   onAdd,
 }: {
   unassigned: Product[];
+  categories: Category[];
   categoryName: (catId: string | null) => string;
   onClose: () => void;
   onAdd: (productIds: string[]) => void;
 }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [query, setQuery] = useState("");
+  const [categoryId, setCategoryId] = useState<string>("all"); // "all" | "none" | <id>
+
+  // Only categories that actually have unassigned products are worth offering.
+  const hasUncategorized = useMemo(
+    () => unassigned.some((p) => !p.categoryId),
+    [unassigned],
+  );
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return unassigned.filter((p) => {
+      const matchesQuery =
+        q === "" ||
+        p.name.toLowerCase().includes(q) ||
+        p.sku.toLowerCase().includes(q);
+      const matchesCategory =
+        categoryId === "all" ||
+        (categoryId === "none" ? !p.categoryId : p.categoryId === categoryId);
+      return matchesQuery && matchesCategory;
+    });
+  }, [unassigned, query, categoryId]);
+
+  // Selection persists across search/filter changes (it's a Set of ids), so you
+  // can search, select, search again, select more, then Add everything at once.
+  const allFilteredSelected =
+    filtered.length > 0 && filtered.every((p) => selected.has(p.id));
 
   function toggle(id: string) {
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      return next;
+    });
+  }
+  function toggleSelectFiltered() {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (allFilteredSelected) filtered.forEach((p) => next.delete(p.id));
+      else filtered.forEach((p) => next.add(p.id));
       return next;
     });
   }
@@ -653,38 +920,86 @@ function AddProductsPicker({
           Add products to catalog
         </h3>
         <p className="mt-1 text-xs text-muted">
-          Pick products to make visible to this customer. They&apos;ll start at the list price — set a customer-specific price after.
+          Search and filter, then select many at once. They&apos;ll start at the list price — set customer-specific prices after.
         </p>
 
-        <div className="mt-5 max-h-[400px] overflow-y-auto rounded-xl border border-[var(--border)]">
-          {unassigned.length === 0 ? (
-            <p className="p-8 text-center text-sm text-muted">
-              All active products are already assigned.
-            </p>
-          ) : (
-            <ul className="divide-y divide-[var(--border)]">
-              {unassigned.map((p) => (
-                <li key={p.id}>
-                  <label className="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-brand-mist/30">
-                    <input
-                      type="checkbox"
-                      checked={selected.has(p.id)}
-                      onChange={() => toggle(p.id)}
-                      className="accent-accent"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-foreground">{p.name}</p>
-                      <p className="text-xs text-muted">
-                        {p.sku} · {p.unitSize} · {categoryName(p.categoryId)}
-                      </p>
-                    </div>
-                    <span className="font-mono text-sm text-muted">{formatMoney(p.listPriceCents)}</span>
-                  </label>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {unassigned.length === 0 ? (
+          <p className="mt-5 rounded-xl border border-dashed border-[var(--border)] p-8 text-center text-sm text-muted">
+            All active products are already assigned.
+          </p>
+        ) : (
+          <>
+            {/* Search + category filter */}
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <div className="relative min-w-[180px] flex-1">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-soft" />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search by name or SKU"
+                  className="w-full rounded-lg border border-[var(--border)] bg-background py-2 pl-9 pr-3 text-sm focus:border-accent focus:outline-none"
+                />
+              </div>
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="rounded-lg border border-[var(--border)] bg-background px-2.5 py-2 text-sm focus:border-accent focus:outline-none"
+              >
+                <option value="all">All categories</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+                {hasUncategorized && <option value="none">Uncategorized</option>}
+              </select>
+            </div>
+
+            {/* Select-all-filtered row */}
+            <div className="mt-3 flex items-center justify-between text-xs text-muted">
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="accent-accent"
+                  checked={allFilteredSelected}
+                  onChange={toggleSelectFiltered}
+                  disabled={filtered.length === 0}
+                />
+                Select all {filtered.length > 0 ? `(${filtered.length})` : ""}
+              </label>
+              <span>{selected.size} selected</span>
+            </div>
+
+            <div className="mt-2 max-h-[360px] overflow-y-auto rounded-xl border border-[var(--border)]">
+              {filtered.length === 0 ? (
+                <p className="p-8 text-center text-sm text-muted">
+                  No products match your search or filter.
+                </p>
+              ) : (
+                <ul className="divide-y divide-[var(--border)]">
+                  {filtered.map((p) => (
+                    <li key={p.id}>
+                      <label className="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-brand-mist/30">
+                        <input
+                          type="checkbox"
+                          checked={selected.has(p.id)}
+                          onChange={() => toggle(p.id)}
+                          className="accent-accent"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground">{p.name}</p>
+                          <p className="text-xs text-muted">
+                            {p.sku} · {p.unitSize} · {categoryName(p.categoryId)}
+                          </p>
+                        </div>
+                        <span className="font-mono text-sm text-muted">{formatMoney(p.listPriceCents)}</span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </>
+        )}
 
         <div className="mt-6 flex justify-end gap-2">
           <button
