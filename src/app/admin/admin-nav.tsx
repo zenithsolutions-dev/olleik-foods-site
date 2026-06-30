@@ -8,6 +8,7 @@ const ITEMS: Array<{ href: string; label: string; icon: string }> = [
   { href: "/admin/products", label: "Products", icon: "◇" },
   { href: "/admin/categories", label: "Categories", icon: "◈" },
   { href: "/admin/customers", label: "Customers", icon: "◉" },
+  { href: "/admin/offers", label: "Offer library", icon: "◆" },
   { href: "/admin/leads", label: "Leads", icon: "◐" },
 ];
 

@@ -80,6 +80,24 @@ export type Offer = {
   endsAt?: string | null;         // ISO 8601 or null = open end
   isActive: boolean;
   createdAt: string;
+  // Phase F provenance: which offer_template this row was applied from (snapshot
+  // origin). null = ad-hoc offer. Admin-only; never read by the portal.
+  templateId?: ID | null;
+};
+
+// Phase F: reusable, admin-managed offer template. Applying one SNAPSHOTS its
+// discount into a customer_offers row (editing the template later doesn't change
+// already-applied offers). discount_value follows the same per-kind convention
+// as Offer/customer_offers.
+export type OfferTemplate = {
+  id: ID;
+  name: string;
+  description?: string;
+  discountKind: OfferDiscountKind | null;
+  discountValue: number | null;
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
 };
 
 // Per-customer assigned products + negotiated prices. If a customer isn't
