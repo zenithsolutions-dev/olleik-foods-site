@@ -119,6 +119,7 @@ type OfferRow = {
   ends_at: string | null;
   is_active: boolean;
   created_at: string;
+  template_id: string | null;
 };
 
 function toOffer(r: OfferRow): Offer {
@@ -134,6 +135,7 @@ function toOffer(r: OfferRow): Offer {
     endsAt: r.ends_at,
     isActive: r.is_active,
     createdAt: r.created_at,
+    templateId: r.template_id,
   };
 }
 
@@ -202,7 +204,7 @@ export async function fetchAdminCustomer(
   const { data: offerRows, error: offerErr } = await admin
     .from("customer_offers")
     .select(
-      "id, customer_id, title, description, product_id, discount_kind, discount_value, starts_at, ends_at, is_active, created_at",
+      "id, customer_id, title, description, product_id, discount_kind, discount_value, starts_at, ends_at, is_active, created_at, template_id",
     )
     .eq("customer_id", id)
     .order("created_at", { ascending: false });

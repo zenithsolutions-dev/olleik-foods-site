@@ -4,12 +4,19 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Pencil, Plus, X, RotateCcw, Copy, Search } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
-import type { Category, Offer, Product } from "@/lib/admin/types";
+import { formatDiscount } from "@/lib/admin/offers-format";
+import type { Category, Offer, OfferDiscountKind, OfferTemplate, Product } from "@/lib/admin/types";
 import type { AssignedProduct, CustomerDetail, Activation } from "@/lib/admin/customers-data";
 import { CustomerFormModal } from "../customers-client";
 import { InviteControls } from "../invite-controls";
 import { OnboardingChecklist } from "./onboarding-checklist";
 import { CopyCatalogModal } from "./copy-catalog-modal";
+import { ApplyTemplateModal } from "./apply-template-modal";
+import {
+  DiscountFields,
+  parseDiscountValue,
+  discountValueToText,
+} from "../../offers/offers-client";
 import type { CopySource } from "./page";
 import {
   updateCustomer,
@@ -28,6 +35,7 @@ import {
   type OfferInput,
   type BulkPriceOp,
 } from "../actions";
+import { applyTemplateToCustomer } from "../../offers/actions";
 
 export function CustomerDetailClient({
   detail,
@@ -35,6 +43,7 @@ export function CustomerDetailClient({
   categories,
   activation,
   copySources,
+  offerTemplates,
   live,
 }: {
   detail: CustomerDetail;
@@ -42,6 +51,7 @@ export function CustomerDetailClient({
   categories: Category[];
   activation: Activation;
   copySources: CopySource[];
+  offerTemplates: OfferTemplate[];
   live: boolean;
 }) {
   const { customer, assigned, offers } = detail;
@@ -50,6 +60,7 @@ export function CustomerDetailClient({
   const [editError, setEditError] = useState<string | null>(null);
   const [addProductPickerOpen, setAddProductPickerOpen] = useState(false);
   const [copyOpen, setCopyOpen] = useState(false);
+  const [applyTemplateOpen, setApplyTemplateOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [notice, setNotice] = useState<string | null>(null);
   const [offerModal, setOfferModal] = useState<{ open: boolean; offer: Offer | null }>({
@@ -70,6 +81,19 @@ export function CustomerDetailClient({
   const unassigned = useMemo(
     () => allProducts.filter((p) => p.isActive && !assignedIds.has(p.id)),
     [allProducts, assignedIds],
+  );
+  // Offers may link only to a product this customer can see (decision #3).
+  const assignedProductOptions = useMemo(
+    () => assigned.map((a) => ({ id: a.productId, name: a.name })),
+    [assigned],
+  );
+  const templateNameById = useMemo(
+    () => Object.fromEntries(offerTemplates.map((t) => [t.id, t.name])),
+    [offerTemplates],
+  );
+  const appliedTemplateIds = useMemo(
+    () => offers.map((o) => o.templateId).filter((x): x is string => !!x),
+    [offers],
   );
 
   const isArchived = customer.status === "archived";
@@ -144,6 +168,21 @@ export function CustomerDetailClient({
         (res.skipped > 0 ? ` (${res.skipped} skipped — inactive/removed)` : "") +
         ".",
     );
+  }
+
+  async function handleApplyTemplate(
+    templateId: string,
+    overrides: { title?: string; productId: string | null; startsAt: string | null; endsAt: string | null },
+  ) {
+    setBusy(true);
+    const res = await applyTemplateToCustomer(customer.id, templateId, overrides);
+    setBusy(false);
+    if (!res.ok) {
+      window.alert(res.message);
+      return;
+    }
+    setApplyTemplateOpen(false);
+    setNotice(`Applied template "${templateNameById[templateId] ?? "offer"}" to this customer.`);
   }
 
   return (
@@ -359,13 +398,22 @@ export function CustomerDetailClient({
               Informational notes shown to this customer in their portal (promos, seasonal pricing, account perks).
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setOfferModal({ open: true, offer: null })}
-            className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(200,122,42,0.6)] hover:bg-accent-deep"
-          >
-            <Plus size={14} /> Add offer
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setApplyTemplateOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-surface px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent hover:text-accent-deep"
+            >
+              <Plus size={14} /> Apply template
+            </button>
+            <button
+              type="button"
+              onClick={() => setOfferModal({ open: true, offer: null })}
+              className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(200,122,42,0.6)] hover:bg-accent-deep"
+            >
+              <Plus size={14} /> Add offer
+            </button>
+          </div>
         </header>
 
         {offers.length === 0 ? (
@@ -377,6 +425,7 @@ export function CustomerDetailClient({
                 key={o.id}
                 offer={o}
                 productName={o.productId ? productById[o.productId]?.name : undefined}
+                templateName={o.templateId ? templateNameById[o.templateId] : undefined}
                 busy={busy}
                 onEdit={() => setOfferModal({ open: true, offer: o })}
                 onToggle={() => run(() => toggleOfferActive(customer.id, o.id, !o.isActive))}
@@ -445,7 +494,7 @@ export function CustomerDetailClient({
       {offerModal.open && (
         <OfferModal
           initial={offerModal.offer}
-          products={allProducts.filter((p) => p.isActive)}
+          products={assignedProductOptions}
           onClose={() => setOfferModal({ open: false, offer: null })}
           onSave={async (values) => {
             const result = offerModal.offer
@@ -457,6 +506,17 @@ export function CustomerDetailClient({
             }
             setOfferModal({ open: false, offer: null });
           }}
+        />
+      )}
+
+      {applyTemplateOpen && (
+        <ApplyTemplateModal
+          templates={offerTemplates}
+          assignedProducts={assignedProductOptions}
+          appliedTemplateIds={appliedTemplateIds}
+          busy={busy}
+          onClose={() => setApplyTemplateOpen(false)}
+          onApply={handleApplyTemplate}
         />
       )}
     </div>
@@ -691,6 +751,7 @@ function fmtDate(iso: string | null | undefined): string | null {
 function OfferRow({
   offer: o,
   productName,
+  templateName,
   busy,
   onEdit,
   onToggle,
@@ -698,6 +759,7 @@ function OfferRow({
 }: {
   offer: Offer;
   productName?: string;
+  templateName?: string;
   busy: boolean;
   onEdit: () => void;
   onToggle: () => void;
@@ -707,11 +769,12 @@ function OfferRow({
   const end = fmtDate(o.endsAt);
   const window =
     start && end ? `${start} → ${end}` : start ? `From ${start}` : end ? `Until ${end}` : "Always";
+  const discount = formatDiscount(o.discountKind, o.discountValue);
 
   return (
     <li className="flex flex-wrap items-start justify-between gap-3 px-6 py-4">
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <p className="font-medium text-foreground">{o.title}</p>
           <span
             className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
@@ -720,6 +783,16 @@ function OfferRow({
           >
             {o.isActive ? "Active" : "Inactive"}
           </span>
+          {discount && (
+            <span className="inline-flex rounded-full bg-accent-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent-deep">
+              {discount}
+            </span>
+          )}
+          {templateName && (
+            <span className="inline-flex rounded-full bg-brand-mist px-2 py-0.5 text-[10px] font-medium text-brand-deep">
+              From template: {templateName}
+            </span>
+          )}
         </div>
         {o.description && <p className="mt-1 text-sm text-muted">{o.description}</p>}
         <p className="mt-1.5 text-xs text-muted-soft">
@@ -749,7 +822,7 @@ function OfferModal({
   onSave,
 }: {
   initial: Offer | null;
-  products: Product[];
+  products: { id: string; name: string }[]; // the customer's ASSIGNED products
   onClose: () => void;
   onSave: (values: OfferInput) => void | Promise<void>;
 }) {
@@ -759,10 +832,25 @@ function OfferModal({
   const [startsAt, setStartsAt] = useState(fmtDate(initial?.startsAt) ?? "");
   const [endsAt, setEndsAt] = useState(fmtDate(initial?.endsAt) ?? "");
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
+  const [discountKind, setDiscountKind] = useState<OfferDiscountKind | null>(
+    initial?.discountKind ?? null,
+  );
+  const [discountText, setDiscountText] = useState(
+    discountValueToText(initial?.discountKind ?? null, initial?.discountValue),
+  );
   const [saving, setSaving] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    const discountValue = parseDiscountValue(discountKind, discountText);
+    if (discountKind && (discountValue == null || Number.isNaN(discountValue) || discountValue < 0)) {
+      window.alert("Enter a valid discount amount, or set the discount type to None.");
+      return;
+    }
+    if (discountKind === "percent" && discountValue != null && discountValue > 100) {
+      window.alert("Percent off must be between 0 and 100.");
+      return;
+    }
     setSaving(true);
     await onSave({
       title: title.trim(),
@@ -771,7 +859,8 @@ function OfferModal({
       startsAt: startsAt || null,
       endsAt: endsAt || null,
       isActive,
-      // discountKind/discountValue intentionally omitted — informational phase.
+      discountKind,
+      discountValue: discountKind ? discountValue : null,
     });
     setSaving(false);
   }
@@ -802,7 +891,7 @@ function OfferModal({
           <Field label="Description (optional)">
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className={inputCls} />
           </Field>
-          <Field label="Linked product (optional)">
+          <Field label="Linked product (optional — this customer's assigned products)">
             <select value={productId} onChange={(e) => setProductId(e.target.value)} className={inputCls}>
               <option value="">— None (account-wide) —</option>
               {products.map((p) => (
@@ -810,6 +899,13 @@ function OfferModal({
               ))}
             </select>
           </Field>
+          <DiscountFields
+            kind={discountKind}
+            setKind={(k) => setDiscountKind(k)}
+            valueText={discountText}
+            setValueText={setDiscountText}
+            allowNone
+          />
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Starts (optional)">
               <input type="date" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} className={inputCls} />
