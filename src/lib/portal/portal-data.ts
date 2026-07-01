@@ -1,6 +1,11 @@
 import "server-only";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { ProductUnit } from "@/lib/admin/types";
+import type { OfferDiscountKind, ProductUnit } from "@/lib/admin/types";
+import {
+  effectivePriceCents,
+  applyOffersToPrice,
+  offerAppliesToProduct,
+} from "@/lib/pricing";
 
 // Customer portal reads. EVERY query here uses the SESSION-BOUND anon client so
 // Postgres RLS enforces tenant isolation (a customer sees only their own
@@ -16,8 +21,11 @@ export type PortalProduct = {
   unit: ProductUnit;
   unitSize: string;
   imageUrl: string | null;
-  effectiveCents: number; // COALESCE(customer price, list price)
+  effectiveCents: number; // pre-offer price = COALESCE(customer price, list price)
   isCustomPrice: boolean;
+  finalCents: number; // after the best applicable active offer (== effectiveCents if none)
+  discounted: boolean; // finalCents < effectiveCents
+  appliedOfferTitle: string | null; // the winning offer's title (for a label), else null
 };
 
 export type PortalCategoryGroup = {
@@ -41,21 +49,62 @@ type CpRow = {
   } | null;
 };
 
+// Offer fields needed to price a product. Read via the SESSION client, so RLS
+// returns only THIS customer's own offer rows (same "customer reads own offers"
+// policy as fetchMyOffers — no isolation change, just more columns of owned rows).
+type PricingOfferRow = {
+  title: string;
+  product_id: string | null;
+  discount_kind: OfferDiscountKind | null;
+  discount_value: number | null;
+  starts_at: string | null;
+  ends_at: string | null;
+  is_active: boolean;
+};
+
+type PricingOffer = {
+  title: string;
+  productId: string | null;
+  discountKind: OfferDiscountKind | null;
+  discountValue: number | null;
+  isActive: boolean;
+  startsAt: string | null;
+  endsAt: string | null;
+};
+
 export async function fetchMyCatalog(): Promise<PortalCategoryGroup[]> {
   const supabase = await createSupabaseServerClient();
-  const [{ data: cpRows, error }, { data: cats }] = await Promise.all([
-    supabase
-      .from("customer_products")
-      .select(
-        "price_cents, products(id, name, sku, unit, unit_size, image_url, category_id, list_price_cents, is_active)",
-      ),
-    supabase.from("categories").select("id, name"),
-  ]);
+  const [{ data: cpRows, error }, { data: cats }, { data: offerRows, error: offerErr }] =
+    await Promise.all([
+      supabase
+        .from("customer_products")
+        .select(
+          "price_cents, products(id, name, sku, unit, unit_size, image_url, category_id, list_price_cents, is_active)",
+        ),
+      supabase.from("categories").select("id, name"),
+      supabase
+        .from("customer_offers")
+        .select("title, product_id, discount_kind, discount_value, starts_at, ends_at, is_active")
+        .eq("is_active", true),
+    ]);
 
   if (error) {
     console.error("[portal] catalog read failed:", error.message);
     return [];
   }
+  // Offers are non-fatal: if the read fails, prices simply fall back to effective.
+  if (offerErr) console.error("[portal] offers read failed:", offerErr.message);
+
+  const offers: PricingOffer[] = ((offerRows as PricingOfferRow[]) ?? []).map((o) => ({
+    title: o.title,
+    productId: o.product_id,
+    discountKind: o.discount_kind,
+    discountValue: o.discount_value,
+    isActive: o.is_active,
+    startsAt: o.starts_at,
+    endsAt: o.ends_at,
+  }));
+  const now = new Date();
 
   const catName = new Map((cats ?? []).map((c) => [c.id as string, c.name as string]));
   const groups = new Map<string, PortalCategoryGroup>();
@@ -71,6 +120,17 @@ export async function fetchMyCatalog(): Promise<PortalCategoryGroup[]> {
         products: [],
       });
     }
+
+    const effectiveCents = effectivePriceCents(r.price_cents, p.list_price_cents);
+    const applicable = offers
+      .filter((o) => offerAppliesToProduct(o, p.id, now))
+      .map((o) => ({
+        title: o.title,
+        discountKind: o.discountKind as OfferDiscountKind,
+        discountValue: o.discountValue as number,
+      }));
+    const priced = applyOffersToPrice(effectiveCents, applicable);
+
     groups.get(key)!.products.push({
       productId: p.id,
       name: p.name,
@@ -78,8 +138,11 @@ export async function fetchMyCatalog(): Promise<PortalCategoryGroup[]> {
       unit: p.unit,
       unitSize: p.unit_size,
       imageUrl: p.image_url,
-      effectiveCents: r.price_cents ?? p.list_price_cents,
+      effectiveCents,
       isCustomPrice: r.price_cents != null,
+      finalCents: priced.finalCents,
+      discounted: priced.discounted,
+      appliedOfferTitle: priced.appliedOffer?.title ?? null,
     });
   }
 
