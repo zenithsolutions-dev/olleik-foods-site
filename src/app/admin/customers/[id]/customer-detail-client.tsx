@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { ArrowLeft, Pencil, Plus, X, RotateCcw, Copy, Search } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
 import { formatDiscount } from "@/lib/admin/offers-format";
+import { applyOffersToPrice, offerAppliesToProduct } from "@/lib/pricing";
 import type { Category, Offer, OfferDiscountKind, OfferTemplate, Product } from "@/lib/admin/types";
 import type { AssignedProduct, CustomerDetail, Activation } from "@/lib/admin/customers-data";
 import { CustomerFormModal } from "../customers-client";
@@ -95,6 +96,48 @@ export function CustomerDetailClient({
     () => offers.map((o) => o.templateId).filter((x): x is string => !!x),
     [offers],
   );
+
+  // Per-product offer pricing, using the SAME pure functions as the portal so the
+  // admin sees exactly what the customer pays. Recomputed from the loaded offers;
+  // `now` is captured per render for the active/date-window check.
+  const offerPriceByProduct = useMemo(() => {
+    const now = new Date();
+    const map: Record<
+      string,
+      { finalCents: number; discounted: boolean; originalCents: number; appliedTitle: string | null }
+    > = {};
+    for (const a of assigned) {
+      const base = a.priceCents ?? a.listPriceCents;
+      const applicable = offers
+        .filter((o) =>
+          offerAppliesToProduct(
+            {
+              isActive: o.isActive,
+              startsAt: o.startsAt ?? null,
+              endsAt: o.endsAt ?? null,
+              productId: o.productId ?? null,
+              discountKind: o.discountKind ?? null,
+              discountValue: o.discountValue ?? null,
+            },
+            a.productId,
+            now,
+          ),
+        )
+        .map((o) => ({
+          title: o.title,
+          discountKind: o.discountKind as OfferDiscountKind,
+          discountValue: o.discountValue as number,
+        }));
+      const priced = applyOffersToPrice(base, applicable);
+      map[a.productId] = {
+        finalCents: priced.finalCents,
+        discounted: priced.discounted,
+        originalCents: priced.originalCents,
+        appliedTitle: priced.appliedOffer?.title ?? null,
+      };
+    }
+    return map;
+  }, [assigned, offers]);
 
   const isArchived = customer.status === "archived";
 
@@ -372,6 +415,7 @@ export function CustomerDetailClient({
                 <CustomerProductRow
                   key={a.productId}
                   row={a}
+                  priced={offerPriceByProduct[a.productId]}
                   categoryName={(a.categoryId ? catById[a.categoryId] : undefined) ?? "—"}
                   busy={busy}
                   selected={selected.has(a.productId)}
@@ -548,6 +592,7 @@ function InfoCard({ label, value }: { label: string; value: string }) {
 
 function CustomerProductRow({
   row,
+  priced,
   categoryName,
   busy,
   selected,
@@ -556,6 +601,7 @@ function CustomerProductRow({
   onRemove,
 }: {
   row: AssignedProduct;
+  priced?: { finalCents: number; discounted: boolean; originalCents: number; appliedTitle: string | null };
   categoryName: string;
   busy: boolean;
   selected: boolean;
@@ -625,6 +671,21 @@ function CustomerProductRow({
               Cancel
             </button>
           </div>
+        ) : priced?.discounted ? (
+          // An active in-window offer applies: show the discounted price the
+          // customer actually pays (green) with the pre-offer price struck. Still
+          // click-to-edit the underlying custom price.
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            title={priced.appliedTitle ? `Offer: ${priced.appliedTitle}` : "Offer applied"}
+            className="font-mono font-semibold hover:opacity-80"
+          >
+            <span className="text-emerald-700">{formatMoney(priced.finalCents)}</span>
+            <span className="ml-2 text-xs font-normal text-muted line-through">
+              {formatMoney(effective)}
+            </span>
+          </button>
         ) : (
           <button
             type="button"

@@ -62,16 +62,35 @@ export default async function PortalCatalogPage() {
                     <p className="mt-1 text-xs text-muted">
                       {p.sku} · {p.unitSize} / {p.unit}
                     </p>
-                    <div className="mt-3 flex items-baseline gap-2">
-                      <span className="font-mono text-lg font-semibold text-brand-deep">
-                        {formatMoney(p.effectiveCents)}
-                      </span>
-                      {p.isCustomPrice && (
-                        <span className="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-deep">
-                          Your price
-                        </span>
+                    <div className="mt-3 flex flex-wrap items-baseline gap-2">
+                      {p.discounted ? (
+                        <>
+                          <span className="font-mono text-lg font-semibold text-emerald-700">
+                            {formatMoney(p.finalCents)}
+                          </span>
+                          <span className="font-mono text-sm text-muted line-through">
+                            {formatMoney(p.effectiveCents)}
+                          </span>
+                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
+                            Offer
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-mono text-lg font-semibold text-brand-deep">
+                            {formatMoney(p.effectiveCents)}
+                          </span>
+                          {p.isCustomPrice && (
+                            <span className="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-deep">
+                              Your price
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
+                    {p.discounted && p.appliedOfferTitle && (
+                      <p className="mt-1 text-xs text-emerald-700">{p.appliedOfferTitle}</p>
+                    )}
                   </div>
                 </div>
               ))}
