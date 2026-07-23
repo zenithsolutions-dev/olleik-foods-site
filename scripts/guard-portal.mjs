@@ -6,12 +6,19 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOTS = ["src/app/portal", "src/lib/portal"];
-// Match imports/usages of the service-role client, not incidental words.
+// Match imports/usages of the service-role client, not incidental words —
+// plus the ADMIN-ONLY cost/margin modules (0006): cost prices and margin rules
+// must never be reachable from portal code, even via a pure import.
 const FORBIDDEN = [
   /from\s+["'][^"']*lib\/supabase\/admin["']/,
   /getAdminClient/,
   /service_role/,
   /SUPABASE_SERVICE_ROLE_KEY/,
+  /from\s+["'][^"']*lib\/admin\/pricing-engine["']/,
+  /from\s+["'][^"']*lib\/admin\/pricing-data["']/,
+  /product_costs/,
+  /pricing_rules/,
+  /customer_product_pricing_meta/,
 ];
 
 function walk(dir) {

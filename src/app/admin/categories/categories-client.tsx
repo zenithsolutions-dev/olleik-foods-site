@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Plus } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Plus, CornerDownRight } from "lucide-react";
 import type { Category } from "@/lib/admin/types";
 import { createCategory, updateCategory, deleteCategory } from "./actions";
 
@@ -16,17 +16,44 @@ export function CategoriesClient({
 }) {
   const [newName, setNewName] = useState("");
   const [newDesc, setNewDesc] = useState("");
+  const [newParent, setNewParent] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editDesc, setEditDesc] = useState("");
+  const [editParent, setEditParent] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Tree ordering: each top-level category followed by its children (indented).
+  const ordered = useMemo(() => {
+    const parents = categories.filter((c) => !c.parentId);
+    const childrenOf = (id: string) => categories.filter((c) => c.parentId === id);
+    const rows: { cat: Category; depth: 0 | 1 }[] = [];
+    for (const p of parents) {
+      rows.push({ cat: p, depth: 0 });
+      for (const child of childrenOf(p.id)) rows.push({ cat: child, depth: 1 });
+    }
+    // Orphans (parent missing) fall back to top level.
+    for (const c of categories) {
+      if (c.parentId && !categories.some((x) => x.id === c.parentId)) {
+        rows.push({ cat: c, depth: 0 });
+      }
+    }
+    return rows;
+  }, [categories]);
+
+  // Valid parents: top-level categories only (one level of nesting), and a
+  // category that has children can't be moved under another.
+  const hasChildren = (id: string) => categories.some((c) => c.parentId === id);
+  const parentOptions = (selfId: string | null) =>
+    categories.filter((c) => !c.parentId && c.id !== selfId);
 
   function startEdit(c: Category) {
     setError(null);
     setEditingId(c.id);
     setEditName(c.name);
     setEditDesc(c.description ?? "");
+    setEditParent(c.parentId ?? "");
   }
 
   async function run(action: () => Promise<{ ok: true } | { ok: false; message: string }>) {
@@ -46,11 +73,16 @@ export function CategoriesClient({
     const name = newName.trim();
     if (!name) return;
     const ok = await run(() =>
-      createCategory({ name, description: newDesc.trim() || undefined }),
+      createCategory({
+        name,
+        description: newDesc.trim() || undefined,
+        parentId: newParent || null,
+      }),
     );
     if (ok) {
       setNewName("");
       setNewDesc("");
+      setNewParent("");
     }
   }
 
@@ -59,17 +91,22 @@ export function CategoriesClient({
       updateCategory(c.id, {
         name: editName.trim() || c.name,
         description: editDesc.trim() || undefined,
+        parentId: editParent || null,
       }),
     );
     if (ok) setEditingId(null);
   }
 
   async function handleDelete(c: Category) {
-    // Client-side guard mirrors the server guard for a faster message.
+    // Client-side guards mirror the server guards for a faster message.
     if ((counts[c.id] ?? 0) > 0) {
       setError(
         `Can't delete "${c.name}" — ${counts[c.id]} product${counts[c.id] === 1 ? "" : "s"} still use it. Reassign them first.`,
       );
+      return;
+    }
+    if (hasChildren(c.id)) {
+      setError(`Can't delete "${c.name}" — it still has subcategories. Move or delete them first.`);
       return;
     }
     if (!window.confirm(`Delete "${c.name}"?`)) return;
@@ -108,17 +145,38 @@ export function CategoriesClient({
                   </td>
                 </tr>
               )}
-              {categories.map((c) => (
+              {ordered.map(({ cat: c, depth }) => (
                 <tr key={c.id} className="border-b border-[var(--border)] last:border-0">
                   <td className="px-4 py-3">
                     {editingId === c.id ? (
-                      <input
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        className="w-full rounded-md border border-[var(--border)] bg-background px-2 py-1 text-sm"
-                      />
+                      <div className="space-y-1.5">
+                        <input
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          className="w-full rounded-md border border-[var(--border)] bg-background px-2 py-1 text-sm"
+                        />
+                        {/* Parent select: hidden while this category has children
+                            (it must stay top-level; the server enforces too). */}
+                        {!hasChildren(c.id) && (
+                          <select
+                            value={editParent}
+                            onChange={(e) => setEditParent(e.target.value)}
+                            className="w-full rounded-md border border-[var(--border)] bg-background px-2 py-1 text-xs"
+                          >
+                            <option value="">Top-level category</option>
+                            {parentOptions(c.id).map((p) => (
+                              <option key={p.id} value={p.id}>
+                                Under: {p.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
                     ) : (
-                      <span className="font-medium">{c.name}</span>
+                      <span className={`font-medium ${depth === 1 ? "inline-flex items-center gap-1.5 pl-4 text-foreground/85" : ""}`}>
+                        {depth === 1 && <CornerDownRight size={12} className="text-muted-soft" />}
+                        {c.name}
+                      </span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-muted">
@@ -196,6 +254,25 @@ export function CategoriesClient({
                 placeholder="Buns, baguettes, focaccia…"
                 className="mt-1 w-full rounded-lg border border-[var(--border)] bg-background px-3 py-2 text-sm"
               />
+            </div>
+            <div>
+              <label className="text-[11px] font-medium uppercase tracking-wider text-muted">Parent category (optional)</label>
+              <select
+                value={newParent}
+                onChange={(e) => setNewParent(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-[var(--border)] bg-background px-3 py-2 text-sm"
+              >
+                <option value="">Top-level category</option>
+                {parentOptions(null).map((p) => (
+                  <option key={p.id} value={p.id}>
+                    Under: {p.name}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-[11px] text-muted-soft">
+                One level only — e.g. Dairy &gt; Cheese. Margin rules on a parent apply to its
+                subcategories unless the subcategory has its own rule.
+              </p>
             </div>
             <button
               type="submit"

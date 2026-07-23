@@ -12,16 +12,19 @@ import {
   uploadProductImageAction,
   type ProductInput,
 } from "./actions";
+import { setProductCost } from "../pricing/actions";
 
 const UNITS: ProductUnit[] = ["case", "bag", "lb", "kg", "gal", "L", "ea", "box"];
 
 export function ProductsClient({
   products,
   categories,
+  costs,
   live,
 }: {
   products: Product[];
   categories: Category[];
+  costs: Record<string, number>; // productId -> cost_cents (admin-only data)
   live: boolean;
 }) {
   const [query, setQuery] = useState("");
@@ -63,17 +66,36 @@ export function ProductsClient({
     setFormError(null);
   }
 
-  async function handleSave(values: ProductInput) {
+  async function handleSave(values: ProductInput, costCents: number | null) {
     setSaving(true);
     setFormError(null);
-    const result = editing
-      ? await updateProduct(editing.id, values)
-      : await createProduct(values);
-    setSaving(false);
-    if (!result.ok) {
-      setFormError(result.message);
-      return;
+    let productId = editing?.id ?? null;
+    if (editing) {
+      const result = await updateProduct(editing.id, values);
+      if (!result.ok) {
+        setSaving(false);
+        setFormError(result.message);
+        return;
+      }
+    } else {
+      const result = await createProduct(values);
+      if (!result.ok) {
+        setSaving(false);
+        setFormError(result.message);
+        return;
+      }
+      productId = result.id;
     }
+    // Cost lives in the admin-only product_costs table (never on products).
+    if (productId && costCents !== (editing ? (costs[editing.id] ?? null) : null)) {
+      const costResult = await setProductCost(productId, costCents);
+      if (!costResult.ok) {
+        setSaving(false);
+        setFormError(`Product saved, but the cost was not: ${costResult.message}`);
+        return;
+      }
+    }
+    setSaving(false);
     closeModal();
   }
 
@@ -140,7 +162,9 @@ export function ProductsClient({
               <th className="px-4 py-3">Product</th>
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Unit</th>
+              <th className="px-4 py-3 text-right">Cost</th>
               <th className="px-4 py-3 text-right">List price</th>
+              <th className="px-4 py-3 text-right">Profit @ list</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3" />
             </tr>
@@ -148,12 +172,15 @@ export function ProductsClient({
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-muted">
+                <td colSpan={9} className="px-4 py-10 text-center text-muted">
                   No products match.
                 </td>
               </tr>
             )}
-            {filtered.map((p) => (
+            {filtered.map((p) => {
+              const cost = costs[p.id] ?? null;
+              const profitAtList = cost != null ? p.listPriceCents - cost : null;
+              return (
               <tr key={p.id} className="border-b border-[var(--border)] last:border-0 hover:bg-brand-mist/30">
                 <td className="px-4 py-3 font-mono text-xs text-muted">{p.sku}</td>
                 <td className="px-4 py-3">
@@ -166,7 +193,21 @@ export function ProductsClient({
                 <td className="px-4 py-3 text-muted">
                   {p.unitSize} <span className="text-muted-soft">/ {p.unit}</span>
                 </td>
+                <td className="px-4 py-3 text-right font-mono text-muted" title={cost == null ? "No cost set — edit the product to add one" : undefined}>
+                  {cost != null ? formatMoney(cost) : "—"}
+                </td>
                 <td className="px-4 py-3 text-right font-mono">{formatMoney(p.listPriceCents)}</td>
+                <td
+                  className={`px-4 py-3 text-right font-mono ${
+                    profitAtList == null
+                      ? "text-muted-soft"
+                      : profitAtList >= 0
+                        ? "text-emerald-700"
+                        : "text-red-700"
+                  }`}
+                >
+                  {profitAtList != null ? formatMoney(profitAtList) : "—"}
+                </td>
                 <td className="px-4 py-3">
                   {p.isActive ? (
                     <span className="inline-flex rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-deep">
@@ -188,7 +229,8 @@ export function ProductsClient({
                   </button>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -197,6 +239,7 @@ export function ProductsClient({
       {(creating || editing) && (
         <ProductFormModal
           initial={editing}
+          initialCostCents={editing ? (costs[editing.id] ?? null) : null}
           categories={categories}
           saving={saving}
           error={formError}
@@ -219,6 +262,7 @@ export function ProductsClient({
 
 function ProductFormModal({
   initial,
+  initialCostCents,
   categories,
   saving,
   error,
@@ -227,11 +271,12 @@ function ProductFormModal({
   onDeactivate,
 }: {
   initial: Product | null;
+  initialCostCents: number | null;
   categories: Category[];
   saving: boolean;
   error: string | null;
   onClose: () => void;
-  onSave: (values: ProductInput) => void;
+  onSave: (values: ProductInput, costCents: number | null) => void;
   onDeactivate?: () => void;
 }) {
   const [name, setName] = useState(initial?.name ?? "");
@@ -244,6 +289,9 @@ function ProductFormModal({
   const [unitSize, setUnitSize] = useState(initial?.unitSize ?? "");
   const [listPriceDollars, setListPriceDollars] = useState(
     initial ? (initial.listPriceCents / 100).toFixed(2) : "",
+  );
+  const [costDollars, setCostDollars] = useState(
+    initialCostCents != null ? (initialCostCents / 100).toFixed(2) : "",
   );
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
   const [imageUrl, setImageUrl] = useState<string | null>(initial?.imageUrl ?? null);
@@ -283,17 +331,24 @@ function ProductFormModal({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const cents = Math.max(0, Math.round(parseFloat(listPriceDollars || "0") * 100));
-    onSave({
-      sku: sku.trim(),
-      name: name.trim(),
-      description: description.trim() || undefined,
-      categoryId: categoryId || null,
-      unit,
-      unitSize: unitSize.trim(),
-      listPriceCents: cents,
-      isActive,
-      imageUrl,
-    });
+    const costCents =
+      costDollars.trim() === ""
+        ? null
+        : Math.max(0, Math.round(parseFloat(costDollars) * 100));
+    onSave(
+      {
+        sku: sku.trim(),
+        name: name.trim(),
+        description: description.trim() || undefined,
+        categoryId: categoryId || null,
+        unit,
+        unitSize: unitSize.trim(),
+        listPriceCents: cents,
+        isActive,
+        imageUrl,
+      },
+      costCents,
+    );
   }
 
   return (
@@ -400,6 +455,17 @@ function ProductFormModal({
               value={listPriceDollars}
               onChange={(e) => setListPriceDollars(e.target.value)}
               required
+              className={inputCls}
+            />
+          </Field>
+          <Field label="Purchase cost ($ — admin only, never shown to customers)">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={costDollars}
+              onChange={(e) => setCostDollars(e.target.value)}
+              placeholder="Leave blank if unknown"
               className={inputCls}
             />
           </Field>

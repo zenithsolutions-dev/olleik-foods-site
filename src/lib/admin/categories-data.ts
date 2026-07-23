@@ -7,7 +7,12 @@ import { SEED_DATA } from "./mock-data";
 // per-category product-count map (used for the list + the delete guard's UX).
 // `counts` is keyed by category id.
 
-type CategoryRow = { id: string; name: string; description: string | null };
+type CategoryRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  parent_id: string | null;
+};
 
 export type AdminCategories = {
   categories: Category[];
@@ -35,7 +40,7 @@ export async function fetchAdminCategories(): Promise<AdminCategories> {
   const [catsRes, prodRes] = await Promise.all([
     admin
       .from("categories")
-      .select("id, name, description")
+      .select("id, name, description, parent_id")
       .order("name", { ascending: true }),
     admin.from("products").select("category_id"),
   ]);
@@ -56,6 +61,7 @@ export async function fetchAdminCategories(): Promise<AdminCategories> {
     id: r.id,
     name: r.name,
     description: r.description ?? undefined,
+    parentId: r.parent_id,
   }));
 
   return { categories, counts, live: true };

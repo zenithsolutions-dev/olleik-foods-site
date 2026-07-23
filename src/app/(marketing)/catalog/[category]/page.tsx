@@ -101,11 +101,39 @@ export default async function CategoryPage({
           </div>
 
           {data.products.length > 0 ? (
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {data.products.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
+            data.children.length > 0 ? (
+              // Parent category (D4): its own products first, then each
+              // subcategory under its own subheading. Still price-free.
+              <div className="mt-10 space-y-12">
+                {data.ownProducts.length > 0 && (
+                  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    {data.ownProducts.map((p) => (
+                      <ProductCard key={p.id} product={p} />
+                    ))}
+                  </div>
+                )}
+                {data.children
+                  .filter((sub) => sub.products.length > 0)
+                  .map((sub) => (
+                    <div key={sub.id}>
+                      <h3 className="font-display text-xl font-semibold tracking-tight text-brand-deep">
+                        {sub.name}
+                      </h3>
+                      <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        {sub.products.map((p) => (
+                          <ProductCard key={p.id} product={p} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {data.products.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            )
           ) : (
             <div className="mt-10 rounded-3xl border border-dashed border-[var(--border-strong)] bg-surface p-8 text-center">
               <p className="text-[15px] leading-relaxed text-muted">

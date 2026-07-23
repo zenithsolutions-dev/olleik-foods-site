@@ -8,6 +8,11 @@ import {
 import { fetchAdminProducts } from "@/lib/admin/products-data";
 import { fetchAdminCategories } from "@/lib/admin/categories-data";
 import { fetchAdminOfferTemplates } from "@/lib/admin/offer-templates-data";
+import {
+  fetchPricingRules,
+  fetchProductCosts,
+  fetchPricingMeta,
+} from "@/lib/admin/pricing-data";
 
 export const dynamic = "force-dynamic";
 
@@ -19,14 +24,25 @@ export default async function CustomerDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [{ detail, live }, { products }, { categories }, { customers, counts }, { templates }] =
-    await Promise.all([
-      fetchAdminCustomer(id),
-      fetchAdminProducts(),
-      fetchAdminCategories(),
-      fetchAdminCustomers(),
-      fetchAdminOfferTemplates(),
-    ]);
+  const [
+    { detail, live },
+    { products },
+    { categories },
+    { customers, counts },
+    { templates },
+    { costs },
+    { rules },
+    pricingMeta,
+  ] = await Promise.all([
+    fetchAdminCustomer(id),
+    fetchAdminProducts(),
+    fetchAdminCategories(),
+    fetchAdminCustomers(),
+    fetchAdminOfferTemplates(),
+    fetchProductCosts(),
+    fetchPricingRules(),
+    fetchPricingMeta(id),
+  ]);
 
   // Copy-catalog source candidates: other non-archived customers, with their
   // assigned-product count (so the picker can show "N products").
@@ -59,6 +75,9 @@ export default async function CustomerDetailPage({
       activation={activation}
       copySources={copySources}
       offerTemplates={templates}
+      costs={costs}
+      pricingRules={rules}
+      pricingMeta={pricingMeta}
       live={live}
     />
   );
