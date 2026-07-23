@@ -5,6 +5,8 @@ import { headers } from "next/headers";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { indexRules, resolveWithIndex, type RuleIndex } from "@/lib/admin/pricing-engine";
+import { fetchPricingRules } from "@/lib/admin/pricing-data";
 import type {
   CustomerStatus,
   OfferDiscountKind,
@@ -23,6 +25,106 @@ function revalidate(customerId?: string) {
   revalidatePath("/admin/customers");
   if (customerId) revalidatePath(`/admin/customers/${customerId}`);
   revalidatePath("/admin"); // dashboard customer count
+}
+
+// ---------- Cost-engine helpers (0006) ----------
+// Pricing context for the waterfall: costs, active rules, category parents, and
+// product list prices/categories. Loaded once per action that needs to price.
+type PricingCtx = {
+  idx: RuleIndex;
+  costs: Map<string, number>;
+  parentOf: Map<string, string | null>;
+  productInfo: Map<string, { listPriceCents: number; categoryId: string | null }>;
+};
+
+async function loadPricingCtx(
+  admin: SupabaseClient,
+  productIds: string[],
+): Promise<PricingCtx> {
+  const [{ data: prodRows }, { data: catRows }, { data: costRows }, { rules }] = await Promise.all([
+    productIds.length
+      ? admin.from("products").select("id, list_price_cents, category_id").in("id", productIds)
+      : Promise.resolve({ data: [] as never[] }),
+    admin.from("categories").select("id, parent_id"),
+    admin.from("product_costs").select("product_id, cost_cents"),
+    fetchPricingRules(),
+  ]);
+  return {
+    idx: indexRules(rules),
+    costs: new Map(
+      ((costRows as { product_id: string; cost_cents: number }[]) ?? []).map((r) => [r.product_id, r.cost_cents]),
+    ),
+    parentOf: new Map(
+      ((catRows as { id: string; parent_id: string | null }[]) ?? []).map((c) => [c.id, c.parent_id]),
+    ),
+    productInfo: new Map(
+      ((prodRows as { id: string; list_price_cents: number; category_id: string | null }[]) ?? []).map((p) => [
+        p.id,
+        { listPriceCents: p.list_price_cents, categoryId: p.category_id },
+      ]),
+    ),
+  };
+}
+
+// Resolve one product for one customer via the waterfall (no manual price).
+// Returns the stored price (null = inherit list) + meta fields.
+function priceViaRules(ctx: PricingCtx, customerId: string, productId: string) {
+  const info = ctx.productInfo.get(productId);
+  if (!info) return null;
+  const resolved = resolveWithIndex({
+    idx: ctx.idx,
+    customerId,
+    categoryId: info.categoryId,
+    parentCategoryId: info.categoryId ? (ctx.parentOf.get(info.categoryId) ?? null) : null,
+    costCents: ctx.costs.get(productId) ?? null,
+    listPriceCents: info.listPriceCents,
+    manualPriceCents: null,
+  });
+  return {
+    priceCents: resolved.source === "list" ? null : resolved.priceCents,
+    marginPercent: resolved.marginPercent,
+    ruleScope:
+      resolved.source === "customer-margin"
+        ? ("customer" as const)
+        : resolved.source === "category-margin"
+          ? ("category" as const)
+          : resolved.source === "global-margin"
+            ? ("global" as const)
+            : null,
+  };
+}
+
+// Stamp provenance for assignment rows (deny-all meta table; best-effort — a
+// meta failure never blocks the price write, it only degrades recompute skips).
+async function stampMeta(
+  admin: SupabaseClient,
+  rows: {
+    customer_id: string;
+    product_id: string;
+    price_source: "manual" | "computed";
+    margin_percent?: number | null;
+    rule_scope?: "global" | "category" | "customer" | null;
+  }[],
+): Promise<void> {
+  if (rows.length === 0) return;
+  const nowIso = new Date().toISOString();
+  const { error } = await admin
+    .from("customer_product_pricing_meta")
+    .upsert(rows.map((r) => ({ ...r, computed_at: nowIso })), {
+      onConflict: "customer_id,product_id",
+    });
+  if (error) console.error("[admin] pricing meta stamp failed (run migration 0006?):", error.message);
+}
+
+// Clear provenance (used when a price is cleared back to "inherit list").
+async function clearMeta(admin: SupabaseClient, customerId: string, productIds: string[]) {
+  if (productIds.length === 0) return;
+  const { error } = await admin
+    .from("customer_product_pricing_meta")
+    .delete()
+    .eq("customer_id", customerId)
+    .in("product_id", productIds);
+  if (error) console.error("[admin] pricing meta clear failed:", error.message);
 }
 
 // ---------------- Customers ----------------
@@ -507,8 +609,10 @@ export async function convertLeadsToCustomers(leadIds: string[]): Promise<Conver
 
 // ---------------- Per-customer pricing (customer_products) ----------------
 
-// Bulk-assign products at list price (price_cents = null). ignoreDuplicates so
-// re-adding never clobbers an existing custom price.
+// Bulk-assign products, PRICED VIA THE WATERFALL at assign time (0006): margin
+// rules produce a concrete price; no cost / no rules keeps the old behavior
+// (price_cents = null = list). ignoreDuplicates so re-adding never clobbers an
+// existing assignment or its price.
 export async function assignProducts(
   customerId: string,
   productIds: string[],
@@ -519,18 +623,45 @@ export async function assignProducts(
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
 
-  const rows = productIds.map((productId) => ({
-    customer_id: customerId,
-    product_id: productId,
-    price_cents: null,
-  }));
-  const { error } = await admin
+  const ctx = await loadPricingCtx(admin, productIds);
+  const priced = productIds
+    .map((productId) => ({ productId, r: priceViaRules(ctx, customerId, productId) }))
+    .filter((x): x is { productId: string; r: NonNullable<ReturnType<typeof priceViaRules>> } => x.r != null);
+
+  // Only rows that don't exist yet get inserted (ignoreDuplicates), so meta must
+  // also only cover the NEW rows — read what exists first.
+  const { data: existingRows } = await admin
     .from("customer_products")
-    .upsert(rows, { onConflict: "customer_id,product_id", ignoreDuplicates: true });
+    .select("product_id")
+    .eq("customer_id", customerId)
+    .in("product_id", productIds);
+  const existing = new Set(
+    ((existingRows as { product_id: string }[]) ?? []).map((r) => r.product_id),
+  );
+  const fresh = priced.filter((x) => !existing.has(x.productId));
+
+  const { error } = await admin.from("customer_products").upsert(
+    fresh.map((x) => ({
+      customer_id: customerId,
+      product_id: x.productId,
+      price_cents: x.r.priceCents,
+    })),
+    { onConflict: "customer_id,product_id", ignoreDuplicates: true },
+  );
   if (error) {
     console.error("[admin] assign products failed:", error.message);
     return { ok: false, message: "Could not add the products. Please try again." };
   }
+  await stampMeta(
+    admin,
+    fresh.map((x) => ({
+      customer_id: customerId,
+      product_id: x.productId,
+      price_source: "computed" as const,
+      margin_percent: x.r.marginPercent,
+      rule_scope: x.r.ruleScope,
+    })),
+  );
   revalidate(customerId);
   return { ok: true };
 }
@@ -558,6 +689,15 @@ export async function setCustomerProductPrice(
   if (error) {
     console.error("[admin] set customer price failed:", error.message);
     return { ok: false, message: "Could not update the price. Please try again." };
+  }
+  // Provenance: a typed price is MANUAL (protected from recompute); clearing it
+  // (null = inherit list) removes provenance so the row is recompute-eligible.
+  if (priceCents != null) {
+    await stampMeta(admin, [
+      { customer_id: customerId, product_id: productId, price_source: "manual" },
+    ]);
+  } else {
+    await clearMeta(admin, customerId, [productId]);
   }
   revalidate(customerId);
   return { ok: true };
@@ -588,7 +728,9 @@ export async function removeCustomerProduct(
 // prices) onto this customer. Inactive/deleted products are always skipped.
 //   mode "merge"     -> add products the target lacks; keep existing rows + prices
 //   mode "overwrite" -> DESTRUCTIVE: replace the target's entire catalog
-//   prices "copy"    -> bring the source's custom prices; "list" -> null (list price)
+//   prices "copy"    -> bring the source's prices as-is (meta 'manual' — bespoke)
+//   prices "list"    -> D2: price via the TARGET customer's margin waterfall
+//                       (meta 'computed'; null/list only when nothing applies)
 export type CopyCatalogResult =
   | { ok: true; copied: number; skipped: number; mode: "merge" | "overwrite" }
   | { ok: false; message: string };
@@ -625,14 +767,45 @@ export async function copyCatalogFromCustomer(
   const eligible = all.filter((r) => r.products && r.products.is_active);
   const skipped = all.length - eligible.length;
 
-  const mapRow = (r: SrcRow) => ({
-    customer_id: targetCustomerId,
-    product_id: r.product_id,
-    price_cents: options.prices === "copy" ? r.price_cents : null,
-  });
+  // D2: "list" mode prices via the TARGET's waterfall; "copy" carries the
+  // source price verbatim. Meta records which, so recompute protects copies.
+  const ctx =
+    options.prices === "list"
+      ? await loadPricingCtx(admin, eligible.map((r) => r.product_id))
+      : null;
+
+  const mapRow = (r: SrcRow) => {
+    if (options.prices === "copy") {
+      return { customer_id: targetCustomerId, product_id: r.product_id, price_cents: r.price_cents };
+    }
+    const priced = ctx ? priceViaRules(ctx, targetCustomerId, r.product_id) : null;
+    return {
+      customer_id: targetCustomerId,
+      product_id: r.product_id,
+      price_cents: priced?.priceCents ?? null,
+    };
+  };
+  const metaFor = (r: SrcRow) => {
+    if (options.prices === "copy") {
+      return {
+        customer_id: targetCustomerId,
+        product_id: r.product_id,
+        price_source: "manual" as const,
+      };
+    }
+    const priced = ctx ? priceViaRules(ctx, targetCustomerId, r.product_id) : null;
+    return {
+      customer_id: targetCustomerId,
+      product_id: r.product_id,
+      price_source: "computed" as const,
+      margin_percent: priced?.marginPercent ?? null,
+      rule_scope: priced?.ruleScope ?? null,
+    };
+  };
 
   if (options.mode === "overwrite") {
     // Destructive: wipe the target's catalog (and its custom prices) first.
+    // (Meta rows cascade-delete via the composite FK.)
     const { error: delErr } = await admin
       .from("customer_products")
       .delete()
@@ -647,6 +820,7 @@ export async function copyCatalogFromCustomer(
         console.error("[admin] copy catalog: insert failed:", insErr.message);
         return { ok: false, message: "Cleared the catalog but the copy failed. Please re-copy." };
       }
+      await stampMeta(admin, eligible.map(metaFor));
     }
     revalidate(targetCustomerId);
     return { ok: true, copied: eligible.length, skipped, mode: "overwrite" };
@@ -673,6 +847,7 @@ export async function copyCatalogFromCustomer(
       console.error("[admin] copy catalog: merge failed:", upErr.message);
       return { ok: false, message: "Could not copy the products. Please try again." };
     }
+    await stampMeta(admin, fresh.map(metaFor));
   }
   revalidate(targetCustomerId);
   return { ok: true, copied: fresh.length, skipped, mode: "merge" };
@@ -680,11 +855,13 @@ export async function copyCatalogFromCustomer(
 
 // Apply one pricing operation to many of a customer's assigned products at once.
 // The effective-price rule is unchanged (COALESCE(custom, list)); this only
-// writes price_cents (a flat value, a %-off-list value, or null = revert).
+// writes price_cents. set/percentOff produce MANUAL prices (protected from
+// recompute); "reprice" (D3, formerly "clear") re-runs the margin waterfall and
+// stores computed prices (null when only the list price applies).
 export type BulkPriceOp =
   | { kind: "set"; priceCents: number } // flat price for all selected
   | { kind: "percentOff"; percent: number } // % off EACH product's own list price
-  | { kind: "clear" }; // revert to list price (price_cents = null)
+  | { kind: "clear" }; // REPRICE BY RULES (waterfall; null when nothing applies)
 
 export type BulkPriceResult = { ok: true; updated: number } | { ok: false; message: string };
 
@@ -700,6 +877,7 @@ export async function bulkUpdateCustomerPrices(
   if (!admin) return { ok: false, message: "Supabase is not configured." };
 
   let rows: { customer_id: string; product_id: string; price_cents: number | null }[];
+  let metaRows: Parameters<typeof stampMeta>[1] = [];
 
   if (op.kind === "set") {
     if (!Number.isInteger(op.priceCents) || op.priceCents < 0) {
@@ -710,12 +888,38 @@ export async function bulkUpdateCustomerPrices(
       product_id,
       price_cents: op.priceCents,
     }));
-  } else if (op.kind === "clear") {
-    rows = productIds.map((product_id) => ({
-      customer_id: customerId,
-      product_id,
-      price_cents: null,
+    metaRows = rows.map((r) => ({
+      customer_id: r.customer_id,
+      product_id: r.product_id,
+      price_source: "manual" as const,
     }));
+  } else if (op.kind === "clear") {
+    // D3: reprice via the waterfall (margin rules); rows where only the list
+    // price applies store null (inherit list) and drop their provenance.
+    const ctx = await loadPricingCtx(admin, productIds);
+    const priced = productIds
+      .map((product_id) => ({ product_id, r: priceViaRules(ctx, customerId, product_id) }))
+      .filter((x): x is { product_id: string; r: NonNullable<ReturnType<typeof priceViaRules>> } => x.r != null);
+    rows = priced.map((x) => ({
+      customer_id: customerId,
+      product_id: x.product_id,
+      price_cents: x.r.priceCents,
+    }));
+    metaRows = priced
+      .filter((x) => x.r.priceCents != null)
+      .map((x) => ({
+        customer_id: customerId,
+        product_id: x.product_id,
+        price_source: "computed" as const,
+        margin_percent: x.r.marginPercent,
+        rule_scope: x.r.ruleScope,
+      }));
+    // Rows that resolved to plain list lose their provenance entirely.
+    await clearMeta(
+      admin,
+      customerId,
+      priced.filter((x) => x.r.priceCents == null).map((x) => x.product_id),
+    );
   } else {
     if (
       typeof op.percent !== "number" ||
@@ -744,6 +948,11 @@ export async function bulkUpdateCustomerPrices(
         product_id,
         price_cents: Math.max(0, Math.round(listById.get(product_id)! * (1 - op.percent / 100))),
       }));
+    metaRows = rows.map((r) => ({
+      customer_id: r.customer_id,
+      product_id: r.product_id,
+      price_source: "manual" as const,
+    }));
   }
 
   const { error } = await admin
@@ -753,6 +962,7 @@ export async function bulkUpdateCustomerPrices(
     console.error("[admin] bulk price update failed:", error.message);
     return { ok: false, message: "Could not update the prices. Please try again." };
   }
+  await stampMeta(admin, metaRows);
   revalidate(customerId);
   return { ok: true, updated: rows.length };
 }

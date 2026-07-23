@@ -90,8 +90,8 @@ export function CopyCatalogModal({
 
             <fieldset className="space-y-2">
               <legend className="text-xs font-medium uppercase tracking-wider text-muted">Prices</legend>
-              <Radio name="prices" checked={prices === "copy"} onChange={() => setPrices("copy")} label="Copy custom prices as-is" />
-              <Radio name="prices" checked={prices === "list"} onChange={() => setPrices("list")} label="Assign at list price (no custom prices)" />
+              <Radio name="prices" checked={prices === "copy"} onChange={() => setPrices("copy")} label="Copy custom prices as-is (kept as manual prices)" />
+              <Radio name="prices" checked={prices === "list"} onChange={() => setPrices("list")} label="Price by this customer's rules (margin waterfall; list price when no rule applies)" />
             </fieldset>
 
             {mode === "overwrite" ? (

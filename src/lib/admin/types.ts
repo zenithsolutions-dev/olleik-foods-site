@@ -8,6 +8,9 @@ export type Category = {
   id: ID;
   name: string;
   description?: string;
+  // One-level nesting (0006): null/undefined = top-level. A category with a
+  // parent can never itself be a parent (enforced in category actions).
+  parentId?: ID | null;
 };
 
 // "Unit" describes how the product is sold to restaurants — case, lb, gallon, etc.
@@ -127,6 +130,30 @@ export type Lead = {
   monthlyVolume?: string;
   convertedCustomerId?: ID | null;
 };
+
+// ---------- Cost & profit engine (0006) — ADMIN-ONLY data ----------
+// These mirror deny-all tables (product_costs, pricing_rules,
+// customer_product_pricing_meta). They must never be sent to portal/public
+// code paths.
+
+export type PricingRuleScope = "global" | "category" | "customer";
+
+export type PricingRule = {
+  id: ID;
+  scope: PricingRuleScope;
+  categoryId: ID | null; // set when scope='category'
+  customerId: ID | null; // set when scope='customer'
+  marginPercent: number; // markup on cost, 0–500, up to 2 decimals
+  // Category rules only: true = "Overrides customer margins" (priority tier in
+  // the waterfall). Always false for global/customer scopes.
+  isPriority: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// How a stored customer_products.price_cents was produced.
+export type PriceSource = "manual" | "computed";
 
 export type AdminState = {
   categories: Category[];

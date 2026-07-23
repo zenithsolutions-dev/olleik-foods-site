@@ -81,7 +81,9 @@ export async function fetchMyCatalog(): Promise<PortalCategoryGroup[]> {
         .select(
           "price_cents, products(id, name, sku, unit, unit_size, image_url, category_id, list_price_cents, is_active)",
         ),
-      supabase.from("categories").select("id, name"),
+      // parent_id is taxonomy only (0006) — used to label subcategory groups as
+      // "Parent · Child". No pricing data lives on categories.
+      supabase.from("categories").select("id, name, parent_id"),
       supabase
         .from("customer_offers")
         .select("title, product_id, discount_kind, discount_value, starts_at, ends_at, is_active")
@@ -106,7 +108,15 @@ export async function fetchMyCatalog(): Promise<PortalCategoryGroup[]> {
   }));
   const now = new Date();
 
-  const catName = new Map((cats ?? []).map((c) => [c.id as string, c.name as string]));
+  type CatMeta = { id: string; name: string; parent_id: string | null };
+  const catMeta = new Map(((cats as CatMeta[] | null) ?? []).map((c) => [c.id, c]));
+  // Subcategory groups display as "Parent · Child".
+  const groupLabel = (categoryId: string): string => {
+    const c = catMeta.get(categoryId);
+    if (!c) return "Other";
+    const parent = c.parent_id ? catMeta.get(c.parent_id) : null;
+    return parent ? `${parent.name} · ${c.name}` : c.name;
+  };
   const groups = new Map<string, PortalCategoryGroup>();
 
   for (const r of (cpRows as unknown as CpRow[]) ?? []) {
@@ -116,7 +126,7 @@ export async function fetchMyCatalog(): Promise<PortalCategoryGroup[]> {
     if (!groups.has(key)) {
       groups.set(key, {
         id: key,
-        name: p.category_id ? (catName.get(p.category_id) ?? "Other") : "Other",
+        name: p.category_id ? groupLabel(p.category_id) : "Other",
         products: [],
       });
     }

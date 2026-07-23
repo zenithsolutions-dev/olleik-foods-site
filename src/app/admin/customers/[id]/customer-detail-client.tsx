@@ -6,8 +6,18 @@ import { ArrowLeft, Pencil, Plus, X, RotateCcw, Copy, Search } from "lucide-reac
 import { formatMoney } from "@/lib/admin/store";
 import { formatDiscount } from "@/lib/admin/offers-format";
 import { applyOffersToPrice, offerAppliesToProduct } from "@/lib/pricing";
-import type { Category, Offer, OfferDiscountKind, OfferTemplate, Product } from "@/lib/admin/types";
+import type {
+  Category,
+  Offer,
+  OfferDiscountKind,
+  OfferTemplate,
+  PricingRule,
+  Product,
+} from "@/lib/admin/types";
 import type { AssignedProduct, CustomerDetail, Activation } from "@/lib/admin/customers-data";
+import type { PricingMeta } from "@/lib/admin/pricing-data";
+import { RecomputeModal } from "./recompute-modal";
+import { upsertPricingRule, togglePricingRule } from "../../pricing/actions";
 import { CustomerFormModal } from "../customers-client";
 import { InviteControls } from "../invite-controls";
 import { OnboardingChecklist } from "./onboarding-checklist";
@@ -45,6 +55,9 @@ export function CustomerDetailClient({
   activation,
   copySources,
   offerTemplates,
+  costs,
+  pricingRules,
+  pricingMeta,
   live,
 }: {
   detail: CustomerDetail;
@@ -53,6 +66,9 @@ export function CustomerDetailClient({
   activation: Activation;
   copySources: CopySource[];
   offerTemplates: OfferTemplate[];
+  costs: Record<string, number>; // productId -> cost_cents (admin-only)
+  pricingRules: PricingRule[];
+  pricingMeta: Record<string, PricingMeta>; // productId -> provenance
   live: boolean;
 }) {
   const { customer, assigned, offers } = detail;
@@ -62,6 +78,7 @@ export function CustomerDetailClient({
   const [addProductPickerOpen, setAddProductPickerOpen] = useState(false);
   const [copyOpen, setCopyOpen] = useState(false);
   const [applyTemplateOpen, setApplyTemplateOpen] = useState(false);
+  const [recomputeOpen, setRecomputeOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [notice, setNotice] = useState<string | null>(null);
   const [offerModal, setOfferModal] = useState<{ open: boolean; offer: Offer | null }>({
@@ -138,6 +155,111 @@ export function CustomerDetailClient({
     }
     return map;
   }, [assigned, offers]);
+
+  // ---- Cost/profit per assigned row (admin-only data; 0006) ----
+  // Source chip: meta provenance when present; otherwise the rollout default
+  // (non-null stored price = Manual, null = List).
+  const rowPricing = useMemo(() => {
+    const map: Record<
+      string,
+      { costCents: number | null; profitCents: number | null; sourceChip: string }
+    > = {};
+    for (const a of assigned) {
+      const effective = a.priceCents ?? a.listPriceCents;
+      const costCents = costs[a.productId] ?? null;
+      const meta = pricingMeta[a.productId];
+      let sourceChip: string;
+      if (meta) {
+        if (meta.priceSource === "manual") sourceChip = "Manual";
+        else {
+          const pct = meta.marginPercent != null ? ` ${meta.marginPercent}%` : "";
+          sourceChip =
+            meta.ruleScope === "customer"
+              ? `Cust${pct}`
+              : meta.ruleScope === "category"
+                ? `Cat${pct}`
+                : meta.ruleScope === "global"
+                  ? `Global${pct}`
+                  : "List";
+        }
+      } else {
+        sourceChip = a.priceCents != null ? "Manual" : "List";
+      }
+      map[a.productId] = {
+        costCents,
+        profitCents: costCents != null ? effective - costCents : null,
+        sourceChip,
+      };
+    }
+    return map;
+  }, [assigned, costs, pricingMeta]);
+
+  const totals = useMemo(() => {
+    let sale = 0,
+      cost = 0,
+      profit = 0,
+      withCost = 0;
+    for (const a of assigned) {
+      const effective = a.priceCents ?? a.listPriceCents;
+      sale += effective;
+      const c = costs[a.productId];
+      if (c != null) {
+        cost += c;
+        profit += effective - c;
+        withCost++;
+      }
+    }
+    return { sale, cost, profit, withCost };
+  }, [assigned, costs]);
+
+  const customerMarginRule = useMemo(
+    () => pricingRules.find((r) => r.scope === "customer" && r.customerId === customer.id) ?? null,
+    [pricingRules, customer.id],
+  );
+
+  // CSV of exactly what the admin sees in the assigned-products table.
+  function exportCsv() {
+    const esc = (v: string | number | null | undefined) => {
+      const s = v == null ? "" : String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const header = [
+      "Product",
+      "SKU",
+      "Category",
+      "Cost",
+      "List price",
+      "Customer price",
+      "Price source",
+      "Profit",
+      "After offer",
+    ];
+    const lines = assigned.map((a) => {
+      const rp = rowPricing[a.productId];
+      const op = offerPriceByProduct[a.productId];
+      const effective = a.priceCents ?? a.listPriceCents;
+      return [
+        esc(a.name),
+        esc(a.sku),
+        esc((a.categoryId ? catById[a.categoryId] : undefined) ?? ""),
+        esc(rp?.costCents != null ? (rp.costCents / 100).toFixed(2) : ""),
+        esc((a.listPriceCents / 100).toFixed(2)),
+        esc((effective / 100).toFixed(2)),
+        esc(rp?.sourceChip ?? ""),
+        esc(rp?.profitCents != null ? (rp.profitCents / 100).toFixed(2) : ""),
+        esc(op?.discounted ? (op.finalCents / 100).toFixed(2) : ""),
+      ].join(",");
+    });
+    const blob = new Blob([[header.join(","), ...lines].join("\n")], {
+      type: "text/csv;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${customer.businessName.replace(/[^\w-]+/g, "-")}-pricing.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
 
   const isArchived = customer.status === "archived";
 
@@ -315,6 +437,19 @@ export function CustomerDetailClient({
         onAssignClick={() => setAddProductPickerOpen(true)}
       />
 
+      {/* Customer margin (D7: also editable centrally on /admin/pricing) */}
+      <MarginCard
+        customerName={customer.businessName}
+        rule={customerMarginRule}
+        busy={busy}
+        onSave={(pct) =>
+          run(() =>
+            upsertPricingRule({ scope: "customer", customerId: customer.id, marginPercent: pct }),
+          )
+        }
+        onToggle={(rule) => run(() => togglePricingRule(rule.id, !rule.isActive))}
+      />
+
       {/* Quick info cards */}
       <div className="grid gap-4 sm:grid-cols-4">
         <InfoCard label="Status" value={customer.status} />
@@ -355,7 +490,21 @@ export function CustomerDetailClient({
               Only these products are visible to this customer in their portal. Override pricing per product as needed.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={exportCsv}
+              className="rounded-full border border-[var(--border-strong)] bg-surface px-3 py-2 text-xs font-medium text-foreground/80 hover:border-accent hover:text-accent-deep"
+            >
+              Export CSV
+            </button>
+            <button
+              type="button"
+              onClick={() => setRecomputeOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-surface px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent hover:text-accent-deep"
+            >
+              <RotateCcw size={14} /> Recompute prices
+            </button>
             <button
               type="button"
               onClick={() => setCopyOpen(true)}
@@ -405,9 +554,11 @@ export function CustomerDetailClient({
                 </th>
                 <th className="px-6 py-3">Product</th>
                 <th className="px-6 py-3">Category</th>
-                <th className="px-6 py-3 text-right">List price</th>
-                <th className="px-6 py-3 text-right">Customer price</th>
-                <th className="px-6 py-3" />
+                <th className="px-4 py-3 text-right">Cost</th>
+                <th className="px-4 py-3 text-right">List</th>
+                <th className="px-4 py-3 text-right">Customer price</th>
+                <th className="px-4 py-3 text-right">Profit</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
@@ -416,6 +567,7 @@ export function CustomerDetailClient({
                   key={a.productId}
                   row={a}
                   priced={offerPriceByProduct[a.productId]}
+                  pricing={rowPricing[a.productId]}
                   categoryName={(a.categoryId ? catById[a.categoryId] : undefined) ?? "—"}
                   busy={busy}
                   selected={selected.has(a.productId)}
@@ -429,6 +581,26 @@ export function CustomerDetailClient({
                 />
               ))}
             </tbody>
+            <tfoot>
+              <tr className="border-t-2 border-[var(--border-strong)] bg-brand-mist/30 font-semibold">
+                <td className="px-6 py-3" colSpan={3}>
+                  Totals ({assigned.length} products
+                  {totals.withCost < assigned.length
+                    ? `, ${assigned.length - totals.withCost} without cost`
+                    : ""}
+                  )
+                </td>
+                <td className="px-4 py-3 text-right font-mono">{formatMoney(totals.cost)}</td>
+                <td className="px-4 py-3" />
+                <td className="px-4 py-3 text-right font-mono">{formatMoney(totals.sale)}</td>
+                <td
+                  className={`px-4 py-3 text-right font-mono ${totals.profit >= 0 ? "text-emerald-700" : "text-red-700"}`}
+                >
+                  {formatMoney(totals.profit)}
+                </td>
+                <td className="px-4 py-3" />
+              </tr>
+            </tfoot>
           </table>
         )}
       </section>
@@ -563,7 +735,120 @@ export function CustomerDetailClient({
           onApply={handleApplyTemplate}
         />
       )}
+
+      {recomputeOpen && (
+        <RecomputeModal
+          customerId={customer.id}
+          customerName={customer.businessName}
+          onClose={() => setRecomputeOpen(false)}
+          onApplied={(updated) => {
+            setRecomputeOpen(false);
+            setNotice(`Recomputed ${updated} price${updated === 1 ? "" : "s"} from the current rules.`);
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+// Per-customer margin (markup on cost). Beaten only by manual prices and
+// priority category rules; 0% = sell at cost. Also manageable on /admin/pricing.
+function MarginCard({
+  customerName,
+  rule,
+  busy,
+  onSave,
+  onToggle,
+}: {
+  customerName: string;
+  rule: PricingRule | null;
+  busy: boolean;
+  onSave: (pct: number) => Promise<boolean>;
+  onToggle: (rule: PricingRule) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(rule ? String(rule.marginPercent) : "");
+
+  return (
+    <section className="rounded-2xl border border-[var(--border)] bg-surface p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-display text-base font-semibold text-brand-deep">Customer margin</h2>
+          <p className="mt-0.5 text-xs text-muted">
+            {customerName}&apos;s markup on cost. Manual prices and priority category rules still win.
+            After changing it, run Recompute to apply to existing prices.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {rule && !editing && (
+            <>
+              <span
+                className={`font-mono text-lg font-semibold ${rule.isActive ? "text-brand-deep" : "text-muted line-through"}`}
+              >
+                cost + {rule.marginPercent}%
+              </span>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => onToggle(rule)}
+                className="text-xs font-medium text-muted hover:text-foreground disabled:opacity-50"
+              >
+                {rule.isActive ? "Turn off" : "Turn on"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setValue(String(rule.marginPercent));
+                  setEditing(true);
+                }}
+                className="text-xs font-medium text-brand hover:text-accent"
+              >
+                Edit
+              </button>
+            </>
+          )}
+          {!rule && !editing && (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="rounded-full border border-[var(--border-strong)] px-4 py-1.5 text-xs font-semibold text-foreground/80 hover:border-accent"
+            >
+              Set a margin
+            </button>
+          )}
+          {editing && (
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min="0"
+                max="500"
+                step="0.01"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder="15"
+                className="w-24 rounded-lg border border-[var(--border)] bg-background px-2 py-1.5 text-right font-mono text-sm"
+                autoFocus
+              />
+              <span className="text-sm text-muted">%</span>
+              <button
+                type="button"
+                disabled={busy || value.trim() === ""}
+                onClick={async () => {
+                  const ok = await onSave(parseFloat(value));
+                  if (ok) setEditing(false);
+                }}
+                className="rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-deep disabled:opacity-50"
+              >
+                Save
+              </button>
+              <button type="button" onClick={() => setEditing(false)} className="text-xs text-muted">
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -593,6 +878,7 @@ function InfoCard({ label, value }: { label: string; value: string }) {
 function CustomerProductRow({
   row,
   priced,
+  pricing,
   categoryName,
   busy,
   selected,
@@ -602,6 +888,7 @@ function CustomerProductRow({
 }: {
   row: AssignedProduct;
   priced?: { finalCents: number; discounted: boolean; originalCents: number; appliedTitle: string | null };
+  pricing?: { costCents: number | null; profitCents: number | null; sourceChip: string };
   categoryName: string;
   busy: boolean;
   selected: boolean;
@@ -640,8 +927,11 @@ function CustomerProductRow({
         </p>
       </td>
       <td className="px-6 py-3 text-muted">{categoryName}</td>
-      <td className="px-6 py-3 text-right font-mono text-muted">{formatMoney(row.listPriceCents)}</td>
-      <td className="px-6 py-3 text-right">
+      <td className="px-4 py-3 text-right font-mono text-muted">
+        {pricing?.costCents != null ? formatMoney(pricing.costCents) : "—"}
+      </td>
+      <td className="px-4 py-3 text-right font-mono text-muted">{formatMoney(row.listPriceCents)}</td>
+      <td className="px-4 py-3 text-right">
         {editing ? (
           <div className="inline-flex items-center gap-1">
             <span className="text-xs text-muted">$</span>
@@ -705,7 +995,37 @@ function CustomerProductRow({
           </button>
         )}
       </td>
-      <td className="px-6 py-3 text-right">
+      <td className="px-4 py-3 text-right">
+        {pricing?.profitCents == null ? (
+          <span className="text-xs text-muted-soft" title="No cost set for this product">
+            —
+          </span>
+        ) : (
+          <div>
+            <p
+              className={`font-mono font-semibold ${
+                pricing.profitCents >= 0 ? "text-emerald-700" : "text-red-700"
+              }`}
+            >
+              {formatMoney(pricing.profitCents)}
+            </p>
+            {/* Which waterfall tier priced this row */}
+            <p className="text-[10px] uppercase tracking-wider text-muted-soft">{pricing.sourceChip}</p>
+            {/* Realized profit when an active offer discounts the price */}
+            {priced?.discounted && pricing.costCents != null && (
+              <p
+                className={`text-[10px] ${
+                  priced.finalCents - pricing.costCents < 0 ? "font-semibold text-red-700" : "text-amber-700"
+                }`}
+              >
+                after offer: {formatMoney(priced.finalCents - pricing.costCents)}
+                {priced.finalCents - pricing.costCents < 0 && " (below cost!)"}
+              </p>
+            )}
+          </div>
+        )}
+      </td>
+      <td className="px-4 py-3 text-right">
         <button
           type="button"
           disabled={busy}
@@ -768,7 +1088,7 @@ function BulkPriceBar({
       >
         <option value="set">Set flat price</option>
         <option value="percentOff">% off list</option>
-        <option value="clear">Clear custom price</option>
+        <option value="clear">Reprice by rules</option>
       </select>
       {kind !== "clear" && (
         <div className="inline-flex items-center gap-1">

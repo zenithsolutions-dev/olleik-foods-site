@@ -73,7 +73,11 @@ export async function uploadProductImageAction(
   return uploadProductImage(file);
 }
 
-export async function createProduct(input: ProductInput): Promise<ActionResult> {
+// Returns the new product's id on success so the caller can attach admin-only
+// data (e.g. the purchase cost via setProductCost) in the same flow.
+export type CreateProductResult = { ok: true; id: string } | { ok: false; message: string };
+
+export async function createProduct(input: ProductInput): Promise<CreateProductResult> {
   await requireAdmin();
   const invalid = validate(input);
   if (invalid) return { ok: false, message: invalid };
@@ -81,14 +85,14 @@ export async function createProduct(input: ProductInput): Promise<ActionResult> 
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
 
-  const { error } = await admin.from("products").insert(toRow(input));
-  if (error) {
-    if (error.code === "23505") return { ok: false, message: "That SKU is already in use." };
-    console.error("[admin] create product failed:", error.message);
+  const { data, error } = await admin.from("products").insert(toRow(input)).select("id").single();
+  if (error || !data) {
+    if (error?.code === "23505") return { ok: false, message: "That SKU is already in use." };
+    console.error("[admin] create product failed:", error?.message);
     return { ok: false, message: "Could not create the product. Please try again." };
   }
   revalidate();
-  return { ok: true };
+  return { ok: true, id: data.id as string };
 }
 
 export async function updateProduct(

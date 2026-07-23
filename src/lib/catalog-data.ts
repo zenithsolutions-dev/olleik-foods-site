@@ -10,10 +10,11 @@ import { SEED_DATA } from "./admin/mock-data";
 // price ever leaves the database on this path. Olleik shows negotiated pricing
 // only after sign-in.
 
-// list_price_cents is intentionally NOT in this list.
+// list_price_cents is intentionally NOT in this list. parent_id (0006) is pure
+// taxonomy — still no price/cost data on this path.
 const PRODUCT_COLUMNS =
   "id, name, description, category_id, unit, unit_size, image_url, is_active";
-const CATEGORY_COLUMNS = "id, name, description";
+const CATEGORY_COLUMNS = "id, name, description, parent_id";
 
 export type PublicProduct = {
   id: string;
@@ -24,12 +25,25 @@ export type PublicProduct = {
   imageUrl: string | null;
 };
 
+export type PublicSubcategory = {
+  id: string;
+  name: string;
+  products: PublicProduct[];
+};
+
 export type PublicCategory = {
   id: string;
   slug: string;
   name: string;
   description: string | null;
+  parentId: string | null;
+  // For a PARENT: own products + all children's products (so tiles/counts and
+  // the empty check cover the whole tree). For a child: just its own.
   products: PublicProduct[];
+  // Present on parents that have subcategories: own products first (as
+  // ownProducts) then each child, for the subheading layout on the detail page.
+  ownProducts: PublicProduct[];
+  children: PublicSubcategory[];
 };
 
 export type PublicCatalog = {
@@ -37,7 +51,7 @@ export type PublicCatalog = {
   live: boolean;
 };
 
-type CatRow = { id: string; name: string; description: string | null };
+type CatRow = { id: string; name: string; description: string | null; parent_id: string | null };
 type ProdRow = {
   id: string;
   name: string;
@@ -64,13 +78,22 @@ function group(cats: CatRow[], prods: ProdRow[]): PublicCategory[] {
     if (arr) arr.push(item);
     else byCat.set(p.category_id, [item]);
   }
-  return cats.map((c) => ({
-    id: c.id,
-    slug: slugify(c.name),
-    name: c.name,
-    description: c.description,
-    products: byCat.get(c.id) ?? [],
-  }));
+  return cats.map((c) => {
+    const own = byCat.get(c.id) ?? [];
+    const children: PublicSubcategory[] = cats
+      .filter((child) => child.parent_id === c.id)
+      .map((child) => ({ id: child.id, name: child.name, products: byCat.get(child.id) ?? [] }));
+    return {
+      id: c.id,
+      slug: slugify(c.name),
+      name: c.name,
+      description: c.description,
+      parentId: c.parent_id,
+      products: [...own, ...children.flatMap((ch) => ch.products)],
+      ownProducts: own,
+      children,
+    };
+  });
 }
 
 // Fallback used only when Supabase isn't configured (local/preview without env).
@@ -81,6 +104,7 @@ function buildFromSeed(): PublicCategory[] {
     id: c.id,
     name: c.name,
     description: c.description ?? null,
+    parent_id: c.parentId ?? null,
   }));
   const prods: ProdRow[] = SEED_DATA.products
     .filter((p) => p.isActive)
@@ -123,9 +147,11 @@ export async function fetchPublicCatalog(): Promise<PublicCatalog> {
   return { categories: group(cats as CatRow[], prods as ProdRow[]), live: true };
 }
 
-/** Categories that have at least one active product — for the index/homepage. */
+/** TOP-LEVEL categories with at least one active product (own or in a child) —
+ *  for the index/homepage tiles. Subcategories don't get their own tiles; their
+ *  products roll up into the parent (D4). */
 export function visibleCategories(catalog: PublicCatalog): PublicCategory[] {
-  return catalog.categories.filter((c) => c.products.length > 0);
+  return catalog.categories.filter((c) => !c.parentId && c.products.length > 0);
 }
 
 /** Resolve a slug to a category, including real-but-empty ones (for the detail page). */

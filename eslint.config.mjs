@@ -36,12 +36,27 @@ const eslintConfig = defineConfig([
               message:
                 "Portal code must not construct a Supabase client directly. Use @/lib/supabase/server (session-bound, RLS-enforced).",
             },
+            {
+              name: "@/lib/admin/pricing-engine",
+              message:
+                "Portal code must never import the cost/margin pricing engine — customers only ever see the final price_cents.",
+            },
+            {
+              name: "@/lib/admin/pricing-data",
+              message:
+                "Portal code must never read cost/margin data — those tables are admin-only (deny-all RLS).",
+            },
           ],
           patterns: [
             {
               group: ["**/lib/supabase/admin", "**/supabase/admin"],
               message:
                 "Portal code must not import the service-role admin client. Use @/lib/supabase/server.",
+            },
+            {
+              group: ["**/lib/admin/pricing-engine", "**/lib/admin/pricing-data"],
+              message:
+                "Portal code must never import cost/margin pricing modules — customers only ever see the final price_cents.",
             },
           ],
         },

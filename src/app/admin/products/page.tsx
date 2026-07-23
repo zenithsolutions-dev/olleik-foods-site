@@ -1,13 +1,15 @@
 import { ProductsClient } from "./products-client";
 import { fetchAdminProducts } from "@/lib/admin/products-data";
 import { fetchAdminCategories } from "@/lib/admin/categories-data";
+import { fetchProductCosts } from "@/lib/admin/pricing-data";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProductsPage() {
-  const [{ products, live }, { categories }] = await Promise.all([
+  const [{ products, live }, { categories }, { costs }] = await Promise.all([
     fetchAdminProducts(),
     fetchAdminCategories(),
+    fetchProductCosts(),
   ]);
 
   return (
@@ -25,7 +27,7 @@ export default async function ProductsPage() {
           </p>
         </div>
       </header>
-      <ProductsClient products={products} categories={categories} live={live} />
+      <ProductsClient products={products} categories={categories} costs={costs} live={live} />
     </div>
   );
 }
