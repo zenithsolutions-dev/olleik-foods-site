@@ -198,7 +198,10 @@ export function CustomerDetailClient({
     let sale = 0,
       cost = 0,
       profit = 0,
-      withCost = 0;
+      withCost = 0,
+      // Sale value of rows with no recorded cost — in `sale` but excluded from
+      // `cost`/`profit`. Surfaced in the footer so the row reconciles.
+      noCostSale = 0;
     for (const a of assigned) {
       const effective = a.priceCents ?? a.listPriceCents;
       sale += effective;
@@ -207,9 +210,11 @@ export function CustomerDetailClient({
         cost += c;
         profit += effective - c;
         withCost++;
+      } else {
+        noCostSale += effective;
       }
     }
-    return { sale, cost, profit, withCost };
+    return { sale, cost, profit, withCost, noCostSale };
   }, [assigned, costs]);
 
   const customerMarginRule = useMemo(
@@ -590,13 +595,26 @@ export function CustomerDetailClient({
                     : ""}
                   )
                 </td>
-                <td className="px-4 py-3 text-right font-mono">{formatMoney(totals.cost)}</td>
+                <td className="px-4 py-3 text-right font-mono">
+                  {formatMoney(totals.cost)}
+                  {totals.withCost < assigned.length && (
+                    <span className="block text-[10px] font-normal text-muted-soft">
+                      on {totals.withCost} of {assigned.length}
+                    </span>
+                  )}
+                </td>
                 <td className="px-4 py-3" />
                 <td className="px-4 py-3 text-right font-mono">{formatMoney(totals.sale)}</td>
                 <td
                   className={`px-4 py-3 text-right font-mono ${totals.profit >= 0 ? "text-emerald-700" : "text-red-700"}`}
                 >
                   {formatMoney(totals.profit)}
+                  {/* Reconciles the row: sale − cost − excluded = profit. */}
+                  {totals.noCostSale > 0 && (
+                    <span className="block text-[10px] font-normal text-muted-soft">
+                      excl. {formatMoney(totals.noCostSale)}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3" />
               </tr>

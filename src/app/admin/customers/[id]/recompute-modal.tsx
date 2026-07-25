@@ -53,6 +53,8 @@ export function RecomputeModal({
 
   const ok = preview?.ok ? preview : null;
   const changed = ok ? ok.rows.filter((r) => r.willChange) : [];
+  // Cost is untouched by a recompute, so the revenue delta IS the profit delta.
+  const revenueDelta = ok ? ok.newTotalCents - ok.oldTotalCents : 0;
 
   return (
     <div
@@ -103,19 +105,30 @@ export function RecomputeModal({
 
         {ok && (
           <>
-            <div className="mt-5 grid gap-3 rounded-xl border border-[var(--border)] bg-brand-mist/30 p-4 sm:grid-cols-4">
+            {/* Revenue Δ and profit Δ are always identical here (cost doesn't
+                change), so they're shown as one figure instead of two
+                suspicious-looking duplicates. */}
+            <div className="mt-5 grid gap-3 rounded-xl border border-[var(--border)] bg-brand-mist/30 p-4 sm:grid-cols-3">
               <Stat label="Will change" value={String(ok.willChange)} />
               <Stat label="Skipped (manual)" value={String(ok.skippedManual)} />
               <Stat
-                label="Revenue Δ"
-                value={`${ok.newTotalCents - ok.oldTotalCents >= 0 ? "+" : "−"}${formatMoney(Math.abs(ok.newTotalCents - ok.oldTotalCents))}`}
-              />
-              <Stat
-                label="Profit Δ"
-                value={`${ok.newProfitCents - ok.oldProfitCents >= 0 ? "+" : "−"}${formatMoney(Math.abs(ok.newProfitCents - ok.oldProfitCents))}`}
-                accent={ok.newProfitCents - ok.oldProfitCents >= 0 ? "green" : "red"}
+                label="Revenue & profit Δ"
+                value={`${revenueDelta >= 0 ? "+" : "−"}${formatMoney(Math.abs(revenueDelta))}`}
+                accent={revenueDelta >= 0 ? "green" : "red"}
+                note="cost is unchanged, so both move by the same amount"
               />
             </div>
+
+            {/* Applying margin rules LOWERS prices whenever list prices carry a
+                bigger markup than the rule. Impossible to miss now. */}
+            {revenueDelta < 0 && (
+              <p className="mt-3 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-xs text-amber-900">
+                ⚠️ This will <span className="font-semibold">lower</span> the price of{" "}
+                {ok.willChange} product{ok.willChange === 1 ? "" : "s"} by a total of{" "}
+                <span className="font-semibold">{formatMoney(Math.abs(revenueDelta))}</span>. Your
+                list prices are higher than cost + the margin being applied.
+              </p>
+            )}
 
             {changed.length === 0 ? (
               <p className="mt-4 rounded-xl border border-dashed border-[var(--border)] p-6 text-center text-sm text-muted">
@@ -202,7 +215,17 @@ export function RecomputeModal({
   );
 }
 
-function Stat({ label, value, accent }: { label: string; value: string; accent?: "green" | "red" }) {
+function Stat({
+  label,
+  value,
+  accent,
+  note,
+}: {
+  label: string;
+  value: string;
+  accent?: "green" | "red";
+  note?: string;
+}) {
   return (
     <div>
       <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">{label}</p>
@@ -213,6 +236,7 @@ function Stat({ label, value, accent }: { label: string; value: string; accent?:
       >
         {value}
       </p>
+      {note && <p className="mt-0.5 text-[10px] leading-tight text-muted-soft">{note}</p>}
     </div>
   );
 }
