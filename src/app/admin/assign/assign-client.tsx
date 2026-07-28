@@ -96,7 +96,12 @@ export function AssignClient({
       costTotal = 0,
       profitTotal = 0,
       willAssign = 0,
-      skipExisting = 0;
+      skipExisting = 0,
+      // Rows with no recorded cost: counted in saleTotal but NOT in costTotal /
+      // profitTotal. Surfaced so the four figures reconcile on screen
+      // (sale - cost - noCostSale = profit) instead of looking like bad math.
+      noCostRows = 0,
+      noCostSaleTotal = 0;
 
     for (const customerId of selectedCustomers) {
       const rows: PreviewRow[] = [];
@@ -136,12 +141,24 @@ export function AssignClient({
           if (costCents != null) {
             costTotal += costCents;
             profitTotal += row.priceCents - costCents;
+          } else {
+            noCostRows++;
+            noCostSaleTotal += row.priceCents;
           }
         }
       }
       byCustomer.set(customerId, rows);
     }
-    return { byCustomer, saleTotal, costTotal, profitTotal, willAssign, skipExisting };
+    return {
+      byCustomer,
+      saleTotal,
+      costTotal,
+      profitTotal,
+      willAssign,
+      skipExisting,
+      noCostRows,
+      noCostSaleTotal,
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCustomers, selectedProducts, excluded, idx, costs, existing, productById]);
 
@@ -358,17 +375,40 @@ export function AssignClient({
             </button>
           </header>
 
-          {/* Grand totals */}
-          <div className="grid gap-3 border-b border-[var(--border)] px-5 py-4 sm:grid-cols-4">
+          {/* Grand totals. The "no cost" figure is shown so the numbers
+              reconcile on screen: sale − cost − noCost = profit. Without it the
+              three headline figures look like broken arithmetic. */}
+          <div
+            className={`grid gap-3 border-b border-[var(--border)] px-5 py-4 ${
+              preview.noCostRows > 0 ? "sm:grid-cols-5" : "sm:grid-cols-4"
+            }`}
+          >
             <Total label="Will assign" value={String(preview.willAssign)} />
             <Total label="Total sale value" value={formatMoney(preview.saleTotal)} />
             <Total label="Total cost" value={formatMoney(preview.costTotal)} />
+            {preview.noCostRows > 0 && (
+              <Total
+                label="No cost recorded"
+                value={formatMoney(preview.noCostSaleTotal)}
+                accent="muted"
+              />
+            )}
             <Total
               label="Total profit"
               value={formatMoney(preview.profitTotal)}
               accent={preview.profitTotal >= 0 ? "green" : "red"}
             />
           </div>
+          {preview.noCostRows > 0 && (
+            <p className="border-b border-[var(--border)] bg-brand-mist/20 px-5 py-2 text-xs text-muted">
+              sale value − cost − no-cost = profit ·{" "}
+              <span className="font-medium text-foreground">
+                {preview.noCostRows} row{preview.noCostRows === 1 ? "" : "s"}
+              </span>{" "}
+              have no cost recorded, so they are excluded from the cost and profit figures. Add
+              their cost on the Products page to see the real profit.
+            </p>
+          )}
           {preview.skipExisting > 0 && (
             <p className="border-b border-[var(--border)] px-5 py-2 text-xs text-muted">
               {preview.skipExisting} pair{preview.skipExisting === 1 ? " is" : "s are"} already
@@ -480,13 +520,27 @@ export function AssignClient({
   );
 }
 
-function Total({ label, value, accent }: { label: string; value: string; accent?: "green" | "red" }) {
+function Total({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: "green" | "red" | "muted";
+}) {
   return (
     <div>
       <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">{label}</p>
       <p
         className={`mt-0.5 font-mono text-lg font-semibold ${
-          accent === "green" ? "text-emerald-700" : accent === "red" ? "text-red-700" : "text-brand-deep"
+          accent === "green"
+            ? "text-emerald-700"
+            : accent === "red"
+              ? "text-red-700"
+              : accent === "muted"
+                ? "text-muted"
+                : "text-brand-deep"
         }`}
       >
         {value}

@@ -29,6 +29,9 @@ export function ProductsClient({
 }) {
   const [query, setQuery] = useState("");
   const [activeCat, setActiveCat] = useState<string>("all");
+  // "missing" narrows the list to ACTIVE products with no cost recorded — the
+  // one thing that silently blocks margins and profit from working.
+  const [costFilter, setCostFilter] = useState<"all" | "missing">("all");
   const [editing, setEditing] = useState<Product | null>(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -39,10 +42,17 @@ export function ProductsClient({
     [categories],
   );
 
+  // Inactive products are ignored: they're hidden from customers anyway.
+  const missingCostCount = useMemo(
+    () => products.filter((p) => p.isActive && costs[p.id] == null).length,
+    [products, costs],
+  );
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return products.filter((p) => {
       if (activeCat !== "all" && p.categoryId !== activeCat) return false;
+      if (costFilter === "missing" && !(p.isActive && costs[p.id] == null)) return false;
       if (!q) return true;
       return (
         p.name.toLowerCase().includes(q) ||
@@ -50,7 +60,7 @@ export function ProductsClient({
         (p.categoryId ? (catLookup[p.categoryId] ?? "") : "").toLowerCase().includes(q)
       );
     });
-  }, [products, query, activeCat, catLookup]);
+  }, [products, query, activeCat, costFilter, costs, catLookup]);
 
   function openCreate() {
     setFormError(null);
@@ -118,6 +128,29 @@ export function ProductsClient({
           Showing demo seed data — Supabase isn&apos;t configured, so changes
           won&apos;t persist.
         </p>
+      )}
+
+      {/* Missing-cost banner: without a cost, margin rules can't price a product
+          and its profit can't be calculated. Disappears once every active
+          product has a cost. */}
+      {missingCostCount > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-900">
+          <span>
+            <span className="font-semibold">
+              {missingCostCount} active product{missingCostCount === 1 ? "" : "s"}
+            </span>{" "}
+            {missingCostCount === 1 ? "has" : "have"} no purchase cost — margin rules can&apos;t
+            price {missingCostCount === 1 ? "it" : "them"} and {missingCostCount === 1 ? "its" : "their"}{" "}
+            profit shows as &quot;—&quot;.
+          </span>
+          <button
+            type="button"
+            onClick={() => setCostFilter(costFilter === "missing" ? "all" : "missing")}
+            className="shrink-0 rounded-full border border-amber-300 bg-white/70 px-3 py-1 font-semibold text-amber-900 hover:border-amber-500"
+          >
+            {costFilter === "missing" ? "Show all products" : "Show only these"}
+          </button>
+        </div>
       )}
 
       {/* Toolbar */}
