@@ -111,6 +111,21 @@ check("5. non-priority product beats non-priority category + global", () => {
   assert.deepEqual(r, { priceCents: 1250, source: "product-margin", marginPercent: 25, priority: false });
 });
 
+check("5b. FETTA REGRESSION: prod 50% vs cat 40%, neither priority -> $3.00 Prod", () => {
+  // Exact live-bug numbers (2026-07-29): cost $2.00, product rule 50%
+  // non-priority, category rule 40% non-priority, no customer margin.
+  // The product rule must win: $2.00 * 1.5 = $3.00, chip "Prod 50%".
+  const r = resolveCustomerPriceCents({
+    ...base,
+    costCents: 200,
+    listPriceCents: 1000,
+    productMargin: { percent: 50, priority: false },
+    categoryMargin: { percent: 40, priority: false },
+  });
+  assert.deepEqual(r, { priceCents: 300, source: "product-margin", marginPercent: 50, priority: false });
+  assert.equal(marginSourceLabel(r), "Prod 50%");
+});
+
 check("6. child category beats parent category", () => {
   const r = resolveCustomerPriceCents({
     ...base,

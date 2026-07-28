@@ -173,15 +173,31 @@ export async function upsertPricingRule(input: PricingRuleInput): Promise<Action
     updated_at: new Date().toISOString(),
   };
 
-  const { error } = existing
-    ? await admin.from("pricing_rules").update(row).eq("id", existing.id)
-    : await admin.from("pricing_rules").insert(row);
-  if (error) {
-    if (error.code === "23505") {
+  // Write, then READ BACK — a rule that silently fails to persist produces
+  // wrong prices with no trace (live incident 2026-07-29), so persistence is
+  // verified explicitly and failures name their likely cause.
+  const { data: saved, error } = existing
+    ? await admin.from("pricing_rules").update(row).eq("id", existing.id).select("id, scope").maybeSingle()
+    : await admin.from("pricing_rules").insert(row).select("id, scope").maybeSingle();
+  if (error || !saved || saved.scope !== input.scope) {
+    if (error?.code === "23505") {
       return { ok: false, message: "A rule for that target already exists — edit it instead." };
     }
-    console.error("[admin] save pricing rule failed:", error.message);
-    return { ok: false, message: "Could not save the rule. Please try again." };
+    if (error?.code === "23514") {
+      return {
+        ok: false,
+        message:
+          "The database rejected this rule shape — migration 0007 has probably not been applied yet. Run it, then retry.",
+      };
+    }
+    if (error?.code === "42703" || error?.code === "42P01") {
+      return {
+        ok: false,
+        message: "The pricing tables are out of date — run migration 0007, then retry.",
+      };
+    }
+    console.error("[admin] save pricing rule failed:", error?.code ?? "row not persisted");
+    return { ok: false, message: "Could not save the rule — it was NOT persisted. Please retry." };
   }
 
   const swept = await autoRecomputeForScope(admin, scopeForRule(row));
