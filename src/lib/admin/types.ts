@@ -136,16 +136,17 @@ export type Lead = {
 // customer_product_pricing_meta). They must never be sent to portal/public
 // code paths.
 
-export type PricingRuleScope = "global" | "category" | "customer";
+export type PricingRuleScope = "global" | "category" | "customer" | "product";
 
 export type PricingRule = {
   id: ID;
   scope: PricingRuleScope;
   categoryId: ID | null; // set when scope='category'
   customerId: ID | null; // set when scope='customer'
+  productId: ID | null; // set when scope='product' (0007)
   marginPercent: number; // markup on cost, 0–500, up to 2 decimals
-  // Category rules only: true = "Overrides customer margins" (priority tier in
-  // the waterfall). Always false for global/customer scopes.
+  // Category and product rules only: true = "Overrides customer margins"
+  // (priority tier in the waterfall). Always false for global/customer scopes.
   isPriority: boolean;
   isActive: boolean;
   createdAt: string;

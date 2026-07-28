@@ -4,6 +4,8 @@ import { fetchAdminCategories } from "@/lib/admin/categories-data";
 import { fetchProductCosts } from "@/lib/admin/pricing-data";
 
 export const dynamic = "force-dynamic";
+// D6: cost/rule saves from this page trigger autopilot price sweeps.
+export const maxDuration = 60;
 
 export default async function ProductsPage() {
   const [{ products, live }, { categories }, { costs }] = await Promise.all([

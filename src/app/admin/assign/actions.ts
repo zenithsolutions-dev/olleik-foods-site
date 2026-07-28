@@ -75,7 +75,8 @@ export async function bulkAssignToCustomers(input: {
     product_id: string;
     price_source: "computed";
     margin_percent: number | null;
-    rule_scope: "global" | "category" | "customer" | null;
+    rule_scope: "global" | "category" | "customer" | "product" | null;
+    is_priority: boolean;
     computed_at: string;
   };
   const rows: Row[] = [];
@@ -93,6 +94,7 @@ export async function bulkAssignToCustomers(input: {
       const resolved = resolveWithIndex({
         idx,
         customerId,
+        productId: p.id,
         categoryId: p.category_id,
         parentCategoryId: p.category_id ? (parentOf.get(p.category_id) ?? null) : null,
         costCents: costs.get(p.id) ?? null,
@@ -112,13 +114,16 @@ export async function bulkAssignToCustomers(input: {
         price_source: "computed",
         margin_percent: resolved.marginPercent,
         rule_scope:
-          resolved.source === "customer-margin"
-            ? "customer"
-            : resolved.source === "category-margin"
-              ? "category"
-              : resolved.source === "global-margin"
-                ? "global"
-                : null,
+          resolved.source === "product-margin"
+            ? "product"
+            : resolved.source === "customer-margin"
+              ? "customer"
+              : resolved.source === "category-margin"
+                ? "category"
+                : resolved.source === "global-margin"
+                  ? "global"
+                  : null,
+        is_priority: resolved.priority,
         computed_at: nowIso,
       });
     }

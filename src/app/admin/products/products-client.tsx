@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { Plus, Search, ImagePlus } from "lucide-react";
+import { Plus, Search, ImagePlus, AlertTriangle } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
 import type { Category, Product, ProductUnit } from "@/lib/admin/types";
 import {
@@ -13,6 +13,7 @@ import {
   type ProductInput,
 } from "./actions";
 import { setProductCost } from "../pricing/actions";
+import { profitOnCost, saleFromCostAndMargin } from "@/lib/admin/pricing-engine";
 
 const UNITS: ProductUnit[] = ["case", "bag", "lb", "kg", "gal", "L", "ea", "box"];
 
@@ -36,6 +37,7 @@ export function ProductsClient({
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const catLookup = useMemo(
     () => Object.fromEntries(categories.map((c) => [c.id, c.name])),
@@ -80,6 +82,8 @@ export function ProductsClient({
     setSaving(true);
     setFormError(null);
     let productId = editing?.id ?? null;
+    let swept = 0; // CP-1 autopilot: prices auto-updated by this save
+    let warning: string | undefined;
     if (editing) {
       const result = await updateProduct(editing.id, values);
       if (!result.ok) {
@@ -87,6 +91,8 @@ export function ProductsClient({
         setFormError(result.message);
         return;
       }
+      swept += result.updated ?? 0;
+      warning = result.warning;
     } else {
       const result = await createProduct(values);
       if (!result.ok) {
@@ -104,8 +110,16 @@ export function ProductsClient({
         setFormError(`Product saved, but the cost was not: ${costResult.message}`);
         return;
       }
+      swept += costResult.updated ?? 0;
+      warning = warning ?? costResult.warning;
     }
     setSaving(false);
+    setNotice(
+      warning ??
+        (swept > 0
+          ? `Saved — ${swept} customer price${swept === 1 ? "" : "s"} updated automatically.`
+          : "Saved."),
+    );
     closeModal();
   }
 
@@ -127,6 +141,22 @@ export function ProductsClient({
         <p className="rounded-lg bg-amber-50 px-4 py-2.5 text-xs text-amber-800">
           Showing demo seed data — Supabase isn&apos;t configured, so changes
           won&apos;t persist.
+        </p>
+      )}
+
+      {notice && (
+        <p
+          role="status"
+          className="flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs text-emerald-900"
+        >
+          <span>{notice}</span>
+          <button
+            type="button"
+            onClick={() => setNotice(null)}
+            className="shrink-0 font-semibold hover:underline"
+          >
+            Dismiss
+          </button>
         </p>
       )}
 
@@ -326,6 +356,30 @@ function ProductFormModal({
   const [costDollars, setCostDollars] = useState(
     initialCostCents != null ? (initialCostCents / 100).toFixed(2) : "",
   );
+  const [marginPct, setMarginPct] = useState("");
+
+  // CP-1 margin helper — all display math via the domain helpers, cents only.
+  const costCentsLive =
+    costDollars.trim() === "" || Number.isNaN(parseFloat(costDollars))
+      ? null
+      : Math.max(0, Math.round(parseFloat(costDollars) * 100));
+  const saleCentsLive =
+    listPriceDollars.trim() === "" || Number.isNaN(parseFloat(listPriceDollars))
+      ? null
+      : Math.max(0, Math.round(parseFloat(listPriceDollars) * 100));
+  const profitLive =
+    costCentsLive != null && saleCentsLive != null
+      ? profitOnCost(costCentsLive, saleCentsLive)
+      : { profitCents: 0, percentOnCost: null };
+
+  // Typing a margin auto-fills the sale price (cost required). Typing the sale
+  // price directly just updates the live profit readout — no loops.
+  function applyMargin(raw: string) {
+    setMarginPct(raw);
+    const pct = parseFloat(raw);
+    if (costCentsLive == null || raw.trim() === "" || Number.isNaN(pct) || pct < 0 || pct > 500) return;
+    setListPriceDollars((saleFromCostAndMargin(costCentsLive, pct) / 100).toFixed(2));
+  }
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
   const [imageUrl, setImageUrl] = useState<string | null>(initial?.imageUrl ?? null);
   const [uploading, setUploading] = useState(false);
@@ -480,18 +534,9 @@ function ProductFormModal({
           <Field label="Size">
             <input value={unitSize} onChange={(e) => setUnitSize(e.target.value)} required className={inputCls} placeholder="25 lb" />
           </Field>
-          <Field label="List price ($)">
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={listPriceDollars}
-              onChange={(e) => setListPriceDollars(e.target.value)}
-              required
-              className={inputCls}
-            />
-          </Field>
-          <Field label="Purchase cost ($ — admin only, never shown to customers)">
+          {/* CP-1: cost & sale side by side, margin helper in between. All
+              percentages are MARKUP ON COST (matches the pricing engine). */}
+          <Field label="Purchase cost ($ — admin only)">
             <input
               type="number"
               step="0.01"
@@ -502,6 +547,48 @@ function ProductFormModal({
               className={inputCls}
             />
           </Field>
+          <Field label="Sale price ($ — shown to customers)">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={listPriceDollars}
+              onChange={(e) => setListPriceDollars(e.target.value)}
+              required
+              className={inputCls}
+            />
+          </Field>
+          <div className="sm:col-span-2 rounded-lg border border-[var(--border)] bg-background px-3 py-2.5">
+            {costCentsLive != null ? (
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <label className="flex items-center gap-2 text-xs font-medium text-muted">
+                  Margin % on cost
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="500"
+                    value={marginPct}
+                    onChange={(e) => applyMargin(e.target.value)}
+                    placeholder="40"
+                    className="w-24 rounded-md border border-[var(--border)] bg-surface px-2 py-1 text-sm"
+                  />
+                  <span aria-hidden className="text-muted-soft">→ sale price auto-fills</span>
+                </label>
+                {saleCentsLive != null && (
+                  <span className={`text-xs font-semibold ${profitLive.profitCents < 0 ? "text-red-700" : "text-emerald-700"}`}>
+                    Profit: {formatMoney(profitLive.profitCents)}
+                    {profitLive.percentOnCost != null ? ` (${profitLive.percentOnCost}% on cost)` : ""}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <p className="flex items-center gap-1.5 text-xs font-medium text-amber-700">
+                <AlertTriangle size={13} aria-hidden />
+                No cost — margins can&apos;t apply. Enter the purchase cost to use margin rules.
+              </p>
+            )}
+          </div>
           <Field label="Status">
             <label className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-background px-3 py-2 text-sm">
               <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />

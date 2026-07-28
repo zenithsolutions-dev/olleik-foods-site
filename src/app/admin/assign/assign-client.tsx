@@ -114,6 +114,7 @@ export function AssignClient({
         const resolved = resolveWithIndex({
           idx,
           customerId,
+          productId,
           categoryId: p.categoryId,
           parentCategoryId: parentOf(p.categoryId),
           costCents,
@@ -503,7 +504,16 @@ export function AssignClient({
                                     : "text-red-700"
                               }`}
                             >
-                              {r.profitCents != null ? formatMoney(r.profitCents) : "—"}
+                              {r.profitCents != null ? (
+                                formatMoney(r.profitCents)
+                              ) : (
+                                <span
+                                  className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-800"
+                                  title="No purchase cost recorded — rules can't compute a margin; list price is used"
+                                >
+                                  No cost
+                                </span>
+                              )}
                             </td>
                           </tr>
                         );
