@@ -74,6 +74,7 @@ function priceViaRules(ctx: PricingCtx, customerId: string, productId: string) {
   const resolved = resolveWithIndex({
     idx: ctx.idx,
     customerId,
+    productId,
     categoryId: info.categoryId,
     parentCategoryId: info.categoryId ? (ctx.parentOf.get(info.categoryId) ?? null) : null,
     costCents: ctx.costs.get(productId) ?? null,
@@ -83,14 +84,17 @@ function priceViaRules(ctx: PricingCtx, customerId: string, productId: string) {
   return {
     priceCents: resolved.source === "list" ? null : resolved.priceCents,
     marginPercent: resolved.marginPercent,
+    isPriority: resolved.priority,
     ruleScope:
-      resolved.source === "customer-margin"
-        ? ("customer" as const)
-        : resolved.source === "category-margin"
-          ? ("category" as const)
-          : resolved.source === "global-margin"
-            ? ("global" as const)
-            : null,
+      resolved.source === "product-margin"
+        ? ("product" as const)
+        : resolved.source === "customer-margin"
+          ? ("customer" as const)
+          : resolved.source === "category-margin"
+            ? ("category" as const)
+            : resolved.source === "global-margin"
+              ? ("global" as const)
+              : null,
   };
 }
 
@@ -103,7 +107,8 @@ async function stampMeta(
     product_id: string;
     price_source: "manual" | "computed";
     margin_percent?: number | null;
-    rule_scope?: "global" | "category" | "customer" | null;
+    rule_scope?: "global" | "category" | "customer" | "product" | null;
+    is_priority?: boolean;
   }[],
 ): Promise<void> {
   if (rows.length === 0) return;
@@ -660,6 +665,7 @@ export async function assignProducts(
       price_source: "computed" as const,
       margin_percent: x.r.marginPercent,
       rule_scope: x.r.ruleScope,
+      is_priority: x.r.isPriority,
     })),
   );
   revalidate(customerId);
@@ -800,6 +806,7 @@ export async function copyCatalogFromCustomer(
       price_source: "computed" as const,
       margin_percent: priced?.marginPercent ?? null,
       rule_scope: priced?.ruleScope ?? null,
+      is_priority: priced?.isPriority ?? false,
     };
   };
 
@@ -913,6 +920,7 @@ export async function bulkUpdateCustomerPrices(
         price_source: "computed" as const,
         margin_percent: x.r.marginPercent,
         rule_scope: x.r.ruleScope,
+        is_priority: x.r.isPriority,
       }));
     // Rows that resolved to plain list lose their provenance entirely.
     await clearMeta(

@@ -173,14 +173,17 @@ export function CustomerDetailClient({
         if (meta.priceSource === "manual") sourceChip = "Manual";
         else {
           const pct = meta.marginPercent != null ? ` ${meta.marginPercent}%` : "";
+          const prio = meta.isPriority ? " (priority)" : "";
           sourceChip =
-            meta.ruleScope === "customer"
-              ? `Cust${pct}`
-              : meta.ruleScope === "category"
-                ? `Cat${pct}`
-                : meta.ruleScope === "global"
-                  ? `Global${pct}`
-                  : "List";
+            meta.ruleScope === "product"
+              ? `Prod${pct}${prio}`
+              : meta.ruleScope === "customer"
+                ? `Cust${pct}`
+                : meta.ruleScope === "category"
+                  ? `Cat${pct}${prio}`
+                  : meta.ruleScope === "global"
+                    ? `Global${pct}`
+                    : "List";
         }
       } else {
         sourceChip = a.priceCents != null ? "Manual" : "List";
@@ -793,8 +796,8 @@ function MarginCard({
         <div>
           <h2 className="font-display text-base font-semibold text-brand-deep">Customer margin</h2>
           <p className="mt-0.5 text-xs text-muted">
-            {customerName}&apos;s markup on cost. Manual prices and priority category rules still win.
-            After changing it, run Recompute to apply to existing prices.
+            {customerName}&apos;s markup on cost. Manual prices and priority product/category
+            rules still win. Changes re-price this customer&apos;s computed prices automatically.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -1015,8 +1018,11 @@ function CustomerProductRow({
       </td>
       <td className="px-4 py-3 text-right">
         {pricing?.profitCents == null ? (
-          <span className="text-xs text-muted-soft" title="No cost set for this product">
-            —
+          <span
+            className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-800"
+            title="No purchase cost recorded — rules can't compute a margin; list price is used"
+          >
+            No cost
           </span>
         ) : (
           <div>

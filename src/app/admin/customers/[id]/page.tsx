@@ -15,6 +15,8 @@ import {
 } from "@/lib/admin/pricing-data";
 
 export const dynamic = "force-dynamic";
+// D6: cost/rule saves from this page trigger autopilot price sweeps.
+export const maxDuration = 60;
 
 export type CopySource = { id: string; businessName: string; assignedCount: number };
 

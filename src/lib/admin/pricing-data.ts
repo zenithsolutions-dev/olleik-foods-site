@@ -32,6 +32,7 @@ type RuleRow = {
   scope: PricingRuleScope;
   category_id: string | null;
   customer_id: string | null;
+  product_id: string | null;
   margin_percent: number | string; // numeric can arrive as string
   is_priority: boolean;
   is_active: boolean;
@@ -45,6 +46,7 @@ function toRule(r: RuleRow): PricingRule {
     scope: r.scope,
     categoryId: r.category_id,
     customerId: r.customer_id,
+    productId: r.product_id,
     marginPercent: typeof r.margin_percent === "string" ? parseFloat(r.margin_percent) : r.margin_percent,
     isPriority: r.is_priority,
     isActive: r.is_active,
@@ -59,10 +61,12 @@ export async function fetchPricingRules(): Promise<{ rules: PricingRule[]; live:
 
   const { data, error } = await admin
     .from("pricing_rules")
-    .select("id, scope, category_id, customer_id, margin_percent, is_priority, is_active, created_at, updated_at")
+    .select(
+      "id, scope, category_id, customer_id, product_id, margin_percent, is_priority, is_active, created_at, updated_at",
+    )
     .order("created_at", { ascending: true });
   if (error) {
-    console.error("[admin] failed to load pricing rules (run migration 0006?):", error.message);
+    console.error("[admin] failed to load pricing rules (run migration 0007?):", error.message);
     return { rules: [], live: true };
   }
   return { rules: (data as RuleRow[]).map(toRule), live: true };
@@ -72,6 +76,7 @@ export type PricingMeta = {
   priceSource: PriceSource;
   marginPercent: number | null;
   ruleScope: PricingRuleScope | null;
+  isPriority: boolean; // 0007: snapshot of the winning rule's priority flag
   computedAt: string;
 };
 
@@ -85,10 +90,10 @@ export async function fetchPricingMeta(
 
   const { data, error } = await admin
     .from("customer_product_pricing_meta")
-    .select("product_id, price_source, margin_percent, rule_scope, computed_at")
+    .select("product_id, price_source, margin_percent, rule_scope, is_priority, computed_at")
     .eq("customer_id", customerId);
   if (error) {
-    console.error("[admin] failed to load pricing meta (run migration 0006?):", error.message);
+    console.error("[admin] failed to load pricing meta (run migration 0007?):", error.message);
     return {};
   }
   const map: Record<string, PricingMeta> = {};
@@ -97,6 +102,7 @@ export async function fetchPricingMeta(
     price_source: PriceSource;
     margin_percent: number | string | null;
     rule_scope: PricingRuleScope | null;
+    is_priority: boolean | null;
     computed_at: string;
   }[]) ?? []) {
     map[r.product_id] = {
@@ -108,6 +114,7 @@ export async function fetchPricingMeta(
             ? parseFloat(r.margin_percent)
             : r.margin_percent,
       ruleScope: r.rule_scope,
+      isPriority: r.is_priority ?? false,
       computedAt: r.computed_at,
     };
   }

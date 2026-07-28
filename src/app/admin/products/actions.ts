@@ -8,6 +8,7 @@ import {
   deleteProductImageByUrl,
   type UploadResult,
 } from "@/lib/admin/product-images";
+import { autoRecomputeForScope } from "@/lib/admin/recompute";
 import type { ProductUnit } from "@/lib/admin/types";
 
 // Product mutations via the service-role client. Each action re-checks
@@ -15,8 +16,13 @@ import type { ProductUnit } from "@/lib/admin/types";
 // proxy/layout gate alone) and returns a result the client surfaces — no silent
 // success. Products are DEACTIVATED, never hard-deleted, so customer_products
 // pricing rows (ON DELETE CASCADE) are preserved.
+//
+// CP-1 AUTOPILOT: editing a product's category or sale (list) price re-prices
+// its computed customer rows automatically; the result reports the count.
 
-export type ActionResult = { ok: true } | { ok: false; message: string };
+export type ActionResult =
+  | { ok: true; updated?: number; warning?: string }
+  | { ok: false; message: string };
 
 export type ProductInput = {
   sku: string;
@@ -106,11 +112,10 @@ export async function updateProduct(
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
 
-  // Note the existing image so a replaced/removed file can be cleaned up after
-  // a successful save.
+  // Note the existing image (cleanup) + category/list price (autopilot trigger).
   const { data: existing } = await admin
     .from("products")
-    .select("image_url")
+    .select("image_url, category_id, list_price_cents")
     .eq("id", id)
     .maybeSingle();
 
@@ -126,8 +131,31 @@ export async function updateProduct(
     await deleteProductImageByUrl(oldUrl);
   }
 
+  // Autopilot: category moves change which rules apply; list-price changes
+  // move list-fallback rows. Either way, this product's computed customer
+  // prices must follow immediately.
+  const pricingChanged =
+    existing != null &&
+    ((existing.category_id as string | null) !== (input.categoryId || null) ||
+      (existing.list_price_cents as number) !== input.listPriceCents);
+
+  let updated = 0;
+  let warning: string | undefined;
+  if (pricingChanged) {
+    const swept = await autoRecomputeForScope(admin, { kind: "product", productId: id });
+    if ("error" in swept) {
+      warning = `Product saved, but auto-update failed: ${swept.error}`;
+    } else {
+      updated = swept.updated;
+      warning = swept.warning;
+    }
+    revalidatePath("/admin/pricing");
+    revalidatePath("/admin/assign");
+    revalidatePath("/admin/customers");
+  }
+
   revalidate();
-  return { ok: true };
+  return { ok: true, updated, warning };
 }
 
 export async function deactivateProduct(id: string): Promise<ActionResult> {
