@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { validMarginPercent } from "@/lib/admin/pricing-engine";
+import { guardAction } from "@/lib/admin/action-guard";
 import {
   autoRecomputeForScope,
   computeRecomputeRows,
@@ -60,6 +61,7 @@ export async function setProductCost(
   costCents: number | null,
 ): Promise<ActionResult> {
   await requireAdmin();
+  return guardAction("setProductCost", async () => {
   if (!UUID_RE.test(productId)) return { ok: false, message: "Invalid product." };
   if (costCents != null && (!Number.isInteger(costCents) || costCents < 0)) {
     return { ok: false, message: "Cost must be a valid non-negative amount." };
@@ -90,6 +92,7 @@ export async function setProductCost(
   const swept = await autoRecomputeForScope(admin, { kind: "product", productId });
   revalidatePricing();
   return sweepResult("Cost saved", swept);
+  });
 }
 
 // ---------------- Pricing rules ----------------
@@ -144,6 +147,7 @@ function scopeForRule(rule: {
 
 export async function upsertPricingRule(input: PricingRuleInput): Promise<ActionResult> {
   await requireAdmin();
+  return guardAction("upsertPricingRule", async () => {
   const invalid = validateRuleInput(input);
   if (invalid) return { ok: false, message: invalid };
 
@@ -203,10 +207,12 @@ export async function upsertPricingRule(input: PricingRuleInput): Promise<Action
   const swept = await autoRecomputeForScope(admin, scopeForRule(row));
   revalidatePricing(input.customerId ?? undefined);
   return sweepResult("Rule saved", swept);
+  });
 }
 
 export async function togglePricingRule(id: string, isActive: boolean): Promise<ActionResult> {
   await requireAdmin();
+  return guardAction("togglePricingRule", async () => {
   if (!UUID_RE.test(id)) return { ok: false, message: "Invalid rule." };
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
@@ -225,10 +231,12 @@ export async function togglePricingRule(id: string, isActive: boolean): Promise<
   const swept = await autoRecomputeForScope(admin, scopeForRule(rule));
   revalidatePricing(rule.customer_id ?? undefined);
   return sweepResult("Rule updated", swept);
+  });
 }
 
 export async function deletePricingRule(id: string): Promise<ActionResult> {
   await requireAdmin();
+  return guardAction("deletePricingRule", async () => {
   if (!UUID_RE.test(id)) return { ok: false, message: "Invalid rule." };
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
@@ -247,6 +255,7 @@ export async function deletePricingRule(id: string): Promise<ActionResult> {
   const swept = await autoRecomputeForScope(admin, scopeForRule(rule));
   revalidatePricing(rule.customer_id ?? undefined);
   return sweepResult("Rule deleted", swept);
+  });
 }
 
 // ---------------- Recompute (manual audit tool) ----------------
@@ -272,6 +281,7 @@ export async function previewRecompute(
   includeManual: boolean,
 ): Promise<RecomputePreview> {
   await requireAdmin();
+  return guardAction("previewRecompute", async () => {
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
 
@@ -307,6 +317,7 @@ export async function previewRecompute(
     oldProfitCents: oldProfit,
     newProfitCents: newProfit,
   };
+  });
 }
 
 export async function applyRecompute(
@@ -315,6 +326,7 @@ export async function applyRecompute(
   expectedChanges: number,
 ): Promise<{ ok: true; updated: number; warning?: string } | { ok: false; message: string }> {
   await requireAdmin();
+  return guardAction("applyRecompute", async () => {
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
 
@@ -335,4 +347,5 @@ export async function applyRecompute(
 
   revalidatePricing(scope.kind === "customer" ? scope.customerId : undefined);
   return { ok: true, updated: written.updated, warning: written.warning };
+  });
 }

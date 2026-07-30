@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { guardAction } from "@/lib/admin/action-guard";
 import { indexRules, resolveWithIndex } from "@/lib/admin/pricing-engine";
 import { fetchPricingRules } from "@/lib/admin/pricing-data";
 
@@ -24,6 +25,7 @@ export async function bulkAssignToCustomers(input: {
   perCustomerExclusions?: Record<string, string[]>;
 }): Promise<BulkAssignResult> {
   await requireAdmin();
+  return guardAction("bulkAssignToCustomers", async () => {
   if (input.customerIds.length === 0 || input.productIds.length === 0) {
     return { ok: false, message: "Pick at least one product and one customer." };
   }
@@ -153,4 +155,5 @@ export async function bulkAssignToCustomers(input: {
   revalidatePath("/admin/assign");
   for (const id of input.customerIds) revalidatePath(`/admin/customers/${id}`);
   return { ok: true, assigned: rows.length, skippedExisting };
+  });
 }

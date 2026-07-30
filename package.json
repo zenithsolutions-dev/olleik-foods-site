@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "guard:portal": "node scripts/guard-portal.mjs"
+    "guard:portal": "node scripts/guard-portal.mjs",
+    "preflight": "node scripts/test-schema-preflight.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
