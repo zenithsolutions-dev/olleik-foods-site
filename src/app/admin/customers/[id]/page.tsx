@@ -13,6 +13,7 @@ import {
   fetchProductCosts,
   fetchPricingMeta,
 } from "@/lib/admin/pricing-data";
+import { fetchCustomerVisibility } from "@/lib/admin/visibility-data";
 
 export const dynamic = "force-dynamic";
 // D6: cost/rule saves from this page trigger autopilot price sweeps.
@@ -35,6 +36,7 @@ export default async function CustomerDetailPage({
     { costs },
     { rules },
     pricingMeta,
+    visibility,
   ] = await Promise.all([
     fetchAdminCustomer(id),
     fetchAdminProducts(),
@@ -44,6 +46,7 @@ export default async function CustomerDetailPage({
     fetchProductCosts(),
     fetchPricingRules(),
     fetchPricingMeta(id),
+    fetchCustomerVisibility(id),
   ]);
 
   // Copy-catalog source candidates: other non-archived customers, with their
@@ -80,6 +83,7 @@ export default async function CustomerDetailPage({
       costs={costs}
       pricingRules={rules}
       pricingMeta={pricingMeta}
+      visibility={visibility}
       live={live}
     />
   );

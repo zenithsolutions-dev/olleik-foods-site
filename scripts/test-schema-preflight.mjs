@@ -130,6 +130,68 @@ try {
     .limit(1);
   if (joinErr) fail("recompute join (customer_products→customers,products)", `${joinErr.code} ${joinErr.message.slice(0, 90)}`);
   else pass("recompute join (customer_products→customers,products) resolves");
+
+  // ---------- 4. CP-2 visibility schema (0008) ----------
+  // Pre-migration this is a WARN, not a FAIL: the deployed CP-2 code degrades
+  // safely (admin card shows a run-migration notice; portal behaves as
+  // assigned-only). Once visibility_mode exists, everything below must hold.
+  const visProbe = await admin.from("customers").select("visibility_mode").limit(1);
+  if (visProbe.error) {
+    console.log("  WARN  0008 not applied yet — CP-2 visibility checks skipped (code degrades to assigned-only). Run 0008.");
+  } else {
+    pass("columns: customers.visibility_mode exists");
+    // Dedicated probe customer — never mutate a real customer's mode.
+    const { data: pc, error: pcErr } = await admin
+      .from("customers")
+      .insert({ business_name: `ZZ-PREFLIGHT-${Date.now()}`, contact_name: "QA", email: `zzpre-${Date.now()}@example.com`, phone: "000", status: "pending" })
+      .select("id, visibility_mode")
+      .single();
+    if (pcErr) {
+      fail("visibility probe customer", `${pcErr.code} ${pcErr.message.slice(0, 90)}`);
+    } else {
+      try {
+        if (pc.visibility_mode === "assigned") pass("customers.visibility_mode defaults to 'assigned'");
+        else fail("customers.visibility_mode defaults to 'assigned'", `got '${pc.visibility_mode}'`);
+
+        const okMode = await admin.from("customers").update({ visibility_mode: "all" }).eq("id", pc.id);
+        if (okMode.error) fail("visibility_mode check accepts 'all'", `${okMode.error.code} ${okMode.error.message.slice(0, 90)}`);
+        else pass("visibility_mode check accepts 'all'");
+        const badMode = await admin.from("customers").update({ visibility_mode: "bogus" }).eq("id", pc.id);
+        if (badMode.error?.code === "23514") pass("customers_visibility_mode_check rejects unknown modes");
+        else fail("customers_visibility_mode_check rejects unknown modes", badMode.error ? `${badMode.error.code}` : "'bogus' ACCEPTED");
+
+        // customer_visible_categories: insert + composite-PK duplicate rejection
+        const { data: cat } = await admin.from("categories").select("id").limit(1).maybeSingle();
+        if (cat) {
+          const ins = await admin.from("customer_visible_categories").insert({ customer_id: pc.id, category_id: cat.id });
+          if (ins.error) fail("customer_visible_categories insert", `${ins.error.code} ${ins.error.message.slice(0, 90)}`);
+          else {
+            pass("customer_visible_categories insert accepted");
+            const dup = await admin.from("customer_visible_categories").insert({ customer_id: pc.id, category_id: cat.id });
+            if (dup.error?.code === "23505") pass("customer_visible_categories composite PK rejects duplicates");
+            else fail("customer_visible_categories composite PK rejects duplicates", dup.error ? `${dup.error.code}` : "duplicate ACCEPTED");
+          }
+        } else {
+          fail("customer_visible_categories probes", "no category row available");
+        }
+
+        // customer_hidden_products: insert + FK to products
+        if (probeProduct) {
+          const insH = await admin.from("customer_hidden_products").insert({ customer_id: pc.id, product_id: probeProduct });
+          if (insH.error) fail("customer_hidden_products insert", `${insH.error.code} ${insH.error.message.slice(0, 90)}`);
+          else pass("customer_hidden_products insert accepted");
+          const badH = await admin.from("customer_hidden_products").insert({ customer_id: pc.id, product_id: "00000000-0000-0000-0000-000000000001" });
+          if (badH.error?.code === "23503") pass("customer_hidden_products FK rejects unknown product ids");
+          else fail("customer_hidden_products FK rejects unknown product ids", badH.error ? `${badH.error.code}` : "ACCEPTED");
+        } else {
+          fail("customer_hidden_products probes", "no probe product available");
+        }
+      } finally {
+        // customers delete cascades cvc + chp probe rows
+        await admin.from("customers").delete().eq("id", pc.id);
+      }
+    }
+  }
 } finally {
   if (probeProduct) {
     await admin.from("pricing_rules").delete().eq("product_id", probeProduct);

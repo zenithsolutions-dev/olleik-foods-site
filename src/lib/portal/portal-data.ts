@@ -9,10 +9,16 @@ import {
 
 // Customer portal reads. EVERY query here uses the SESSION-BOUND anon client so
 // Postgres RLS enforces tenant isolation (a customer sees only their own
-// customer_products / customer_offers, and — after migration 0003 — only their
-// assigned products). This file must NEVER import @/lib/supabase/admin; the
-// ESLint zone + CI guard enforce that. Scoping is RLS-first: we do not rely on
-// a manual customer_id filter as the only defense.
+// customer_products / customer_offers, and — after migration 0008 — exactly the
+// products their visibility mode allows). This file must NEVER import
+// @/lib/supabase/admin; the ESLint zone + CI guard enforce that. Scoping is
+// RLS-first: we do not rely on a manual customer_id filter as the only defense.
+//
+// CP-2: the catalog reads `products` DIRECTLY — the RLS policy is the single
+// source of truth for what's visible (this code never inspects visibility_mode).
+// The customer's own customer_products rows are layered on top for the
+// "Your price" badge (any assigned product, decision D-V5) and the
+// materialized price; visible-but-unassigned products show list price plainly.
 
 export type PortalProduct = {
   productId: string;
@@ -21,32 +27,35 @@ export type PortalProduct = {
   unit: ProductUnit;
   unitSize: string;
   imageUrl: string | null;
-  effectiveCents: number; // pre-offer price = COALESCE(customer price, list price)
-  isCustomPrice: boolean;
+  categoryLabel: string | null; // "Parent · Child" (null = uncategorized)
+  assigned: boolean; // has a customer_products row -> "Your price" badge (D-V5)
+  effectiveCents: number; // assigned: COALESCE(customer price, list); else list
   finalCents: number; // after the best applicable active offer (== effectiveCents if none)
   discounted: boolean; // finalCents < effectiveCents
   appliedOfferTitle: string | null; // the winning offer's title (for a label), else null
 };
 
-export type PortalCategoryGroup = {
-  id: string;
-  name: string;
-  products: PortalProduct[];
+export type PortalCategoryOption = { id: string; label: string };
+
+export type PortalCatalogPage = {
+  items: PortalProduct[];
+  total: number; // visible products matching the current search/filter
+  page: number; // 1-based, clamped to range
+  pageCount: number;
+  categoryOptions: PortalCategoryOption[]; // categories with >=1 visible product
 };
 
-type CpRow = {
-  price_cents: number | null;
-  products: {
-    id: string;
-    name: string;
-    sku: string;
-    unit: ProductUnit;
-    unit_size: string;
-    image_url: string | null;
-    category_id: string | null;
-    list_price_cents: number;
-    is_active: boolean;
-  } | null;
+export const PORTAL_PAGE_SIZE = 48;
+
+type ProductRow = {
+  id: string;
+  name: string;
+  sku: string;
+  unit: ProductUnit;
+  unit_size: string;
+  image_url: string | null;
+  category_id: string | null;
+  list_price_cents: number;
 };
 
 // Offer fields needed to price a product. Read via the SESSION client, so RLS
@@ -72,30 +81,116 @@ type PricingOffer = {
   endsAt: string | null;
 };
 
-export async function fetchMyCatalog(): Promise<PortalCategoryGroup[]> {
+// How many products this customer can browse — RLS does the filtering; the
+// is_active filter is belt-and-suspenders (the policy already requires it).
+export async function fetchMyVisibleProductCount(): Promise<number> {
   const supabase = await createSupabaseServerClient();
-  const [{ data: cpRows, error }, { data: cats }, { data: offerRows, error: offerErr }] =
-    await Promise.all([
-      supabase
-        .from("customer_products")
-        .select(
-          "price_cents, products(id, name, sku, unit, unit_size, image_url, category_id, list_price_cents, is_active)",
-        ),
-      // parent_id is taxonomy only (0006) — used to label subcategory groups as
-      // "Parent · Child". No pricing data lives on categories.
-      supabase.from("categories").select("id, name, parent_id"),
-      supabase
-        .from("customer_offers")
-        .select("title, product_id, discount_kind, discount_value, starts_at, ends_at, is_active")
-        .eq("is_active", true),
-    ]);
-
+  const { count, error } = await supabase
+    .from("products")
+    .select("id", { count: "exact", head: true })
+    .eq("is_active", true);
   if (error) {
-    console.error("[portal] catalog read failed:", error.message);
-    return [];
+    console.error("[portal] visible-count read failed:", error.message);
+    return 0;
   }
+  return count ?? 0;
+}
+
+// PostgREST .or() treats , ( ) as syntax; % is the ilike wildcard. Strip them
+// so a search term can never break out of the name/sku ilike pair.
+function sanitizeSearch(term: string): string {
+  return term.replace(/[,()%\\]/g, " ").trim();
+}
+
+export async function fetchMyCatalogPage(opts: {
+  page: number;
+  search?: string;
+  categoryId?: string;
+}): Promise<PortalCatalogPage> {
+  const supabase = await createSupabaseServerClient();
+  const search = sanitizeSearch(opts.search ?? "");
+  const categoryId = opts.categoryId?.trim() || null;
+
+  const buildQuery = (from: number, to: number) => {
+    let q = supabase
+      .from("products")
+      .select("id, name, sku, unit, unit_size, image_url, category_id, list_price_cents", {
+        count: "exact",
+      })
+      .eq("is_active", true);
+    if (search) q = q.or(`name.ilike.%${search}%,sku.ilike.%${search}%`);
+    if (categoryId) q = q.eq("category_id", categoryId);
+    return q.order("name", { ascending: true }).range(from, to);
+  };
+
+  // First pass with the requested page; the count comes back with it, so an
+  // out-of-range page can be clamped and re-fetched once.
+  const requested = Math.max(1, Math.floor(opts.page) || 1);
+  let from = (requested - 1) * PORTAL_PAGE_SIZE;
+  const first = await buildQuery(from, from + PORTAL_PAGE_SIZE - 1);
+  if (first.error) {
+    console.error("[portal] catalog read failed:", first.error.message);
+    return { items: [], total: 0, page: 1, pageCount: 1, categoryOptions: [] };
+  }
+  let rows = first.data;
+  const total = first.count ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / PORTAL_PAGE_SIZE));
+  let page = requested;
+  if (requested > pageCount) {
+    page = pageCount;
+    from = (page - 1) * PORTAL_PAGE_SIZE;
+    const retry = await buildQuery(from, from + PORTAL_PAGE_SIZE - 1);
+    rows = retry.data ?? [];
+  }
+
+  // Everything else the page needs, in parallel:
+  //  - the caller's own assignments (RLS: own rows only) for badge + price
+  //  - category taxonomy for labels + the filter dropdown
+  //  - visible category ids (single-column scan of the RLS-visible set)
+  //  - the caller's own active offers
+  const [
+    { data: cpRows, error: cpErr },
+    { data: cats },
+    { data: visCatRows },
+    { data: offerRows, error: offerErr },
+  ] = await Promise.all([
+    supabase.from("customer_products").select("product_id, price_cents"),
+    supabase.from("categories").select("id, name, parent_id"),
+    supabase.from("products").select("category_id").eq("is_active", true),
+    supabase
+      .from("customer_offers")
+      .select("title, product_id, discount_kind, discount_value, starts_at, ends_at, is_active")
+      .eq("is_active", true),
+  ]);
+  if (cpErr) console.error("[portal] assignments read failed:", cpErr.message);
   // Offers are non-fatal: if the read fails, prices simply fall back to effective.
   if (offerErr) console.error("[portal] offers read failed:", offerErr.message);
+
+  const myPrices = new Map(
+    (((cpRows as { product_id: string; price_cents: number | null }[]) ?? [])).map((r) => [
+      r.product_id,
+      r.price_cents,
+    ]),
+  );
+
+  type CatMeta = { id: string; name: string; parent_id: string | null };
+  const catMeta = new Map(((cats as CatMeta[] | null) ?? []).map((c) => [c.id, c]));
+  // Subcategories display as "Parent · Child".
+  const catLabel = (id: string): string => {
+    const c = catMeta.get(id);
+    if (!c) return "Other";
+    const parent = c.parent_id ? catMeta.get(c.parent_id) : null;
+    return parent ? `${parent.name} · ${c.name}` : c.name;
+  };
+
+  const visibleCatIds = new Set(
+    (((visCatRows as { category_id: string | null }[]) ?? []))
+      .map((r) => r.category_id)
+      .filter((x): x is string => x != null),
+  );
+  const categoryOptions: PortalCategoryOption[] = [...visibleCatIds]
+    .map((id) => ({ id, label: catLabel(id) }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   const offers: PricingOffer[] = ((offerRows as PricingOfferRow[]) ?? []).map((o) => ({
     title: o.title,
@@ -108,57 +203,42 @@ export async function fetchMyCatalog(): Promise<PortalCategoryGroup[]> {
   }));
   const now = new Date();
 
-  type CatMeta = { id: string; name: string; parent_id: string | null };
-  const catMeta = new Map(((cats as CatMeta[] | null) ?? []).map((c) => [c.id, c]));
-  // Subcategory groups display as "Parent · Child".
-  const groupLabel = (categoryId: string): string => {
-    const c = catMeta.get(categoryId);
-    if (!c) return "Other";
-    const parent = c.parent_id ? catMeta.get(c.parent_id) : null;
-    return parent ? `${parent.name} · ${c.name}` : c.name;
-  };
-  const groups = new Map<string, PortalCategoryGroup>();
-
-  for (const r of (cpRows as unknown as CpRow[]) ?? []) {
-    const p = r.products;
-    if (!p || !p.is_active) continue; // inactive products stay hidden
-    const key = p.category_id ?? "uncategorized";
-    if (!groups.has(key)) {
-      groups.set(key, {
-        id: key,
-        name: p.category_id ? groupLabel(p.category_id) : "Other",
-        products: [],
-      });
-    }
-
-    const effectiveCents = effectivePriceCents(r.price_cents, p.list_price_cents);
-    const applicable = offers
-      .filter((o) => offerAppliesToProduct(o, p.id, now))
-      .map((o) => ({
-        title: o.title,
-        discountKind: o.discountKind as OfferDiscountKind,
-        discountValue: o.discountValue as number,
-      }));
+  const items: PortalProduct[] = (((rows as ProductRow[] | null) ?? [])).map((p) => {
+    const assigned = myPrices.has(p.id);
+    // Assigned: the materialized customer price (NULL = inherit list, D4).
+    // Unassigned-but-visible: plain list price.
+    const effectiveCents = assigned
+      ? effectivePriceCents(myPrices.get(p.id) ?? null, p.list_price_cents)
+      : p.list_price_cents;
+    // Offers keep their pre-CP-2 reach: assigned products only (extending them
+    // to visible-unassigned products is deferred to CP-3, decision D-V6).
+    const applicable = assigned
+      ? offers
+          .filter((o) => offerAppliesToProduct(o, p.id, now))
+          .map((o) => ({
+            title: o.title,
+            discountKind: o.discountKind as OfferDiscountKind,
+            discountValue: o.discountValue as number,
+          }))
+      : [];
     const priced = applyOffersToPrice(effectiveCents, applicable);
-
-    groups.get(key)!.products.push({
+    return {
       productId: p.id,
       name: p.name,
       sku: p.sku,
       unit: p.unit,
       unitSize: p.unit_size,
       imageUrl: p.image_url,
+      categoryLabel: p.category_id ? catLabel(p.category_id) : null,
+      assigned,
       effectiveCents,
-      isCustomPrice: r.price_cents != null,
       finalCents: priced.finalCents,
       discounted: priced.discounted,
       appliedOfferTitle: priced.appliedOffer?.title ?? null,
-    });
-  }
+    };
+  });
 
-  return [...groups.values()]
-    .map((g) => ({ ...g, products: g.products.sort((a, b) => a.name.localeCompare(b.name)) }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  return { items, total, page, pageCount, categoryOptions };
 }
 
 export type PortalOffer = {
