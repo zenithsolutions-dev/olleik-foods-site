@@ -33,7 +33,12 @@ export type ActionResult =
   | { ok: true; updated?: number; customersTouched?: number; warning?: string }
   | { ok: false; message: string };
 
-export type { RecomputeScope, RecomputeRow };
+// NOTE: never `export type { ... }` (re-export syntax) from a "use server"
+// file — the server-actions loader emits it as a RUNTIME export of a
+// type-only identifier, so the module throws "ReferenceError: RecomputeScope
+// is not defined" at evaluation and EVERY action in it 500s (2026-07-30 prod
+// incident; the build passes because evaluation happens on first invocation).
+// Import RecomputeScope/RecomputeRow from "@/lib/admin/recompute" directly.
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
