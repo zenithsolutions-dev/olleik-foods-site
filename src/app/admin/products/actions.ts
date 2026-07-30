@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { guardAction } from "@/lib/admin/action-guard";
 import {
   uploadProductImage,
   deleteProductImageByUrl,
@@ -72,11 +73,13 @@ export async function uploadProductImageAction(
   formData: FormData,
 ): Promise<UploadResult> {
   await requireAdmin();
+  return guardAction("uploadProductImageAction", async () => {
   const file = formData.get("file");
   if (!(file instanceof File)) {
     return { ok: false, message: "No file received." };
   }
   return uploadProductImage(file);
+  });
 }
 
 // Returns the new product's id on success so the caller can attach admin-only
@@ -85,6 +88,7 @@ export type CreateProductResult = { ok: true; id: string } | { ok: false; messag
 
 export async function createProduct(input: ProductInput): Promise<CreateProductResult> {
   await requireAdmin();
+  return guardAction("createProduct", async () => {
   const invalid = validate(input);
   if (invalid) return { ok: false, message: invalid };
 
@@ -99,6 +103,7 @@ export async function createProduct(input: ProductInput): Promise<CreateProductR
   }
   revalidate();
   return { ok: true, id: data.id as string };
+  });
 }
 
 export async function updateProduct(
@@ -106,6 +111,7 @@ export async function updateProduct(
   input: ProductInput,
 ): Promise<ActionResult> {
   await requireAdmin();
+  return guardAction("updateProduct", async () => {
   const invalid = validate(input);
   if (invalid) return { ok: false, message: invalid };
 
@@ -156,10 +162,12 @@ export async function updateProduct(
 
   revalidate();
   return { ok: true, updated, warning };
+  });
 }
 
 export async function deactivateProduct(id: string): Promise<ActionResult> {
   await requireAdmin();
+  return guardAction("deactivateProduct", async () => {
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
 
@@ -173,4 +181,5 @@ export async function deactivateProduct(id: string): Promise<ActionResult> {
   }
   revalidate();
   return { ok: true };
+  });
 }

@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { guardAction } from "@/lib/admin/action-guard";
 import { indexRules, resolveWithIndex, type RuleIndex } from "@/lib/admin/pricing-engine";
 import { fetchPricingRules } from "@/lib/admin/pricing-data";
 import type {
@@ -623,6 +624,7 @@ export async function assignProducts(
   productIds: string[],
 ): Promise<ActionResult> {
   await requireAdmin();
+  return guardAction("assignProducts", async () => {
   if (productIds.length === 0) return { ok: true };
 
   const admin = getAdminClient();
@@ -670,6 +672,7 @@ export async function assignProducts(
   );
   revalidate(customerId);
   return { ok: true };
+  });
 }
 
 // Set (or clear) a customer-specific price. null = inherit the list price.
@@ -679,6 +682,7 @@ export async function setCustomerProductPrice(
   priceCents: number | null,
 ): Promise<ActionResult> {
   await requireAdmin();
+  return guardAction("setCustomerProductPrice", async () => {
   if (priceCents != null && (!Number.isInteger(priceCents) || priceCents < 0)) {
     return { ok: false, message: "Price must be a valid non-negative amount." };
   }
@@ -707,6 +711,7 @@ export async function setCustomerProductPrice(
   }
   revalidate(customerId);
   return { ok: true };
+  });
 }
 
 export async function removeCustomerProduct(
@@ -714,6 +719,7 @@ export async function removeCustomerProduct(
   productId: string,
 ): Promise<ActionResult> {
   await requireAdmin();
+  return guardAction("removeCustomerProduct", async () => {
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
 
@@ -728,6 +734,7 @@ export async function removeCustomerProduct(
   }
   revalidate(customerId);
   return { ok: true };
+  });
 }
 
 // Copy ALL of another customer's assignments (and optionally their custom
@@ -747,6 +754,7 @@ export async function copyCatalogFromCustomer(
   options: { mode: "merge" | "overwrite"; prices: "copy" | "list" },
 ): Promise<CopyCatalogResult> {
   await requireAdmin();
+  return guardAction("copyCatalogFromCustomer", async () => {
   if (sourceCustomerId === targetCustomerId) {
     return { ok: false, message: "Choose a different customer to copy from." };
   }
@@ -858,6 +866,7 @@ export async function copyCatalogFromCustomer(
   }
   revalidate(targetCustomerId);
   return { ok: true, copied: fresh.length, skipped, mode: "merge" };
+  });
 }
 
 // Apply one pricing operation to many of a customer's assigned products at once.
@@ -878,6 +887,7 @@ export async function bulkUpdateCustomerPrices(
   op: BulkPriceOp,
 ): Promise<BulkPriceResult> {
   await requireAdmin();
+  return guardAction("bulkUpdateCustomerPrices", async () => {
   if (productIds.length === 0) return { ok: true, updated: 0 };
 
   const admin = getAdminClient();
@@ -973,6 +983,7 @@ export async function bulkUpdateCustomerPrices(
   await stampMeta(admin, metaRows);
   revalidate(customerId);
   return { ok: true, updated: rows.length };
+  });
 }
 
 // ---------------- Offers (customer_offers) ----------------
