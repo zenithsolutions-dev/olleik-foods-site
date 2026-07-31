@@ -10,7 +10,8 @@
     "guard:portal": "node scripts/guard-portal.mjs",
     "preflight": "node scripts/test-schema-preflight.mjs",
     "test:visibility": "node scripts/test-visibility-rls.mjs",
-    "test:orders": "node scripts/test-order-security.mjs"
+    "test:orders": "node scripts/test-order-security.mjs",
+    "test:inventory": "node scripts/test-inventory.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",

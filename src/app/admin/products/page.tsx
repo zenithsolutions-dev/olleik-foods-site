@@ -2,16 +2,23 @@ import { ProductsClient } from "./products-client";
 import { fetchAdminProducts } from "@/lib/admin/products-data";
 import { fetchAdminCategories } from "@/lib/admin/categories-data";
 import { fetchProductCosts } from "@/lib/admin/pricing-data";
+import { fetchProductInventory } from "@/lib/admin/inventory-data";
 
 export const dynamic = "force-dynamic";
 // D6: cost/rule saves from this page trigger autopilot price sweeps.
 export const maxDuration = 60;
 
-export default async function ProductsPage() {
-  const [{ products, live }, { categories }, { costs }] = await Promise.all([
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ stock?: string }>;
+}) {
+  const [{ products, live }, { categories }, { costs }, inventory, params] = await Promise.all([
     fetchAdminProducts(),
     fetchAdminCategories(),
     fetchProductCosts(),
+    fetchProductInventory(),
+    searchParams,
   ]);
 
   return (
@@ -29,7 +36,15 @@ export default async function ProductsPage() {
           </p>
         </div>
       </header>
-      <ProductsClient products={products} categories={categories} costs={costs} live={live} />
+      <ProductsClient
+        products={products}
+        categories={categories}
+        costs={costs}
+        live={live}
+        stock={inventory.stock}
+        inventoryEnabled={inventory.migrationApplied}
+        initialLowStockOnly={params.stock === "low"}
+      />
     </div>
   );
 }

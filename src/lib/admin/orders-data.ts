@@ -103,6 +103,9 @@ export type AdminOrderLine = {
   lineTotalCents: number;
   costCents: number | null; // snapshot at order time; null = no cost recorded then
   productIsActive: boolean;
+  // CP-3b: live tracked stock (null = untracked or pre-0010) — feeds the
+  // confirm dialog's shortage list; never shown to customers.
+  stockQty: number | null;
 };
 
 export type AdminOrderDetail = {
@@ -117,6 +120,7 @@ export type AdminOrderDetail = {
   confirmedAt: string | null;
   completedAt: string | null;
   cancelledAt: string | null;
+  stockDecrementedAt: string | null; // CP-3b: set while stock is held by this order
   customer: {
     id: string;
     businessName: string;
@@ -197,6 +201,37 @@ export async function fetchAdminOrder(id: string): Promise<AdminOrderDetail | nu
     order_items: ItemRow[] | null;
   };
 
+  // CP-3b extras, each tolerant of 0010 not being applied yet (separate reads
+  // so the main select above never references a column that may not exist):
+  //   * tracked stock per line (confirm-dialog shortage list)
+  //   * orders.stock_decremented_at (restock guard indicator)
+  const lineIds = (r.order_items ?? []).map((i) => i.product_id);
+  const stockMap = new Map<string, number>();
+  let stockDecrementedAt: string | null = null;
+  if (lineIds.length > 0) {
+    const { data: invRows, error: invErr } = await admin
+      .from("product_inventory")
+      .select("product_id, stock_qty")
+      .in("product_id", lineIds);
+    if (invErr) {
+      if (invErr.code !== "42P01")
+        console.error("[admin] order stock read failed:", invErr.message);
+    } else {
+      for (const s of (invRows as { product_id: string; stock_qty: number }[]) ?? [])
+        stockMap.set(s.product_id, s.stock_qty);
+    }
+  }
+  {
+    const { data: sdRow, error: sdErr } = await admin
+      .from("orders")
+      .select("stock_decremented_at")
+      .eq("id", id)
+      .maybeSingle();
+    if (!sdErr)
+      stockDecrementedAt =
+        (sdRow as { stock_decremented_at: string | null } | null)?.stock_decremented_at ?? null;
+  }
+
   const lines: AdminOrderLine[] = (r.order_items ?? [])
     .map((i) => ({
       productId: i.product_id,
@@ -212,6 +247,7 @@ export async function fetchAdminOrder(id: string): Promise<AdminOrderDetail | nu
       lineTotalCents: i.line_total_cents,
       costCents: costs.get(i.product_id) ?? null,
       productIsActive: i.products?.is_active ?? false,
+      stockQty: stockMap.get(i.product_id) ?? null,
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -235,6 +271,7 @@ export async function fetchAdminOrder(id: string): Promise<AdminOrderDetail | nu
     confirmedAt: r.confirmed_at,
     completedAt: r.completed_at,
     cancelledAt: r.cancelled_at,
+    stockDecrementedAt,
     customer: r.customers
       ? {
           id: r.customers.id,

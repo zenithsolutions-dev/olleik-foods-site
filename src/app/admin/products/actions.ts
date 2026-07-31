@@ -165,6 +165,64 @@ export async function updateProduct(
   });
 }
 
+// CP-3b: set (or clear) a product's tracked stock. stockQty === null UNTRACKS
+// the product — its inventory row is deleted and it becomes always-available
+// (untracked products never block orders and never alert, D-O4/D-O6).
+// This action and the 0010 confirm/cancel functions are the ONLY writers of
+// products.is_available: stock 0 -> false, stock > 0 -> true.
+export async function setProductInventory(
+  productId: string,
+  stockQty: number | null,
+  lowStockThreshold: number,
+): Promise<ActionResult> {
+  await requireAdmin();
+  return guardAction("setProductInventory", async () => {
+    const admin = getAdminClient();
+    if (!admin) return { ok: false, message: "Supabase is not configured." };
+    if (stockQty !== null && (!Number.isInteger(stockQty) || stockQty < 0))
+      return { ok: false, message: "Stock must be a whole number of 0 or more." };
+    if (!Number.isInteger(lowStockThreshold) || lowStockThreshold < 0)
+      return { ok: false, message: "The low-stock alert level must be a whole number of 0 or more." };
+
+    if (stockQty === null) {
+      const { error } = await admin.from("product_inventory").delete().eq("product_id", productId);
+      if (error) {
+        if (error.code === "42P01")
+          return { ok: false, message: "Inventory isn't enabled yet — run migration 0010 first." };
+        console.error("[admin] untrack inventory failed:", error.message);
+        return { ok: false, message: "Could not update stock. Please try again." };
+      }
+      // Untracked products are always available (D-O6).
+      await admin.from("products").update({ is_available: true }).eq("id", productId);
+      revalidate();
+      return { ok: true };
+    }
+
+    const { error } = await admin.from("product_inventory").upsert(
+      {
+        product_id: productId,
+        stock_qty: stockQty,
+        low_stock_threshold: lowStockThreshold,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "product_id" },
+    );
+    if (error) {
+      if (error.code === "42P01")
+        return { ok: false, message: "Inventory isn't enabled yet — run migration 0010 first." };
+      console.error("[admin] set inventory failed:", error.message);
+      return { ok: false, message: "Could not update stock. Please try again." };
+    }
+    const { error: availErr } = await admin
+      .from("products")
+      .update({ is_available: stockQty > 0 })
+      .eq("id", productId);
+    if (availErr) console.error("[admin] availability flip failed:", availErr.message);
+    revalidate();
+    return { ok: true };
+  });
+}
+
 export async function deactivateProduct(id: string): Promise<ActionResult> {
   await requireAdmin();
   return guardAction("deactivateProduct", async () => {

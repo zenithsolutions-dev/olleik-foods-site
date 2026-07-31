@@ -29,6 +29,11 @@ export type PortalProduct = {
   imageUrl: string | null;
   categoryLabel: string | null; // "Parent · Child" (null = uncategorized)
   assigned: boolean; // has a customer_products row -> "Your price" badge (D-V5)
+  // CP-3b (D-O6): the ONLY stock signal the portal ever sees — a boolean.
+  // Quantities live in a deny-all admin table and never reach this layer.
+  // Unavailable products stay visible with a chip; add-to-cart is disabled
+  // and the submit action rejects them server-side too.
+  available: boolean;
   effectiveCents: number; // assigned: COALESCE(customer price, list); else list
   finalCents: number; // after the best applicable active offer (== effectiveCents if none)
   discounted: boolean; // finalCents < effectiveCents
@@ -166,6 +171,27 @@ export async function fetchMyCatalogPage(opts: {
   // Offers are non-fatal: if the read fails, prices simply fall back to effective.
   if (offerErr) console.error("[portal] offers read failed:", offerErr.message);
 
+  // CP-3b availability — a SEPARATE query so the main select never references
+  // a column that may not exist yet (pre-0010 the 42703 here just means
+  // everything is available). Session client: RLS-visible rows only.
+  const unavailable = new Set<string>();
+  {
+    const pageIds = (((rows as ProductRow[] | null) ?? [])).map((p) => p.id);
+    if (pageIds.length > 0) {
+      const { data: availRows, error: availErr } = await supabase
+        .from("products")
+        .select("id, is_available")
+        .in("id", pageIds);
+      if (availErr) {
+        if (availErr.code !== "42703")
+          console.error("[portal] availability read failed:", availErr.message);
+      } else {
+        for (const r of (availRows as { id: string; is_available: boolean }[]) ?? [])
+          if (!r.is_available) unavailable.add(r.id);
+      }
+    }
+  }
+
   const myPrices = new Map(
     (((cpRows as { product_id: string; price_cents: number | null }[]) ?? [])).map((r) => [
       r.product_id,
@@ -231,6 +257,7 @@ export async function fetchMyCatalogPage(opts: {
       imageUrl: p.image_url,
       categoryLabel: p.category_id ? catLabel(p.category_id) : null,
       assigned,
+      available: !unavailable.has(p.id),
       effectiveCents,
       finalCents: priced.finalCents,
       discounted: priced.discounted,

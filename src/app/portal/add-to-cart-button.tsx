@@ -7,13 +7,40 @@ import { useCart } from "./cart-context";
 // once the product is in the cart. Client-side only — prices and validity are
 // the server's business at preview/submission time.
 
-export function AddToCartButton({ productId }: { productId: string }) {
+export function AddToCartButton({
+  productId,
+  disabled = false,
+}: {
+  productId: string;
+  disabled?: boolean; // CP-3b: unavailable product (is_available=false)
+}) {
   const { qtyOf, add, setQty, ready } = useCart();
   const qty = qtyOf(productId);
 
   if (!ready) {
     return (
       <span className="mt-3 inline-block h-9 w-full rounded-full border border-[var(--border)] bg-brand-mist/30" />
+    );
+  }
+
+  // Unavailable: no add control at all — and if the product went unavailable
+  // AFTER it entered the cart, say so (the server rejects it at submission).
+  if (disabled) {
+    return (
+      <div className="mt-3">
+        <span className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[var(--border)] bg-brand-mist/20 px-4 py-2 text-sm font-medium text-muted">
+          Currently unavailable
+        </span>
+        {qty > 0 && (
+          <button
+            type="button"
+            onClick={() => setQty(productId, 0)}
+            className="mt-1.5 w-full text-center text-xs font-medium text-red-700 hover:text-red-900"
+          >
+            Remove {qty} from cart
+          </button>
+        )}
+      </div>
     );
   }
 

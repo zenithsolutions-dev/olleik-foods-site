@@ -63,8 +63,8 @@ export default function CheckoutPage() {
       setPricesChanged(true);
       return;
     }
-    if (res.code === "not-visible" && res.pricing) {
-      setPricing(res.pricing);
+    if ((res.code === "not-visible" || res.code === "unavailable") && res.pricing) {
+      setPricing(res.pricing); // re-render with fresh flags; the message names the lines
     }
     setError(res.message);
   }

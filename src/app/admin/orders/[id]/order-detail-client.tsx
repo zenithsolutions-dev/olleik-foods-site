@@ -6,11 +6,23 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Check, PackageCheck, Truck, X } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
 import type { AdminOrderDetail } from "@/lib/admin/orders-data";
-import { cancelOrder, completeOrder, confirmOrder, markOrderPrepared } from "../actions";
+import {
+  cancelOrder,
+  completeOrder,
+  confirmOrder,
+  markOrderPrepared,
+  type OrderShortage,
+} from "../actions";
 
 // CP-3a admin order detail: lines with charged price + COST + PROFIT (derived
 // from the deny-all snapshots — this screen is the only place profit exists),
 // plus the guarded lifecycle buttons. Every transition confirms first.
+//
+// CP-3b (D-O5): confirming checks tracked stock — insufficient lines BLOCK by
+// default; the dialog lists them ("Feta: ordered 10, in stock 4") and offers
+// an explicit "Confirm anyway (oversell)" that clamps stock to 0 and proceeds.
+// The page's own line stock feeds the pre-check; the server re-checks inside
+// the atomic function, so a race just re-opens this dialog with fresh numbers.
 
 const STATUS_CHIP: Record<string, string> = {
   new: "bg-accent text-white",
@@ -27,22 +39,51 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
   const [notice, setNotice] = useState<string | null>(null);
   const [cancelPrompt, setCancelPrompt] = useState(false);
   const [cancelNote, setCancelNote] = useState("");
+  const [shortages, setShortages] = useState<OrderShortage[] | null>(null);
 
-  async function run(fn: () => Promise<{ ok: boolean; assigned?: number; message?: string }>) {
+  // Pre-check from the page's own data: tracked lines (stockQty != null) that
+  // can't cover their ordered qty. The server re-checks atomically anyway.
+  const shortFromPage: OrderShortage[] = order.lines
+    .filter((l) => l.stockQty != null && l.stockQty < l.qty)
+    .map((l) => ({ productId: l.productId, name: l.name, ordered: l.qty, inStock: l.stockQty as number }));
+
+  async function run(
+    fn: () => Promise<{
+      ok: boolean;
+      assigned?: number;
+      restockedUnits?: number;
+      oversold?: boolean;
+      message?: string;
+      shortages?: OrderShortage[];
+    }>,
+  ) {
     setBusy(true);
     setError(null);
     setNotice(null);
     const res = await fn();
     setBusy(false);
     if (!res.ok) {
+      if (res.shortages && res.shortages.length > 0) {
+        // Race: stock moved since this page loaded — re-open the oversell
+        // dialog with the server's fresh numbers instead of a dead-end error.
+        setShortages(res.shortages);
+        return;
+      }
       setError(res.message ?? "Something went wrong.");
       return;
     }
+    setShortages(null);
+    const parts: string[] = [];
+    if (res.oversold) parts.push("Confirmed with an oversell — short lines took stock to 0.");
     if (res.assigned && res.assigned > 0) {
-      setNotice(
-        `Confirmed. ${res.assigned} newly ordered ${res.assigned === 1 ? "product was" : "products were"} added to this customer's catalog at waterfall pricing.`,
+      parts.push(
+        `${res.oversold ? "" : "Confirmed. "}${res.assigned} newly ordered ${res.assigned === 1 ? "product was" : "products were"} added to this customer's catalog at waterfall pricing.`,
       );
     }
+    if (res.restockedUnits && res.restockedUnits > 0) {
+      parts.push(`${res.restockedUnits} units were restocked.`);
+    }
+    if (parts.length > 0) setNotice(parts.join(" "));
     router.refresh();
   }
 
@@ -100,6 +141,12 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
             type="button"
             disabled={busy}
             onClick={() => {
+              if (shortFromPage.length > 0) {
+                // D-O5: block by default — show the shortage dialog instead of
+                // confirming.
+                setShortages(shortFromPage);
+                return;
+              }
               if (window.confirm("Confirm this order? Newly ordered products will be added to the customer's catalog at waterfall pricing.")) {
                 void run(() => confirmOrder(order.id));
               }
@@ -154,6 +201,44 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
           </p>
         )}
       </div>
+
+      {shortages && shortages.length > 0 && (
+        <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-4">
+          <p className="text-sm font-semibold text-amber-900">
+            Not enough stock to cover this order
+          </p>
+          <ul className="mt-2 space-y-1 text-sm text-amber-900">
+            {shortages.map((s) => (
+              <li key={s.productId}>
+                <span className="font-medium">{s.name}</span>: ordered{" "}
+                <span className="font-mono font-semibold">{s.ordered}</span>, in stock{" "}
+                <span className="font-mono font-semibold">{s.inStock}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-xs text-amber-800">
+            Confirming anyway takes the short lines&apos; stock to 0 and marks them unavailable in
+            the portal. The order itself is unchanged either way.
+          </p>
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void run(() => confirmOrder(order.id, true))}
+              className="rounded-full bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 disabled:opacity-50"
+            >
+              Confirm anyway (oversell)
+            </button>
+            <button
+              type="button"
+              onClick={() => setShortages(null)}
+              className="rounded-full border border-[var(--border-strong)] px-4 py-2 text-sm font-medium"
+            >
+              Keep as new
+            </button>
+          </div>
+        </div>
+      )}
 
       {cancelPrompt && (
         <div className="rounded-2xl border border-red-200 bg-red-50/50 p-4">
@@ -254,6 +339,19 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
                     <p className="text-xs text-muted">
                       {l.sku} · {l.unitSize} / {l.unit}
                       {l.appliedOfferTitle ? ` · ${l.appliedOfferTitle}` : ""}
+                      {/* CP-3b: tracked stock, admin-only. Amber while a NEW
+                          order can't be covered. */}
+                      {l.stockQty != null && (
+                        <span
+                          className={
+                            order.status === "new" && l.stockQty < l.qty
+                              ? "font-semibold text-amber-700"
+                              : ""
+                          }
+                        >
+                          {" "}· in stock {l.stockQty}
+                        </span>
+                      )}
                     </p>
                   </td>
                   <td className="px-3 py-3 text-right font-mono">{l.qty}</td>
