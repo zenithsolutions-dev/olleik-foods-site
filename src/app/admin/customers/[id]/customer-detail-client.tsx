@@ -16,6 +16,8 @@ import type {
 } from "@/lib/admin/types";
 import type { AssignedProduct, CustomerDetail, Activation } from "@/lib/admin/customers-data";
 import type { PricingMeta } from "@/lib/admin/pricing-data";
+import type { CustomerVisibility } from "@/lib/admin/visibility-data";
+import { VisibilityCard } from "./visibility-card";
 import { RecomputeModal } from "./recompute-modal";
 import { upsertPricingRule, togglePricingRule } from "../../pricing/actions";
 import { CustomerFormModal } from "../customers-client";
@@ -58,6 +60,7 @@ export function CustomerDetailClient({
   costs,
   pricingRules,
   pricingMeta,
+  visibility,
   live,
 }: {
   detail: CustomerDetail;
@@ -69,6 +72,7 @@ export function CustomerDetailClient({
   costs: Record<string, number>; // productId -> cost_cents (admin-only)
   pricingRules: PricingRule[];
   pricingMeta: Record<string, PricingMeta>; // productId -> provenance
+  visibility: CustomerVisibility;
   live: boolean;
 }) {
   const { customer, assigned, offers } = detail;
@@ -445,18 +449,36 @@ export function CustomerDetailClient({
         onAssignClick={() => setAddProductPickerOpen(true)}
       />
 
-      {/* Customer margin (D7: also editable centrally on /admin/pricing) */}
-      <MarginCard
-        customerName={customer.businessName}
-        rule={customerMarginRule}
-        busy={busy}
-        onSave={(pct) =>
-          run(() =>
-            upsertPricingRule({ scope: "customer", customerId: customer.id, marginPercent: pct }),
-          )
-        }
-        onToggle={(rule) => run(() => togglePricingRule(rule.id, !rule.isActive))}
-      />
+      {/* Pricing & visibility — the two levers that shape this customer's portal:
+          what they PAY (margin, D7: also editable centrally on /admin/pricing)
+          and what they can BROWSE (CP-2 visibility). */}
+      <div>
+        <h2 className="font-display text-sm font-semibold uppercase tracking-[0.14em] text-muted">
+          Pricing &amp; visibility
+        </h2>
+        <div className="mt-2 space-y-4">
+          <MarginCard
+            customerName={customer.businessName}
+            rule={customerMarginRule}
+            busy={busy}
+            onSave={(pct) =>
+              run(() =>
+                upsertPricingRule({ scope: "customer", customerId: customer.id, marginPercent: pct }),
+              )
+            }
+            onToggle={(rule) => run(() => togglePricingRule(rule.id, !rule.isActive))}
+          />
+          {!isArchived && (
+            <VisibilityCard
+              customerId={customer.id}
+              visibility={visibility}
+              categories={categories}
+              allProducts={allProducts}
+              assignedIds={assigned.map((a) => a.productId)}
+            />
+          )}
+        </div>
+      </div>
 
       {/* Quick info cards */}
       <div className="grid gap-4 sm:grid-cols-4">
@@ -495,7 +517,11 @@ export function CustomerDetailClient({
               Assigned products
             </h2>
             <p className="text-xs text-muted">
-              Only these products are visible to this customer in their portal. Override pricing per product as needed.
+              {visibility.mode === "all"
+                ? "This customer browses the ENTIRE catalog; assigning a product gives it their special price. Override pricing per product as needed."
+                : visibility.mode === "categories"
+                  ? "This customer browses their selected categories; assigning a product gives it their special price (and shows it outside those categories). Override pricing per product as needed."
+                  : "Only these products are visible to this customer in their portal. Override pricing per product as needed."}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

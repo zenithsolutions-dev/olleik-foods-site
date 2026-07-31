@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireCustomer } from "@/lib/portal/require-customer";
-import { fetchMyCatalog, fetchMyOffers } from "@/lib/portal/portal-data";
+import { fetchMyVisibleProductCount, fetchMyOffers } from "@/lib/portal/portal-data";
 import { WelcomeBanner } from "./welcome-banner";
 
 export const dynamic = "force-dynamic";
@@ -12,8 +12,10 @@ export default async function PortalDashboardPage({
 }) {
   const customer = await requireCustomer();
   const { welcome } = await searchParams;
-  const [catalog, offers] = await Promise.all([fetchMyCatalog(), fetchMyOffers()]);
-  const productCount = catalog.reduce((n, g) => n + g.products.length, 0);
+  const [productCount, offers] = await Promise.all([
+    fetchMyVisibleProductCount(),
+    fetchMyOffers(),
+  ]);
 
   return (
     <div className="space-y-8">
@@ -37,7 +39,7 @@ export default async function PortalDashboardPage({
         >
           <p className="text-xs font-medium uppercase tracking-wider text-muted">My catalog</p>
           <p className="font-display mt-2 text-3xl font-semibold text-brand-deep">{productCount}</p>
-          <p className="mt-1 text-xs text-muted-soft">products at your pricing →</p>
+          <p className="mt-1 text-xs text-muted-soft">products available to you →</p>
         </Link>
         <Link
           href="/portal/offers"

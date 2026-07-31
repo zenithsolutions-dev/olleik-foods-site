@@ -44,6 +44,11 @@ export type CustomerStatus = "active" | "pending" | "suspended" | "archived";
 
 export type PaymentTerms = "net-15" | "net-30" | "card-on-file" | "cod";
 
+// CP-2 (0008): what this customer may BROWSE in the portal. 'assigned' is the
+// default and matches pre-CP-2 behavior. Hidden products (a separate exclusion
+// list) win in every mode. Enforced by the products RLS policy, not app code.
+export type VisibilityMode = "assigned" | "all" | "categories";
+
 export type Customer = {
   id: ID;
   businessName: string;
