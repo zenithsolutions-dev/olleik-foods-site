@@ -192,6 +192,90 @@ try {
       }
     }
   }
+
+  // ---------- 5. CP-3a orders schema (0009) ----------
+  // Pre-migration this is a WARN, not a FAIL: the deployed CP-3a code degrades
+  // safely (portal shows no orders; admin inbox shows a run-migration notice;
+  // submission returns "not enabled yet"). Once orders exists, everything
+  // below must hold.
+  const ordProbe = await admin.from("orders").select("id").limit(1);
+  if (ordProbe.error) {
+    console.log("  WARN  0009 not applied yet — CP-3a order checks skipped (ordering disabled until you run it). Run 0009.");
+  } else {
+    const ordColumns = [
+      ["orders", "id, customer_id, status, fulfillment, notes, payment_terms_snapshot, total_cents, client_token, admin_note, created_at, confirmed_at, completed_at, cancelled_at"],
+      ["order_items", "order_id, product_id, name, sku, unit, unit_size, qty, base_price_cents, unit_price_cents, applied_offer_title, was_assigned, line_total_cents"],
+      ["order_item_costs", "order_id, product_id, cost_cents"],
+    ];
+    for (const [table, cols] of ordColumns) {
+      const { error } = await admin.from(table).select(cols).limit(1);
+      if (error) fail(`columns: ${table}(${cols.split(",").length} cols)`, `${error.code} ${error.message.slice(0, 80)}`);
+      else pass(`columns: ${table} — all ${cols.split(",").length} code-referenced columns exist`);
+    }
+
+    // Behavioral constraint probes on a throwaway customer + the probe product.
+    const { data: oc, error: ocErr } = await admin
+      .from("customers")
+      .insert({ business_name: `ZZ-PREFLIGHT-ORD-${Date.now()}`, contact_name: "QA", email: `zzpreord-${Date.now()}@example.com`, phone: "000", status: "active" })
+      .select("id")
+      .single();
+    if (ocErr) {
+      fail("order probe customer", `${ocErr.code} ${ocErr.message.slice(0, 90)}`);
+    } else {
+      try {
+        const baseOrder = () => ({
+          customer_id: oc.id, status: "new", fulfillment: "pickup",
+          payment_terms_snapshot: "net-30", total_cents: 0,
+          client_token: crypto.randomUUID(),
+        });
+        const okIns = await admin.from("orders").insert(baseOrder()).select("id").single();
+        if (okIns.error) fail("orders insert (service role)", `${okIns.error.code} ${okIns.error.message.slice(0, 90)}`);
+        else pass("orders insert accepted for valid status/fulfillment");
+        const badS = await admin.from("orders").insert({ ...baseOrder(), status: "bogus" }).select("id");
+        if (badS.error?.code === "23514") pass("orders_status_check rejects unknown statuses");
+        else fail("orders_status_check rejects unknown statuses", badS.error ? `${badS.error.code}` : "'bogus' ACCEPTED");
+        if (badS.data?.[0]) await admin.from("orders").delete().eq("id", badS.data[0].id);
+        const badF = await admin.from("orders").insert({ ...baseOrder(), fulfillment: "bogus" }).select("id");
+        if (badF.error?.code === "23514") pass("orders_fulfillment_check rejects unknown fulfillment");
+        else fail("orders_fulfillment_check rejects unknown fulfillment", badF.error ? `${badF.error.code}` : "'bogus' ACCEPTED");
+        if (badF.data?.[0]) await admin.from("orders").delete().eq("id", badF.data[0].id);
+
+        if (okIns.data && probeProduct) {
+          const badMath = await admin.from("order_items").insert({
+            order_id: okIns.data.id, product_id: probeProduct, name: "x", sku: "x", unit: "ea", unit_size: "1",
+            qty: 2, base_price_cents: 100, unit_price_cents: 100, was_assigned: false, line_total_cents: 1,
+          });
+          if (badMath.error?.code === "23514") pass("order_items_line_math_check enforces line_total = qty*price");
+          else fail("order_items_line_math_check enforces line_total = qty*price", badMath.error ? `${badMath.error.code}` : "ACCEPTED");
+          const badQty = await admin.from("order_items").insert({
+            order_id: okIns.data.id, product_id: probeProduct, name: "x", sku: "x", unit: "ea", unit_size: "1",
+            qty: 0, base_price_cents: 100, unit_price_cents: 100, was_assigned: false, line_total_cents: 0,
+          });
+          if (badQty.error?.code === "23514") pass("order_items_qty_check rejects qty 0");
+          else fail("order_items_qty_check rejects qty 0", badQty.error ? `${badQty.error.code}` : "ACCEPTED");
+        }
+
+        // The atomic function exists and validates: an EMPTY line set must be
+        // rejected by its line-count guard, proving the function is present
+        // and its internal checks run.
+        const fn = await admin.rpc("submit_order_atomic", {
+          p_customer_id: oc.id, p_fulfillment: "pickup", p_notes: null,
+          p_payment_terms: "net-30", p_total_cents: 0,
+          p_client_token: crypto.randomUUID(), p_lines: [],
+        });
+        if (fn.error?.message?.includes("ORDER_LINE_COUNT_OUT_OF_RANGE")) {
+          pass("submit_order_atomic exists and enforces its line-count guard");
+        } else if (fn.error?.message?.includes("does not exist")) {
+          fail("submit_order_atomic exists", "function missing — re-run 0009");
+        } else {
+          fail("submit_order_atomic exists and enforces its line-count guard", fn.error ? fn.error.message.slice(0, 90) : "empty lines ACCEPTED");
+        }
+      } finally {
+        await admin.from("orders").delete().eq("customer_id", oc.id);
+        await admin.from("customers").delete().eq("id", oc.id);
+      }
+    }
+  }
 } finally {
   if (probeProduct) {
     await admin.from("pricing_rules").delete().eq("product_id", probeProduct);

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const ITEMS: Array<{ href: string; label: string; icon: string }> = [
   { href: "/admin", label: "Dashboard", icon: "■" },
+  { href: "/admin/orders", label: "Orders", icon: "▤" },
   { href: "/admin/products", label: "Products", icon: "◇" },
   { href: "/admin/categories", label: "Categories", icon: "◈" },
   { href: "/admin/customers", label: "Customers", icon: "◉" },
@@ -14,7 +15,8 @@ const ITEMS: Array<{ href: string; label: string; icon: string }> = [
   { href: "/admin/leads", label: "Leads", icon: "◐" },
 ];
 
-export function AdminNav() {
+// newOrderCount: fetched server-side by the layout (per admin page render).
+export function AdminNav({ newOrderCount = 0 }: { newOrderCount?: number }) {
   const pathname = usePathname();
   return (
     <nav className="flex flex-col gap-0.5 px-3 py-4">
@@ -39,6 +41,15 @@ export function AdminNav() {
               {it.icon}
             </span>
             <span className="font-medium">{it.label}</span>
+            {it.href === "/admin/orders" && newOrderCount > 0 && (
+              <span
+                className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold leading-none ${
+                  active ? "bg-white text-brand" : "bg-accent text-white"
+                }`}
+              >
+                {newOrderCount} new
+              </span>
+            )}
           </Link>
         );
       })}

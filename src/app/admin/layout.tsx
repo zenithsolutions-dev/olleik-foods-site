@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AdminProvider } from "@/lib/admin/store";
 import { AdminNav } from "./admin-nav";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { fetchNewOrderCount } from "@/lib/admin/orders-data";
 import { signOutAdmin } from "./actions";
 
 export const metadata = {
@@ -14,6 +15,9 @@ export default async function AdminLayout({
   // Authoritative gate — redirects non-admins when Supabase is configured;
   // returns null (no-op) in mock mode before Supabase is provisioned.
   const adminEmail = await requireAdmin();
+  // Live "N new" badge on the Orders nav item, refreshed on every admin page
+  // render (admin pages are all force-dynamic).
+  const newOrderCount = await fetchNewOrderCount();
 
   return (
     <AdminProvider>
@@ -39,7 +43,7 @@ export default async function AdminLayout({
             </Link>
           </div>
 
-          <AdminNav />
+          <AdminNav newOrderCount={newOrderCount} />
 
           <div className="mt-auto border-t border-[var(--border)] px-6 py-5 text-[11px] text-muted-soft">
             {adminEmail ? (

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireCustomer } from "@/lib/portal/require-customer";
 import { PortalNav } from "./portal-nav";
+import { CartProvider } from "./cart-context";
 import { signOutPortal } from "./actions";
 
 export const metadata = {
@@ -15,6 +16,7 @@ export default async function PortalLayout({
   const customer = await requireCustomer();
 
   return (
+    <CartProvider>
     <div className="min-h-screen bg-[#f7f4eb]">
       <header className="border-b border-[var(--border)] bg-surface">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-4">
@@ -49,5 +51,6 @@ export default async function PortalLayout({
       </header>
       <main className="mx-auto max-w-6xl px-6 py-8 md:py-10">{children}</main>
     </div>
+    </CartProvider>
   );
 }

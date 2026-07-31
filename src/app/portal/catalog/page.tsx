@@ -3,6 +3,7 @@ import Link from "next/link";
 import { requireCustomer } from "@/lib/portal/require-customer";
 import { fetchMyCatalogPage, PORTAL_PAGE_SIZE } from "@/lib/portal/portal-data";
 import { formatMoney } from "@/lib/portal/format";
+import { AddToCartButton } from "../add-to-cart-button";
 
 export const dynamic = "force-dynamic";
 
@@ -164,6 +165,7 @@ export default async function PortalCatalogPage({
                   {p.discounted && p.appliedOfferTitle && (
                     <p className="mt-1 text-xs text-emerald-700">{p.appliedOfferTitle}</p>
                   )}
+                  <AddToCartButton productId={p.productId} />
                 </div>
               </div>
             ))}
