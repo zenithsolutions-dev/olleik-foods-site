@@ -10,29 +10,45 @@ import {
   updateProduct,
   deactivateProduct,
   uploadProductImageAction,
+  setProductInventory,
   type ProductInput,
 } from "./actions";
 import { setProductCost } from "../pricing/actions";
 import { profitOnCost, saleFromCostAndMargin } from "@/lib/admin/pricing-engine";
+import type { ProductStock } from "@/lib/admin/inventory-data";
 
 const UNITS: ProductUnit[] = ["case", "bag", "lb", "kg", "gal", "L", "ea", "box"];
+
+// CP-3b: a tracked product is "low" when stock has fallen to (or under) its
+// alert level. Untracked products (no inventory row) never alert.
+function isLowStock(s: ProductStock | undefined): boolean {
+  return s != null && s.stockQty <= s.lowStockThreshold;
+}
 
 export function ProductsClient({
   products,
   categories,
   costs,
   live,
+  stock,
+  inventoryEnabled,
+  initialLowStockOnly,
 }: {
   products: Product[];
   categories: Category[];
   costs: Record<string, number>; // productId -> cost_cents (admin-only data)
   live: boolean;
+  stock: Record<string, ProductStock>; // productId -> tracked stock (admin-only data)
+  inventoryEnabled: boolean; // false until migration 0010 runs
+  initialLowStockOnly: boolean; // deep link from the dashboard low-stock card
 }) {
   const [query, setQuery] = useState("");
   const [activeCat, setActiveCat] = useState<string>("all");
   // "missing" narrows the list to ACTIVE products with no cost recorded — the
   // one thing that silently blocks margins and profit from working.
   const [costFilter, setCostFilter] = useState<"all" | "missing">("all");
+  // CP-3b: narrows to ACTIVE tracked products at/below their alert level.
+  const [lowStockOnly, setLowStockOnly] = useState(initialLowStockOnly);
   const [editing, setEditing] = useState<Product | null>(null);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -49,12 +65,17 @@ export function ProductsClient({
     () => products.filter((p) => p.isActive && costs[p.id] == null).length,
     [products, costs],
   );
+  const lowStockCount = useMemo(
+    () => products.filter((p) => p.isActive && isLowStock(stock[p.id])).length,
+    [products, stock],
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return products.filter((p) => {
       if (activeCat !== "all" && p.categoryId !== activeCat) return false;
       if (costFilter === "missing" && !(p.isActive && costs[p.id] == null)) return false;
+      if (lowStockOnly && !(p.isActive && isLowStock(stock[p.id]))) return false;
       if (!q) return true;
       return (
         p.name.toLowerCase().includes(q) ||
@@ -62,7 +83,7 @@ export function ProductsClient({
         (p.categoryId ? (catLookup[p.categoryId] ?? "") : "").toLowerCase().includes(q)
       );
     });
-  }, [products, query, activeCat, costFilter, costs, catLookup]);
+  }, [products, query, activeCat, costFilter, costs, lowStockOnly, stock, catLookup]);
 
   function openCreate() {
     setFormError(null);
@@ -78,7 +99,11 @@ export function ProductsClient({
     setFormError(null);
   }
 
-  async function handleSave(values: ProductInput, costCents: number | null) {
+  async function handleSave(
+    values: ProductInput,
+    costCents: number | null,
+    stockInput: { stockQty: number | null; lowStockThreshold: number } | null, // null = unchanged
+  ) {
     setSaving(true);
     setFormError(null);
     let productId = editing?.id ?? null;
@@ -112,6 +137,20 @@ export function ProductsClient({
       }
       swept += costResult.updated ?? 0;
       warning = warning ?? costResult.warning;
+    }
+    // CP-3b: tracked stock lives in the admin-only product_inventory table
+    // (never on products; the portal only ever sees is_available).
+    if (productId && stockInput) {
+      const stockResult = await setProductInventory(
+        productId,
+        stockInput.stockQty,
+        stockInput.lowStockThreshold,
+      );
+      if (!stockResult.ok) {
+        setSaving(false);
+        setFormError(`Product saved, but the stock was not: ${stockResult.message}`);
+        return;
+      }
     }
     setSaving(false);
     setNotice(
@@ -183,6 +222,27 @@ export function ProductsClient({
         </div>
       )}
 
+      {/* CP-3b low-stock banner (tracked, active products at/below their alert
+          level). Mirrors the missing-cost banner; also honours the dashboard's
+          ?stock=low deep link. */}
+      {(lowStockCount > 0 || lowStockOnly) && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-900">
+          <span>
+            <span className="font-semibold">
+              {lowStockCount} tracked product{lowStockCount === 1 ? "" : "s"}
+            </span>{" "}
+            {lowStockCount === 1 ? "is" : "are"} at or below the low-stock alert level.
+          </span>
+          <button
+            type="button"
+            onClick={() => setLowStockOnly(!lowStockOnly)}
+            className="shrink-0 rounded-full border border-amber-300 bg-white/70 px-3 py-1 font-semibold text-amber-900 hover:border-amber-500"
+          >
+            {lowStockOnly ? "Show all products" : "Show only these"}
+          </button>
+        </div>
+      )}
+
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[220px]">
@@ -228,6 +288,7 @@ export function ProductsClient({
               <th className="px-4 py-3 text-right">Cost</th>
               <th className="px-4 py-3 text-right">List price</th>
               <th className="px-4 py-3 text-right">Profit @ list</th>
+              <th className="px-4 py-3 text-right">Stock</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3" />
             </tr>
@@ -235,7 +296,7 @@ export function ProductsClient({
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-4 py-10 text-center text-muted">
+                <td colSpan={10} className="px-4 py-10 text-center text-muted">
                   No products match.
                 </td>
               </tr>
@@ -243,6 +304,7 @@ export function ProductsClient({
             {filtered.map((p) => {
               const cost = costs[p.id] ?? null;
               const profitAtList = cost != null ? p.listPriceCents - cost : null;
+              const s = stock[p.id];
               return (
               <tr key={p.id} className="border-b border-[var(--border)] last:border-0 hover:bg-brand-mist/30">
                 <td className="px-4 py-3 font-mono text-xs text-muted">{p.sku}</td>
@@ -270,6 +332,33 @@ export function ProductsClient({
                   }`}
                 >
                   {profitAtList != null ? formatMoney(profitAtList) : "—"}
+                </td>
+                {/* CP-3b: tracked stock (admin-only; customers only ever see
+                    the is_available boolean). "—" = not tracked. */}
+                <td
+                  className="px-4 py-3 text-right font-mono"
+                  title={s == null ? "Not tracked — edit the product to track stock" : `Alert at ${s.lowStockThreshold}`}
+                >
+                  {s == null ? (
+                    <span className="text-muted-soft">—</span>
+                  ) : (
+                    <span
+                      className={
+                        s.stockQty === 0
+                          ? "font-semibold text-red-700"
+                          : isLowStock(s)
+                            ? "font-semibold text-amber-700"
+                            : "text-foreground"
+                      }
+                    >
+                      {s.stockQty}
+                      {isLowStock(s) && (
+                        <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 font-sans text-[9px] font-semibold uppercase tracking-wider text-amber-800">
+                          {s.stockQty === 0 ? "out" : "low"}
+                        </span>
+                      )}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3">
                   {p.isActive ? (
@@ -303,6 +392,8 @@ export function ProductsClient({
         <ProductFormModal
           initial={editing}
           initialCostCents={editing ? (costs[editing.id] ?? null) : null}
+          initialStock={editing ? (stock[editing.id] ?? null) : null}
+          inventoryEnabled={inventoryEnabled}
           categories={categories}
           saving={saving}
           error={formError}
@@ -326,6 +417,8 @@ export function ProductsClient({
 function ProductFormModal({
   initial,
   initialCostCents,
+  initialStock,
+  inventoryEnabled,
   categories,
   saving,
   error,
@@ -335,11 +428,17 @@ function ProductFormModal({
 }: {
   initial: Product | null;
   initialCostCents: number | null;
+  initialStock: ProductStock | null;
+  inventoryEnabled: boolean;
   categories: Category[];
   saving: boolean;
   error: string | null;
   onClose: () => void;
-  onSave: (values: ProductInput, costCents: number | null) => void;
+  onSave: (
+    values: ProductInput,
+    costCents: number | null,
+    stockInput: { stockQty: number | null; lowStockThreshold: number } | null,
+  ) => void;
   onDeactivate?: () => void;
 }) {
   const [name, setName] = useState(initial?.name ?? "");
@@ -357,6 +456,13 @@ function ProductFormModal({
     initialCostCents != null ? (initialCostCents / 100).toFixed(2) : "",
   );
   const [marginPct, setMarginPct] = useState("");
+  // CP-3b: blank stock = NOT TRACKED (never blocks orders, never alerts).
+  const [stockQtyStr, setStockQtyStr] = useState(
+    initialStock != null ? String(initialStock.stockQty) : "",
+  );
+  const [thresholdStr, setThresholdStr] = useState(
+    initialStock != null ? String(initialStock.lowStockThreshold) : "",
+  );
 
   // CP-1 margin helper — all display math via the domain helpers, cents only.
   const costCentsLive =
@@ -422,6 +528,15 @@ function ProductFormModal({
       costDollars.trim() === ""
         ? null
         : Math.max(0, Math.round(parseFloat(costDollars) * 100));
+    // CP-3b: only touch inventory when the fields actually changed (blank =
+    // untracked; a save with unchanged fields must not rewrite updated_at).
+    const stockQty =
+      stockQtyStr.trim() === "" ? null : Math.max(0, Math.floor(Number(stockQtyStr) || 0));
+    const threshold =
+      thresholdStr.trim() === "" ? 0 : Math.max(0, Math.floor(Number(thresholdStr) || 0));
+    const stockChanged =
+      stockQty !== (initialStock?.stockQty ?? null) ||
+      threshold !== (initialStock?.lowStockThreshold ?? 0);
     onSave(
       {
         sku: sku.trim(),
@@ -435,6 +550,7 @@ function ProductFormModal({
         imageUrl,
       },
       costCents,
+      inventoryEnabled && stockChanged ? { stockQty, lowStockThreshold: threshold } : null,
     );
   }
 
@@ -589,6 +705,43 @@ function ProductFormModal({
               </p>
             )}
           </div>
+          {/* CP-3b stock (admin-only table; portal only ever sees a boolean).
+              Blank = not tracked: never blocks orders, never alerts. */}
+          <Field label="Stock on hand (blank = not tracked)">
+            <input
+              type="number"
+              step="1"
+              min="0"
+              value={stockQtyStr}
+              onChange={(e) => setStockQtyStr(e.target.value)}
+              placeholder="Leave blank to skip tracking"
+              disabled={!inventoryEnabled}
+              className={inputCls}
+            />
+          </Field>
+          <Field label="Low-stock alert at">
+            <input
+              type="number"
+              step="1"
+              min="0"
+              value={thresholdStr}
+              onChange={(e) => setThresholdStr(e.target.value)}
+              placeholder="0"
+              disabled={!inventoryEnabled || stockQtyStr.trim() === ""}
+              className={inputCls}
+            />
+          </Field>
+          {!inventoryEnabled && (
+            <p className="sm:col-span-2 -mt-2 text-xs text-amber-700">
+              Stock tracking needs migration 0010 — run it to enable these fields.
+            </p>
+          )}
+          {inventoryEnabled && stockQtyStr.trim() !== "" && Number(stockQtyStr) === 0 && (
+            <p className="sm:col-span-2 -mt-2 text-xs text-amber-700">
+              Stock 0 marks this product “Unavailable” in the customer portal until it&apos;s
+              restocked.
+            </p>
+          )}
           <Field label="Status">
             <label className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-background px-3 py-2 text-sm">
               <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />

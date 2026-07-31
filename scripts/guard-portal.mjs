@@ -22,6 +22,7 @@ const FORBIDDEN = [
   /customer_product_pricing_meta/,
   /order_item_costs/,
   /product_inventory/,
+  /order_stock_movements/,
   // CP-3a single-entrypoint rule (approved D-O0): portal code may import ONLY
   // @/lib/orders/submit from the privileged orders zone — any other lib/orders
   // path (or the bare directory) is a violation.

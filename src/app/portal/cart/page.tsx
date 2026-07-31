@@ -50,6 +50,10 @@ export default function CartPage() {
   }, [cart.ready, cart.lines]);
 
   const missing = pricing?.missingProductIds ?? [];
+  // CP-3b: unavailable lines (is_available=false) — visible but not orderable;
+  // the submit action rejects them server-side too.
+  const unavailable = (pricing?.lines ?? []).filter((l) => !l.available);
+  const blocked = missing.length > 0 || unavailable.length > 0;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -83,6 +87,22 @@ export default function CartPage() {
         </div>
       )}
 
+      {unavailable.length > 0 && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {unavailable.length === 1
+            ? `“${unavailable[0].name}” is currently unavailable`
+            : `${unavailable.length} items are currently unavailable`}{" "}
+          and can&apos;t be ordered right now.{" "}
+          <button
+            type="button"
+            className="font-semibold underline"
+            onClick={() => unavailable.forEach((l) => cart.remove(l.productId))}
+          >
+            Remove {unavailable.length === 1 ? "it" : "them"}
+          </button>
+        </div>
+      )}
+
       {cart.ready && cart.lines.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[var(--border)] bg-surface p-10 text-center text-sm text-muted">
           Your cart is empty.{" "}
@@ -103,7 +123,14 @@ export default function CartPage() {
                 className="flex flex-wrap items-center gap-3 border-b border-[var(--border)] px-5 py-4 last:border-b-0"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-foreground">{l.name}</p>
+                  <p className="truncate font-medium text-foreground">
+                    {l.name}
+                    {!l.available && (
+                      <span className="ml-2 rounded-full bg-zinc-200 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-zinc-600">
+                        Unavailable
+                      </span>
+                    )}
+                  </p>
                   <p className="text-xs text-muted">
                     {l.sku} · {l.unitSize} / {l.unit}
                   </p>
@@ -171,11 +198,9 @@ export default function CartPage() {
             </Link>
             <Link
               href="/portal/checkout"
-              aria-disabled={missing.length > 0}
+              aria-disabled={blocked}
               className={`rounded-full px-6 py-2.5 text-sm font-semibold text-white ${
-                missing.length > 0
-                  ? "pointer-events-none bg-brand/40"
-                  : "bg-brand hover:bg-brand-deep"
+                blocked ? "pointer-events-none bg-brand/40" : "bg-brand hover:bg-brand-deep"
               }`}
             >
               Proceed to checkout →

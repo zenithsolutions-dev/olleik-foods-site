@@ -14,6 +14,18 @@ import { fetchPricingRules } from "@/lib/admin/pricing-data";
 // Every transition UPDATE is guarded by `.eq("status", <expected-from>)` so a
 // stale button (two admins racing) affects zero rows instead of clobbering.
 //
+// CP-3b: confirm and cancel go through the 0010 SECURITY DEFINER functions so
+// the status transition and the stock movement are ONE transaction (D-O4):
+//   * confirm_order_stock: new->confirmed + conditional decrement of tracked
+//     lines; insufficient stock BLOCKS by default and reports the short lines;
+//     p_allow_oversell=true clamps to 0 and proceeds (D-O5); is_available
+//     flips false for tracked stock hitting 0 (D-O6); stock_decremented_at is
+//     stamped only when something was decremented.
+//   * cancel_order_with_restock: {new,confirmed,prepared}->cancelled + exact
+//     restock of what was decremented (order_stock_movements), guarded by
+//     stock_decremented_at; completed is terminal.
+// Pre-0010 both fall back to the plain guarded transition (no stock tracking).
+//
 // Confirmation also runs assignment-on-confirmation (approved D-O1): each
 // was_assigned=false line becomes a customer_products row priced by the CP-1
 // WATERFALL (merge-only, meta 'computed') — NOT the order's snapshot price.
@@ -22,9 +34,16 @@ import { fetchPricingRules } from "@/lib/admin/pricing-data";
 //
 // NOTE: only declared `export type X = ...` here — never `export type { X }`.
 
+export type OrderShortage = {
+  productId: string;
+  name: string;
+  ordered: number;
+  inStock: number;
+};
+
 export type OrderActionResult =
-  | { ok: true; assigned?: number; staleStatus?: false }
-  | { ok: false; message: string };
+  | { ok: true; assigned?: number; restockedUnits?: number; oversold?: boolean }
+  | { ok: false; message: string; shortages?: OrderShortage[] };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -64,17 +83,67 @@ async function transition(
   return { moved: true, customerId: (data[0] as { customer_id: string }).customer_id };
 }
 
-export async function confirmOrder(orderId: string): Promise<OrderActionResult> {
+export async function confirmOrder(
+  orderId: string,
+  allowOversell = false,
+): Promise<OrderActionResult> {
   await requireAdmin();
   return guardAction("confirmOrder", async () => {
     if (!UUID_RE.test(orderId)) return { ok: false, message: "Invalid order id." };
     const admin = getAdminClient();
     if (!admin) return { ok: false, message: "Supabase is not configured." };
 
-    const res = await transition(orderId, "new", {
-      status: "confirmed",
-      confirmed_at: new Date().toISOString(),
+    // CP-3b: transition + conditional stock decrement in ONE transaction.
+    const { data: fnRes, error: fnErr } = await admin.rpc("confirm_order_stock", {
+      p_order_id: orderId,
+      p_allow_oversell: allowOversell === true,
     });
+    let res: { moved: boolean; customerId?: string; message?: string };
+    let oversold = false;
+    if (fnErr && fnErr.message?.includes("does not exist")) {
+      // Pre-0010: fall back to the CP-3a plain guarded transition (no stock).
+      res = await transition(orderId, "new", {
+        status: "confirmed",
+        confirmed_at: new Date().toISOString(),
+      });
+    } else if (fnErr) {
+      console.error("[admin] confirm_order_stock failed:", fnErr.message);
+      return { ok: false, message: "Could not confirm the order. Please try again." };
+    } else {
+      const out = fnRes as {
+        ok: boolean;
+        code?: "stale" | "insufficient";
+        shortages?: { product_id: string; name: string; ordered: number; in_stock: number }[];
+        oversold?: boolean;
+      };
+      if (!out.ok && out.code === "insufficient") {
+        // D-O5: block by default; the UI offers "Confirm anyway (oversell)".
+        return {
+          ok: false,
+          message: "Not enough stock for some lines — confirm anyway to oversell, or cancel.",
+          shortages: (out.shortages ?? []).map((s) => ({
+            productId: s.product_id,
+            name: s.name,
+            ordered: s.ordered,
+            inStock: s.in_stock,
+          })),
+        };
+      }
+      if (!out.ok) {
+        return {
+          ok: false,
+          message: "The order is no longer in that state — refresh to see its current status.",
+        };
+      }
+      oversold = out.oversold === true;
+      // The function returns no customer_id; read it for revalidation + D-O1.
+      const { data: ordRow } = await admin
+        .from("orders")
+        .select("customer_id")
+        .eq("id", orderId)
+        .maybeSingle();
+      res = { moved: true, customerId: (ordRow as { customer_id: string } | null)?.customer_id };
+    }
     if (!res.moved) return { ok: false, message: res.message ?? "Could not confirm." };
 
     // ---- assignment-on-confirmation (D-O1: waterfall, merge-only) ----
@@ -87,7 +156,8 @@ export async function confirmOrder(orderId: string): Promise<OrderActionResult> 
       console.error("[admin] confirm: unassigned-lines read failed:", itemErr.message);
       // The order IS confirmed; assignment can be redone via /admin/assign.
       revalidateOrders(orderId, res.customerId);
-      return { ok: true, assigned: 0 };
+      revalidatePath("/admin/products"); // decrement changes stock + availability
+      return { ok: true, assigned: 0, oversold };
     }
     const productIds = (((itemRows as { product_id: string }[]) ?? [])).map(
       (r) => r.product_id,
@@ -98,7 +168,8 @@ export async function confirmOrder(orderId: string): Promise<OrderActionResult> 
     }
 
     revalidateOrders(orderId, res.customerId);
-    return { ok: true, assigned };
+    revalidatePath("/admin/products"); // decrement changes stock + availability
+    return { ok: true, assigned, oversold };
   });
 }
 
@@ -235,23 +306,55 @@ export async function cancelOrder(
   await requireAdmin();
   return guardAction("cancelOrder", async () => {
     if (!UUID_RE.test(orderId)) return { ok: false, message: "Invalid order id." };
+    const admin = getAdminClient();
+    if (!admin) return { ok: false, message: "Supabase is not configured." };
     const note = adminNote?.trim().slice(0, 1000) || null;
-    // Cancellable from any pre-completed state; try each guarded transition in
-    // order (only one can match — status is a single value).
-    for (const from of ["new", "confirmed", "prepared"]) {
-      const res = await transition(orderId, from, {
-        status: "cancelled",
-        cancelled_at: new Date().toISOString(),
-        admin_note: note,
-      });
-      if (res.moved) {
-        revalidateOrders(orderId, res.customerId);
-        return { ok: true };
+
+    // CP-3b: cancel + guarded restock in ONE transaction (D-O4). The function
+    // restocks EXACTLY what was decremented (order_stock_movements), only when
+    // stock_decremented_at is set, then clears both so it can never run twice.
+    const { data: fnRes, error: fnErr } = await admin.rpc("cancel_order_with_restock", {
+      p_order_id: orderId,
+      p_admin_note: note,
+    });
+    if (fnErr && fnErr.message?.includes("does not exist")) {
+      // Pre-0010: fall back to the CP-3a plain guarded transitions (no stock).
+      for (const from of ["new", "confirmed", "prepared"]) {
+        const res = await transition(orderId, from, {
+          status: "cancelled",
+          cancelled_at: new Date().toISOString(),
+          admin_note: note,
+        });
+        if (res.moved) {
+          revalidateOrders(orderId, res.customerId);
+          return { ok: true };
+        }
       }
+      return {
+        ok: false,
+        message:
+          "The order can't be cancelled from its current state (completed or already cancelled).",
+      };
     }
-    return {
-      ok: false,
-      message: "The order can't be cancelled from its current state (completed or already cancelled).",
-    };
+    if (fnErr) {
+      console.error("[admin] cancel_order_with_restock failed:", fnErr.message);
+      return { ok: false, message: "Could not cancel the order. Please try again." };
+    }
+    const out = fnRes as { ok: boolean; restocked_units?: number };
+    if (!out.ok) {
+      return {
+        ok: false,
+        message:
+          "The order can't be cancelled from its current state (completed or already cancelled).",
+      };
+    }
+    const { data: ordRow } = await admin
+      .from("orders")
+      .select("customer_id")
+      .eq("id", orderId)
+      .maybeSingle();
+    revalidateOrders(orderId, (ordRow as { customer_id: string } | null)?.customer_id);
+    revalidatePath("/admin/products"); // restock changes stock + availability
+    return { ok: true, restockedUnits: out.restocked_units ?? 0 };
   });
 }

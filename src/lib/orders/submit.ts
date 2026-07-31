@@ -47,6 +47,9 @@ export type PricedCartLine = {
   unitSize: string;
   qty: number;
   assigned: boolean;
+  // CP-3b (D-O6): the boolean availability signal — never a quantity. An
+  // unavailable line blocks submission (checked server-side below).
+  available: boolean;
   basePriceCents: number; // pre-offer effective (assigned price or list)
   unitPriceCents: number; // charged (post-offer; offers apply to assigned only, D-O2)
   appliedOfferTitle: string | null;
@@ -69,6 +72,7 @@ export type SubmitOrderResult =
         | "empty-cart"
         | "invalid-input"
         | "not-visible"
+        | "unavailable"
         | "prices-changed"
         | "rate-limited"
         | "not-configured"
@@ -142,6 +146,24 @@ export async function resolveCartPricing(lines: CartLineInput[]): Promise<CartPr
     ]);
   if (prodErr) throw new Error(`cart product read failed: ${prodErr.message}`);
 
+  // CP-3b availability — a SEPARATE tolerant query (pre-0010 the products
+  // table has no is_available column; 42703 there just means everything is
+  // available). Same session client, so RLS-visible rows only.
+  const unavailable = new Set<string>();
+  {
+    const { data: availRows, error: availErr } = await supabase
+      .from("products")
+      .select("id, is_available")
+      .in("id", ids);
+    if (availErr) {
+      if (availErr.code !== "42703")
+        console.error("[orders] availability read failed:", availErr.message);
+    } else {
+      for (const r of (availRows as { id: string; is_available: boolean }[]) ?? [])
+        if (!r.is_available) unavailable.add(r.id);
+    }
+  }
+
   const products = new Map(((prodRows as ProductRow[]) ?? []).map((p) => [p.id, p]));
   const myPrices = new Map(
     (((cpRows as { product_id: string; price_cents: number | null }[]) ?? [])).map((r) => [
@@ -191,6 +213,7 @@ export async function resolveCartPricing(lines: CartLineInput[]): Promise<CartPr
       unitSize: p.unit_size,
       qty: l.qty,
       assigned,
+      available: !unavailable.has(p.id),
       basePriceCents: base,
       unitPriceCents: res.finalCents,
       appliedOfferTitle: res.appliedOffer?.title ?? null,
@@ -268,6 +291,19 @@ export async function submitOrderForCustomer(
       code: "not-visible",
       message:
         "Some items in your cart are no longer available to your account. Remove them and try again.",
+      pricing,
+    };
+  }
+  // CP-3b (D-O6): unavailable products can't be ordered — enforced here even
+  // if a stale/forged client skipped the disabled add-to-cart control.
+  const unavailableLines = pricing.lines.filter((l) => !l.available);
+  if (unavailableLines.length > 0) {
+    return {
+      ok: false,
+      code: "unavailable",
+      message: `Currently unavailable: ${unavailableLines
+        .map((l) => l.name)
+        .join(", ")}. Remove ${unavailableLines.length === 1 ? "it" : "them"} and try again.`,
       pricing,
     };
   }

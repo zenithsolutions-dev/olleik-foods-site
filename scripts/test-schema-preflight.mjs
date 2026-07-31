@@ -276,6 +276,70 @@ try {
       }
     }
   }
+
+  // ---------- 6. CP-3b inventory schema (0010) ----------
+  // Pre-migration this is a WARN, not a FAIL: the deployed CP-3b code degrades
+  // safely (everything shows as available; stock fields disabled with a
+  // run-migration notice; confirm/cancel fall back to the plain transitions).
+  // Once product_inventory exists, everything below must hold.
+  const invProbe = await admin.from("product_inventory").select("product_id").limit(1);
+  if (invProbe.error) {
+    console.log("  WARN  0010 not applied yet — CP-3b inventory checks skipped (stock tracking disabled until you run it). Run 0010.");
+  } else {
+    const invColumns = [
+      ["product_inventory", "product_id, stock_qty, low_stock_threshold, updated_at"],
+      ["order_stock_movements", "order_id, product_id, qty_decremented"],
+    ];
+    for (const [table, cols] of invColumns) {
+      const { error } = await admin.from(table).select(cols).limit(1);
+      if (error) fail(`columns: ${table}(${cols.split(",").length} cols)`, `${error.code} ${error.message.slice(0, 80)}`);
+      else pass(`columns: ${table} — all ${cols.split(",").length} code-referenced columns exist`);
+    }
+    const availCol = await admin.from("products").select("id, is_available").limit(1);
+    if (availCol.error) fail("columns: products.is_available exists", `${availCol.error.code}`);
+    else pass("columns: products.is_available exists");
+    const sdCol = await admin.from("orders").select("id, stock_decremented_at").limit(1);
+    if (sdCol.error) fail("columns: orders.stock_decremented_at exists", `${sdCol.error.code}`);
+    else pass("columns: orders.stock_decremented_at exists");
+
+    // Behavioral: stock can never be negative (uses the probe product).
+    if (probeProduct) {
+      const neg = await admin.from("product_inventory")
+        .insert({ product_id: probeProduct, stock_qty: -1 });
+      if (neg.error?.code === "23514") pass("product_inventory_qty_check rejects negative stock");
+      else fail("product_inventory_qty_check rejects negative stock", neg.error ? `${neg.error.code}` : "-1 ACCEPTED");
+      // Accept a valid row, then clean up (products delete would cascade anyway).
+      const okInv = await admin.from("product_inventory")
+        .upsert({ product_id: probeProduct, stock_qty: 5, low_stock_threshold: 2 });
+      if (okInv.error) fail("product_inventory accepts a valid tracked row", `${okInv.error.code} ${okInv.error.message.slice(0, 80)}`);
+      else pass("product_inventory accepts a valid tracked row");
+      await admin.from("product_inventory").delete().eq("product_id", probeProduct);
+    }
+
+    // The 0010 functions exist and enforce their status guard: a random order
+    // id can never be in state 'new', so a well-formed call returns the stale
+    // result — proving presence + the guard in one probe.
+    const cfn = await admin.rpc("confirm_order_stock", {
+      p_order_id: crypto.randomUUID(), p_allow_oversell: false,
+    });
+    if (cfn.error?.message?.includes("does not exist")) {
+      fail("confirm_order_stock exists", "function missing — re-run 0010");
+    } else if (!cfn.error && cfn.data?.ok === false && cfn.data?.code === "stale") {
+      pass("confirm_order_stock exists and enforces its status guard");
+    } else {
+      fail("confirm_order_stock exists and enforces its status guard", cfn.error ? cfn.error.message.slice(0, 90) : JSON.stringify(cfn.data).slice(0, 90));
+    }
+    const xfn = await admin.rpc("cancel_order_with_restock", {
+      p_order_id: crypto.randomUUID(), p_admin_note: null,
+    });
+    if (xfn.error?.message?.includes("does not exist")) {
+      fail("cancel_order_with_restock exists", "function missing — re-run 0010");
+    } else if (!xfn.error && xfn.data?.ok === false && xfn.data?.code === "stale") {
+      pass("cancel_order_with_restock exists and enforces its status guard");
+    } else {
+      fail("cancel_order_with_restock exists and enforces its status guard", xfn.error ? xfn.error.message.slice(0, 90) : JSON.stringify(xfn.data).slice(0, 90));
+    }
+  }
 } finally {
   if (probeProduct) {
     await admin.from("pricing_rules").delete().eq("product_id", probeProduct);

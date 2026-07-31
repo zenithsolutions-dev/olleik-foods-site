@@ -128,7 +128,16 @@ export default async function PortalCatalogPage({
                   )}
                 </div>
                 <div className="p-5">
-                  <h3 className="font-medium leading-snug text-foreground">{p.name}</h3>
+                  <h3 className="font-medium leading-snug text-foreground">
+                    {p.name}
+                    {/* CP-3b (D-O6): availability is a boolean — the portal
+                        never sees stock quantities. */}
+                    {!p.available && (
+                      <span className="ml-2 rounded-full bg-zinc-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+                        Unavailable
+                      </span>
+                    )}
+                  </h3>
                   <p className="mt-1 text-xs text-muted">
                     {p.sku} · {p.unitSize} / {p.unit}
                     {p.categoryLabel ? ` · ${p.categoryLabel}` : ""}
@@ -165,7 +174,7 @@ export default async function PortalCatalogPage({
                   {p.discounted && p.appliedOfferTitle && (
                     <p className="mt-1 text-xs text-emerald-700">{p.appliedOfferTitle}</p>
                   )}
-                  <AddToCartButton productId={p.productId} />
+                  <AddToCartButton productId={p.productId} disabled={!p.available} />
                 </div>
               </div>
             ))}

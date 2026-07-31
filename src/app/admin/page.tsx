@@ -2,14 +2,16 @@ import { DashboardClient } from "./dashboard-client";
 import { fetchAdminLeads } from "@/lib/admin/leads-data";
 import { fetchAdminProducts } from "@/lib/admin/products-data";
 import { fetchAdminCustomers } from "@/lib/admin/customers-data";
+import { fetchLowStock } from "@/lib/admin/inventory-data";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [{ leads, live }, { products }, { customers }] = await Promise.all([
+  const [{ leads, live }, { products }, { customers }, lowStock] = await Promise.all([
     fetchAdminLeads(),
     fetchAdminProducts(),
     fetchAdminCustomers(),
+    fetchLowStock(),
   ]);
 
   return (
@@ -25,7 +27,13 @@ export default async function AdminDashboardPage() {
           Quick view of your catalog, customer base, and incoming leads.
         </p>
       </header>
-      <DashboardClient leads={leads} products={products} customers={customers} live={live} />
+      <DashboardClient
+        leads={leads}
+        products={products}
+        customers={customers}
+        live={live}
+        lowStock={lowStock.items}
+      />
     </div>
   );
 }
