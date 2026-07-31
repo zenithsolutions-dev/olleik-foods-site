@@ -241,6 +241,135 @@ export async function fetchMyCatalogPage(opts: {
   return { items, total, page, pageCount, categoryOptions };
 }
 
+// ---- CP-3a: my orders (SELECT-own RLS; customers have no write policies) ----
+
+export type OrderStatus = "new" | "confirmed" | "prepared" | "completed" | "cancelled";
+export type OrderFulfillment = "pickup" | "delivery";
+
+export type PortalOrderSummary = {
+  id: string;
+  status: OrderStatus;
+  fulfillment: OrderFulfillment;
+  totalCents: number;
+  itemCount: number;
+  createdAt: string;
+};
+
+export type PortalOrderLine = {
+  productId: string;
+  name: string;
+  sku: string;
+  unit: string;
+  unitSize: string;
+  qty: number;
+  basePriceCents: number;
+  unitPriceCents: number;
+  appliedOfferTitle: string | null;
+  lineTotalCents: number;
+};
+
+export type PortalOrderDetail = {
+  id: string;
+  status: OrderStatus;
+  fulfillment: OrderFulfillment;
+  notes: string | null;
+  paymentTerms: string;
+  totalCents: number;
+  createdAt: string;
+  lines: PortalOrderLine[];
+};
+
+export async function fetchMyOrders(): Promise<PortalOrderSummary[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("orders")
+    .select("id, status, fulfillment, total_cents, created_at, order_items(product_id)")
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) {
+    // 42P01 before migration 0009 — orders simply aren't enabled yet.
+    if (error.code !== "42P01") console.error("[portal] orders read failed:", error.message);
+    return [];
+  }
+  type Row = {
+    id: string;
+    status: OrderStatus;
+    fulfillment: OrderFulfillment;
+    total_cents: number;
+    created_at: string;
+    order_items: { product_id: string }[] | null;
+  };
+  return ((data as unknown as Row[]) ?? []).map((r) => ({
+    id: r.id,
+    status: r.status,
+    fulfillment: r.fulfillment,
+    totalCents: r.total_cents,
+    itemCount: r.order_items?.length ?? 0,
+    createdAt: r.created_at,
+  }));
+}
+
+export async function fetchMyOrder(id: string): Promise<PortalOrderDetail | null> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("orders")
+    .select(
+      "id, status, fulfillment, notes, payment_terms_snapshot, total_cents, created_at, order_items(product_id, name, sku, unit, unit_size, qty, base_price_cents, unit_price_cents, applied_offer_title, line_total_cents)",
+    )
+    .eq("id", id)
+    .maybeSingle();
+  if (error || !data) {
+    if (error && error.code !== "42P01")
+      console.error("[portal] order read failed:", error.message);
+    return null;
+  }
+  type ItemRow = {
+    product_id: string;
+    name: string;
+    sku: string;
+    unit: string;
+    unit_size: string;
+    qty: number;
+    base_price_cents: number;
+    unit_price_cents: number;
+    applied_offer_title: string | null;
+    line_total_cents: number;
+  };
+  const row = data as unknown as {
+    id: string;
+    status: OrderStatus;
+    fulfillment: OrderFulfillment;
+    notes: string | null;
+    payment_terms_snapshot: string;
+    total_cents: number;
+    created_at: string;
+    order_items: ItemRow[] | null;
+  };
+  return {
+    id: row.id,
+    status: row.status,
+    fulfillment: row.fulfillment,
+    notes: row.notes,
+    paymentTerms: row.payment_terms_snapshot,
+    totalCents: row.total_cents,
+    createdAt: row.created_at,
+    lines: (row.order_items ?? [])
+      .map((i) => ({
+        productId: i.product_id,
+        name: i.name,
+        sku: i.sku,
+        unit: i.unit,
+        unitSize: i.unit_size,
+        qty: i.qty,
+        basePriceCents: i.base_price_cents,
+        unitPriceCents: i.unit_price_cents,
+        appliedOfferTitle: i.applied_offer_title,
+        lineTotalCents: i.line_total_cents,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
+  };
+}
+
 export type PortalOffer = {
   id: string;
   title: string;

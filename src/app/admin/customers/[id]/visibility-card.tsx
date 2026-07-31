@@ -65,6 +65,27 @@ export function VisibilityCard({
     [allProducts],
   );
 
+  // Per-category product tallies for the picker labels ("Dry Goods (1 active
+  // of 3)") — inactive products are hidden from customers by the RLS policy,
+  // so the ACTIVE count is what a customer will actually browse.
+  const catTally = useMemo(() => {
+    const t = new Map<string, { active: number; total: number }>();
+    for (const p of allProducts) {
+      if (!p.categoryId) continue;
+      const cur = t.get(p.categoryId) ?? { active: 0, total: 0 };
+      cur.total++;
+      if (p.isActive) cur.active++;
+      t.set(p.categoryId, cur);
+    }
+    return t;
+  }, [allProducts]);
+
+  const tallyLabel = (categoryId: string): string => {
+    const t = catTally.get(categoryId);
+    if (!t || t.total === 0) return "no products";
+    return `${t.active} active of ${t.total}`;
+  };
+
   // One-level tree: parents (parentId null) with their children beneath.
   const tree = useMemo(() => {
     const tops = categories.filter((c) => !c.parentId);
@@ -235,6 +256,7 @@ export function VisibilityCard({
                       className="accent-[var(--brand)]"
                     />
                     <span className="font-medium">{cat.name}</span>
+                    <span className="text-[10px] text-muted-soft">({tallyLabel(cat.id)})</span>
                     {parentOn && children.length > 0 && (
                       <span className="text-[10px] uppercase tracking-wider text-muted">
                         incl. {children.length} sub
@@ -262,6 +284,7 @@ export function VisibilityCard({
                         className="accent-[var(--brand)]"
                       />
                       {ch.name}
+                      <span className="text-[10px] text-muted-soft">({tallyLabel(ch.id)})</span>
                       {parentOn && (
                         <span className="text-[10px] text-muted-soft">via {cat.name}</span>
                       )}

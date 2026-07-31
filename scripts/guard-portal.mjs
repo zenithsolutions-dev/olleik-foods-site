@@ -9,6 +9,7 @@ const ROOTS = ["src/app/portal", "src/lib/portal"];
 // Match imports/usages of the service-role client, not incidental words —
 // plus the ADMIN-ONLY cost/margin modules (0006): cost prices and margin rules
 // must never be reachable from portal code, even via a pure import.
+// CP-3a adds the admin-only order/inventory tables to the ban list.
 const FORBIDDEN = [
   /from\s+["'][^"']*lib\/supabase\/admin["']/,
   /getAdminClient/,
@@ -19,6 +20,13 @@ const FORBIDDEN = [
   /product_costs/,
   /pricing_rules/,
   /customer_product_pricing_meta/,
+  /order_item_costs/,
+  /product_inventory/,
+  // CP-3a single-entrypoint rule (approved D-O0): portal code may import ONLY
+  // @/lib/orders/submit from the privileged orders zone — any other lib/orders
+  // path (or the bare directory) is a violation.
+  /from\s+["'][^"']*lib\/orders\/(?!submit["'])[^"']*["']/,
+  /from\s+["'][^"']*lib\/orders["']/,
 ];
 
 function walk(dir) {
@@ -47,10 +55,28 @@ for (const root of ROOTS) {
   }
 }
 
+// CP-3a: the privileged orders zone itself gets its own posture check — every
+// module in src/lib/orders must be server-only (it may hold the service-role
+// client, so it must be impossible to pull into a client bundle).
+for (const file of walk("src/lib/orders")) {
+  const text = readFileSync(file, "utf8");
+  if (!/import\s+["']server-only["']/.test(text)) {
+    violations.push(`${file}: privileged orders module missing \`import "server-only"\``);
+  }
+  if (/^\s*["']use client["']/m.test(text)) {
+    violations.push(`${file}: privileged orders module must never be a client module`);
+  }
+}
+
 if (violations.length) {
   console.error("✖ Portal security guard FAILED — service-role usage in portal code:");
   for (const v of violations) console.error("  " + v);
   console.error("\nPortal code must use the session-bound anon client (@/lib/supabase/server).");
+  console.error("The ONLY allowed privileged import from portal code is @/lib/orders/submit.");
   process.exit(1);
 }
-console.log("✓ Portal security guard passed — no service-role usage under " + ROOTS.join(", "));
+console.log(
+  "✓ Portal security guard passed — no service-role usage under " +
+    ROOTS.join(", ") +
+    "; orders zone server-only; single entrypoint @/lib/orders/submit enforced",
+);

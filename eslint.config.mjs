@@ -58,6 +58,13 @@ const eslintConfig = defineConfig([
               message:
                 "Portal code must never import cost/margin pricing modules — customers only ever see the final price_cents.",
             },
+            {
+              // CP-3a single-entrypoint rule (D-O0): the privileged orders zone
+              // is reachable from portal code ONLY via @/lib/orders/submit.
+              regex: "lib/orders/(?!submit$)|lib/orders$",
+              message:
+                "Portal code may import ONLY @/lib/orders/submit from the privileged orders zone (approved D-O0 single entrypoint).",
+            },
           ],
         },
       ],
