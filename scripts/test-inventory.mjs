@@ -34,6 +34,13 @@
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
+// CP-3e: the pure receive/recount math the admin action ships with — imported
+// directly (run via `node --experimental-strip-types`, same as the engine
+// tests) so the tested code IS the deployed code.
+import {
+  computeReceiveSettlement,
+  deriveOversoldOrders,
+} from "../src/lib/admin/stock-math.ts";
 
 const env = Object.fromEntries(
   readFileSync(".env.local", "utf8")
@@ -335,6 +342,96 @@ try {
     note(v1?.restocked_units === 3 && (await stockOf(p1)) === 1 && (await availOf(p1)) === true,
       "-2 + 3 = 1 → available again (crossed 0 upward FROM negative)");
     await led.assert("boundary flips", [p1], 1);
+  }
+
+  // ---- 10. CP-3e: RECEIVE (add) vs SET COUNT (replace) ----
+  // Receive is the action's CAS add mirrored here (read → UPDATE ... WHERE
+  // stock_qty = read value) + the availability rule; the settlement and
+  // oversold-attribution math is the SAME pure module the action imports.
+  const casReceive = async (pid, qty) => {
+    const { data: cur } = await svc.from("product_inventory")
+      .select("stock_qty").eq("product_id", pid).single();
+    const { data: upd, error } = await svc.from("product_inventory")
+      .update({ stock_qty: cur.stock_qty + qty, updated_at: new Date().toISOString() })
+      .eq("product_id", pid).eq("stock_qty", cur.stock_qty).select("stock_qty");
+    if (error || !upd?.length) throw new Error(`CAS receive failed: ${error?.message ?? "0 rows"}`);
+    await svc.from("products").update({ is_available: cur.stock_qty + qty > 0 }).eq("id", pid);
+    return cur.stock_qty;
+  };
+  // The action's exact derivation read: open (confirmed/prepared) movements.
+  const openMovements = async (pid) => {
+    const { data } = await svc.from("order_stock_movements")
+      .select("order_id, qty_decremented, orders(status, stock_decremented_at, customers(business_name))")
+      .eq("product_id", pid);
+    return (data ?? [])
+      .filter((r) => ["confirmed", "prepared"].includes(r.orders?.status) && r.orders?.stock_decremented_at != null)
+      .map((r) => ({
+        orderId: r.order_id,
+        businessName: r.orders?.customers?.business_name ?? "(unknown customer)",
+        qty: r.qty_decremented,
+        decrementedAt: r.orders?.stock_decremented_at,
+      }));
+  };
+  {
+    console.log("\n--- CP-3e: receive settles a REAL deficit + oversold attribution ---");
+    await setStock(p1, 6);
+    const O1 = await makeOrder([[p1, 6]]);
+    const O2 = await makeOrder([[p1, 4]]);
+    const c1 = await confirm(O1, false);
+    const c2 = await confirm(O2, true);
+    note(c1?.ok && c2?.ok && (await stockOf(p1)) === -4 && (await availOf(p1)) === false,
+      "setup: O1 dec 6 (→0), O2 oversell dec 4 (→ -4), unavailable");
+
+    // Attribution BEFORE the receive (as the action derives it, old stock -4):
+    const att = deriveOversoldOrders(await openMovements(p1), 4);
+    note(att.reliable === true && att.orders.length === 1 && att.orders[0].orderId === O2
+      && att.orders[0].shortUnits === 4 && att.orders[0].partiallyCovered === false,
+      `attribution: EXACTLY O2 owes 4 (last-confirmed holds the deficit; O1 is covered) — got ${JSON.stringify(att.orders.map(o => [o.orderId === O2 ? "O2" : "O1", o.shortUnits]))}`);
+    // Partial-coverage attribution (deficit 2 of O2's 4):
+    const part = deriveOversoldOrders(await openMovements(p1), 2);
+    note(part.reliable && part.orders.length === 1 && part.orders[0].shortUnits === 2 && part.orders[0].partiallyCovered === true,
+      "partial attribution: deficit 2 → O2 short by 2 of 4, marked partial");
+
+    // Pure settlement math: -4 + 10 = 6, settles 4, 6 genuinely available.
+    const s = computeReceiveSettlement(-4, 10);
+    note(s.newStock === 6 && s.settledUnits === 4 && s.availableNow === 6,
+      `computeReceiveSettlement(-4, 10) → ${JSON.stringify(s)}`);
+
+    // Live receive onto negative: -4 + 10 = 6, available again.
+    const old = await casReceive(p1, 10);
+    note(old === -4 && (await stockOf(p1)) === 6 && (await availOf(p1)) === true,
+      "RECEIVE onto -4: stock -4 + 10 = 6, available flips true (THE incident's fix: not 10)");
+    // Ledger + adjustments invariant for this scenario:
+    // start 6 - dec(6+4) + received 10 = 6.
+    note((await stockOf(p1)) === 6 - 6 - 4 + 10,
+      "INVARIANT [receive scenario]: start 6 - dec 10 + received 10 = 6 ✓");
+  }
+
+  {
+    console.log("\n--- CP-3e: receive onto zero / positive; set-count replaces ---");
+    await setStock(p1, 0);
+    await casReceive(p1, 5);
+    note((await stockOf(p1)) === 5 && (await availOf(p1)) === true
+      && computeReceiveSettlement(0, 5).settledUnits === 0,
+      "receive onto 0: 0 + 5 = 5, nothing to settle, available");
+    await casReceive(p1, 3);
+    note((await stockOf(p1)) === 8, "receive onto positive: 5 + 3 = 8");
+
+    // Set-count = REPLACE (the action's upsert path).
+    await setStock(p1, -4); // deficit again (as if oversold)
+    await setStock(p1, 10); // recount says 10
+    note((await stockOf(p1)) === 10 && (await availOf(p1)) === true,
+      "SET COUNT from -4 → 10: deficit deliberately erased by a recount");
+    await setStock(p1, 2);
+    note((await stockOf(p1)) === 2, "SET COUNT from positive: 10 → 2");
+
+    // Unreliable attribution: a deficit with NO open-order movements (created
+    // by manual edits) must return numbers-only, never invented orders.
+    await setStock(p3, -5);
+    const att = deriveOversoldOrders(await openMovements(p3), 5);
+    note(att.reliable === false && att.orders.length === 0,
+      "manual-edit deficit: attribution says UNRELIABLE with zero orders (no guessing)");
+    await setStock(p3, 0);
   }
 } catch (e) {
   console.log("ERROR:", e.message);
