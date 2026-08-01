@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { AdminProvider } from "@/lib/admin/store";
+import { RefreshLockProvider } from "@/lib/poll/use-live-refresh";
 import { AdminNav } from "./admin-nav";
+import { OrderAlertsProvider, OrderAlertsWidget } from "./order-alerts";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { fetchNewOrderCount } from "@/lib/admin/orders-data";
 import { signOutAdmin } from "./actions";
@@ -21,6 +23,10 @@ export default async function AdminLayout({
 
   return (
     <AdminProvider>
+      {/* CP-3d: the refresh lock (defers in-place refreshes while an admin is
+          mid-action) and the single 15s order poller (badge/chime/title). */}
+      <RefreshLockProvider>
+      <OrderAlertsProvider>
       <div className="flex min-h-screen bg-[#f7f4eb]">
         {/* Sidebar */}
         <aside className="hidden w-64 shrink-0 flex-col border-r border-[var(--border)] bg-surface md:flex">
@@ -44,6 +50,10 @@ export default async function AdminLayout({
           </div>
 
           <AdminNav newOrderCount={newOrderCount} />
+
+          {/* CP-3d: enable/mute + degraded state — always visible, never in a
+              menu (owner requirement). */}
+          <OrderAlertsWidget />
 
           <div className="mt-auto border-t border-[var(--border)] px-6 py-5 text-[11px] text-muted-soft">
             {adminEmail ? (
@@ -82,6 +92,8 @@ export default async function AdminLayout({
           <main className="flex-1 px-6 py-8 md:px-10 md:py-10">{children}</main>
         </div>
       </div>
+      </OrderAlertsProvider>
+      </RefreshLockProvider>
     </AdminProvider>
   );
 }

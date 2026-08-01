@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Check, PackageCheck, Truck, X } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
+import { useRefreshLockWhile } from "@/lib/poll/use-live-refresh";
 import type { AdminOrderDetail } from "@/lib/admin/orders-data";
 import {
   cancelOrder,
@@ -40,6 +41,11 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
   const [cancelPrompt, setCancelPrompt] = useState(false);
   const [cancelNote, setCancelNote] = useState("");
   const [shortages, setShortages] = useState<OrderShortage[] | null>(null);
+
+  // CP-3d: while a dialog is open or an action is in flight, in-place live
+  // refreshes are DEFERRED (the chime/badge are not) — an admin mid-cancel or
+  // mid-oversell is never clobbered by a poll.
+  useRefreshLockWhile(busy || cancelPrompt || (shortages !== null && shortages.length > 0));
 
   // Pre-check from the page's own data: tracked lines (stockQty != null) that
   // can't cover their ordered qty. The server re-checks atomically anyway.

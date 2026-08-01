@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useOrderAlerts } from "./order-alerts";
 
 const ITEMS: Array<{ href: string; label: string; icon: string }> = [
   { href: "/admin", label: "Dashboard", icon: "■" },
@@ -16,8 +17,12 @@ const ITEMS: Array<{ href: string; label: string; icon: string }> = [
 ];
 
 // newOrderCount: fetched server-side by the layout (per admin page render).
+// CP-3d: once the 15s poller has run, its LIVE count supersedes the
+// server-rendered one, so the badge stays current on every admin page.
 export function AdminNav({ newOrderCount = 0 }: { newOrderCount?: number }) {
   const pathname = usePathname();
+  const liveCount = useOrderAlerts()?.newCount;
+  const count = liveCount ?? newOrderCount;
   return (
     <nav className="flex flex-col gap-0.5 px-3 py-4">
       {ITEMS.map((it) => {
@@ -41,13 +46,13 @@ export function AdminNav({ newOrderCount = 0 }: { newOrderCount?: number }) {
               {it.icon}
             </span>
             <span className="font-medium">{it.label}</span>
-            {it.href === "/admin/orders" && newOrderCount > 0 && (
+            {it.href === "/admin/orders" && count > 0 && (
               <span
                 className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold leading-none ${
                   active ? "bg-white text-brand" : "bg-accent text-white"
                 }`}
               >
-                {newOrderCount} new
+                {count} new
               </span>
             )}
           </Link>
