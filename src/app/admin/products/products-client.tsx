@@ -11,6 +11,7 @@ import {
   deactivateProduct,
   uploadProductImageAction,
   setProductInventory,
+  receiveStock,
   type ProductInput,
 } from "./actions";
 import { setProductCost } from "../pricing/actions";
@@ -24,6 +25,14 @@ const UNITS: ProductUnit[] = ["case", "bag", "lb", "kg", "gal", "L", "ea", "box"
 function isLowStock(s: ProductStock | undefined): boolean {
   return s != null && s.stockQty <= s.lowStockThreshold;
 }
+
+// CP-3e: stock edits are TWO explicit operations — receiving a shipment ADDS
+// (and settles a deficit); a physical recount REPLACES. The modal returns one
+// of these (or null when stock is untouched).
+export type StockOp =
+  | { kind: "receive"; qty: number; lowStockThreshold: number }
+  | { kind: "set"; stockQty: number | null; lowStockThreshold: number }
+  | null;
 
 export function ProductsClient({
   products,
@@ -102,7 +111,7 @@ export function ProductsClient({
   async function handleSave(
     values: ProductInput,
     costCents: number | null,
-    stockInput: { stockQty: number | null; lowStockThreshold: number } | null, // null = unchanged
+    stockOp: StockOp, // null = stock untouched
   ) {
     setSaving(true);
     setFormError(null);
@@ -138,27 +147,55 @@ export function ProductsClient({
       swept += costResult.updated ?? 0;
       warning = warning ?? costResult.warning;
     }
-    // CP-3b: tracked stock lives in the admin-only product_inventory table
-    // (never on products; the portal only ever sees is_available).
-    if (productId && stockInput) {
-      const stockResult = await setProductInventory(
-        productId,
-        stockInput.stockQty,
-        stockInput.lowStockThreshold,
-      );
-      if (!stockResult.ok) {
-        setSaving(false);
-        setFormError(`Product saved, but the stock was not: ${stockResult.message}`);
-        return;
+    // CP-3b/3e: tracked stock lives in the admin-only product_inventory table
+    // (never on products; the portal only ever sees is_available). Receive
+    // ADDS and settles deficits; set-count REPLACES (recount only).
+    let stockNotice: string | null = null;
+    if (productId && stockOp) {
+      if (stockOp.kind === "receive") {
+        const r = await receiveStock(productId, stockOp.qty, stockOp.lowStockThreshold);
+        if (!r.ok) {
+          setSaving(false);
+          setFormError(`Product saved, but the stock was not: ${r.message}`);
+          return;
+        }
+        if (r.settledUnits > 0) {
+          const who = r.oversold.reliable
+            ? r.oversold.orders
+                .map(
+                  (o) =>
+                    `#${o.orderId.slice(0, 8)} ${o.businessName} (${o.shortUnits} unit${o.shortUnits === 1 ? "" : "s"}${o.partiallyCovered ? ", partial" : ""})`,
+                )
+                .join(", ")
+            : null;
+          stockNotice =
+            `Received ${stockOp.qty}: ${r.settledUnits} settled the deficit, ${r.availableNow} now genuinely available (stock ${r.oldStock} → ${r.newStock}).` +
+            (who
+              ? ` Goods arrived for oversold order${r.oversold.orders.length === 1 ? "" : "s"}: ${who} — call them.`
+              : " The deficit couldn't be attributed to specific open orders (it includes manual edits or completed orders) — unit totals only.");
+        } else {
+          stockNotice = `Received ${stockOp.qty} — stock ${r.oldStock} → ${r.newStock}.`;
+        }
+      } else {
+        const stockResult = await setProductInventory(
+          productId,
+          stockOp.stockQty,
+          stockOp.lowStockThreshold,
+        );
+        if (!stockResult.ok) {
+          setSaving(false);
+          setFormError(`Product saved, but the stock was not: ${stockResult.message}`);
+          return;
+        }
       }
     }
     setSaving(false);
-    setNotice(
+    const base =
       warning ??
-        (swept > 0
-          ? `Saved — ${swept} customer price${swept === 1 ? "" : "s"} updated automatically.`
-          : "Saved."),
-    );
+      (swept > 0
+        ? `Saved — ${swept} customer price${swept === 1 ? "" : "s"} updated automatically.`
+        : "Saved.");
+    setNotice(stockNotice ? `${base} ${stockNotice}` : base);
     closeModal();
   }
 
@@ -443,11 +480,7 @@ function ProductFormModal({
   saving: boolean;
   error: string | null;
   onClose: () => void;
-  onSave: (
-    values: ProductInput,
-    costCents: number | null,
-    stockInput: { stockQty: number | null; lowStockThreshold: number } | null,
-  ) => void;
+  onSave: (values: ProductInput, costCents: number | null, stockOp: StockOp) => void;
   onDeactivate?: () => void;
 }) {
   const [name, setName] = useState(initial?.name ?? "");
@@ -465,7 +498,14 @@ function ProductFormModal({
     initialCostCents != null ? (initialCostCents / 100).toFixed(2) : "",
   );
   const [marginPct, setMarginPct] = useState("");
-  // CP-3b: blank stock = NOT TRACKED (never blocks orders, never alerts).
+  // CP-3e: stock edits are TWO explicit operations. Tracked products default
+  // to RECEIVE (a shipment arrived → ADD; the 90% case, settles deficits);
+  // SET COUNT (physical recount → REPLACE) is the deliberate secondary path.
+  // Untracked products only have "set" (nothing to add to yet); blank = stay
+  // untracked.
+  const tracked = initialStock != null;
+  const [stockMode, setStockMode] = useState<"receive" | "set">(tracked ? "receive" : "set");
+  const [receiveQtyStr, setReceiveQtyStr] = useState("");
   const [stockQtyStr, setStockQtyStr] = useState(
     initialStock != null ? String(initialStock.stockQty) : "",
   );
@@ -537,15 +577,34 @@ function ProductFormModal({
       costDollars.trim() === ""
         ? null
         : Math.max(0, Math.round(parseFloat(costDollars) * 100));
-    // CP-3b: only touch inventory when the fields actually changed (blank =
-    // untracked; a save with unchanged fields must not rewrite updated_at).
-    const stockQty =
-      stockQtyStr.trim() === "" ? null : Math.max(0, Math.floor(Number(stockQtyStr) || 0));
+    // CP-3e: build the explicit stock operation (null = stock untouched).
+    // Set-count parses UNclamped so an untouched negative ("-4") compares
+    // equal and produces no op; a deliberate change to a negative is rejected
+    // by the action (physical counts are never negative).
     const threshold =
       thresholdStr.trim() === "" ? 0 : Math.max(0, Math.floor(Number(thresholdStr) || 0));
-    const stockChanged =
-      stockQty !== (initialStock?.stockQty ?? null) ||
-      threshold !== (initialStock?.lowStockThreshold ?? 0);
+    let stockOp: StockOp = null;
+    if (inventoryEnabled) {
+      if (tracked && stockMode === "receive") {
+        const q = receiveQtyStr.trim() === "" ? 0 : Math.floor(Number(receiveQtyStr) || 0);
+        if (q > 0) {
+          stockOp = { kind: "receive", qty: q, lowStockThreshold: threshold };
+        } else if (threshold !== (initialStock?.lowStockThreshold ?? 0)) {
+          // Threshold-only change: re-set the SAME count with the new alert.
+          stockOp = {
+            kind: "set",
+            stockQty: initialStock?.stockQty ?? null,
+            lowStockThreshold: threshold,
+          };
+        }
+      } else {
+        const sq = stockQtyStr.trim() === "" ? null : Math.floor(Number(stockQtyStr));
+        const changed =
+          sq !== (initialStock?.stockQty ?? null) ||
+          threshold !== (initialStock?.lowStockThreshold ?? 0);
+        if (changed) stockOp = { kind: "set", stockQty: sq, lowStockThreshold: threshold };
+      }
+    }
     onSave(
       {
         sku: sku.trim(),
@@ -559,7 +618,7 @@ function ProductFormModal({
         imageUrl,
       },
       costCents,
-      inventoryEnabled && stockChanged ? { stockQty, lowStockThreshold: threshold } : null,
+      stockOp,
     );
   }
 
@@ -714,48 +773,171 @@ function ProductFormModal({
               </p>
             )}
           </div>
-          {/* CP-3b stock (admin-only table; portal only ever sees a boolean).
-              Blank = not tracked: never blocks orders, never alerts. */}
-          <Field label="Stock on hand (blank = not tracked)">
-            <input
-              type="number"
-              step="1"
-              min="0"
-              value={stockQtyStr}
-              onChange={(e) => setStockQtyStr(e.target.value)}
-              placeholder="Leave blank to skip tracking"
-              disabled={!inventoryEnabled}
-              className={inputCls}
-            />
-          </Field>
-          <Field label="Low-stock alert at">
-            <input
-              type="number"
-              step="1"
-              min="0"
-              value={thresholdStr}
-              onChange={(e) => setThresholdStr(e.target.value)}
-              placeholder="0"
-              disabled={!inventoryEnabled || stockQtyStr.trim() === ""}
-              className={inputCls}
-            />
-          </Field>
-          {!inventoryEnabled && (
-            <p className="sm:col-span-2 -mt-2 text-xs text-amber-700">
+          {/* CP-3e stock: TWO explicit operations. Receiving a shipment ADDS
+              (settling any deficit); a physical recount REPLACES. The admin
+              never has to guess which one they're doing — each shows a live
+              preview of the result before saving. Admin-only data throughout;
+              the portal only ever sees the is_available boolean. */}
+          {!inventoryEnabled ? (
+            <p className="sm:col-span-2 text-xs text-amber-700">
               Stock tracking needs migration 0010 — run it to enable these fields.
             </p>
-          )}
-          {inventoryEnabled && initialStock != null && initialStock.stockQty < 0 && (
-            <p className="sm:col-span-2 -mt-2 text-xs font-semibold text-red-700">
-              Oversold by {-initialStock.stockQty} — customers are owed units. Entering the real
-              physical count here overwrites the deficit.
-            </p>
-          )}
-          {inventoryEnabled && stockQtyStr.trim() !== "" && Number(stockQtyStr) === 0 && (
-            <p className="sm:col-span-2 -mt-2 text-xs text-amber-700">
-              Stock 0 marks this product “Unavailable” in the customer portal until it&apos;s
-              restocked.
-            </p>
+          ) : !tracked ? (
+            <>
+              <Field label="Initial stock count (blank = not tracked)">
+                <input
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={stockQtyStr}
+                  onChange={(e) => setStockQtyStr(e.target.value)}
+                  placeholder="Leave blank to skip tracking"
+                  className={inputCls}
+                />
+              </Field>
+              <Field label="Low-stock alert at">
+                <input
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={thresholdStr}
+                  onChange={(e) => setThresholdStr(e.target.value)}
+                  placeholder="0"
+                  disabled={stockQtyStr.trim() === ""}
+                  className={inputCls}
+                />
+              </Field>
+              <p className="sm:col-span-2 -mt-2 text-xs text-muted">
+                This product isn&apos;t tracked yet, so the first number simply SETS the starting
+                count — there&apos;s nothing to add to. After that, use “Receive stock” for
+                arriving shipments.
+              </p>
+            </>
+          ) : (
+            <div className="sm:col-span-2 rounded-lg border border-[var(--border)] bg-background p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-xs font-medium uppercase tracking-wider text-muted">
+                  Stock — currently{" "}
+                  <span
+                    className={`font-mono text-sm ${(initialStock?.stockQty ?? 0) < 0 ? "font-bold text-red-700" : "font-semibold text-foreground"}`}
+                  >
+                    {initialStock?.stockQty}
+                  </span>
+                  {(initialStock?.stockQty ?? 0) < 0 && (
+                    <span className="ml-1.5 rounded-full bg-red-100 px-1.5 py-0.5 text-[9px] font-bold uppercase text-red-800">
+                      Oversold by {-(initialStock?.stockQty ?? 0)}
+                    </span>
+                  )}
+                </span>
+                <div className="flex gap-1 rounded-full border border-[var(--border-strong)] p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setStockMode("receive")}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      stockMode === "receive"
+                        ? "bg-brand text-white"
+                        : "text-foreground/70 hover:text-foreground"
+                    }`}
+                  >
+                    Receive stock
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStockMode("set")}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      stockMode === "set"
+                        ? "bg-zinc-700 text-white"
+                        : "text-foreground/70 hover:text-foreground"
+                    }`}
+                  >
+                    Set count
+                  </button>
+                </div>
+              </div>
+
+              {stockMode === "receive" ? (
+                <div className="mt-3">
+                  <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
+                    <span className="uppercase tracking-wider">
+                      Quantity that ARRIVED (adds to current stock)
+                    </span>
+                    <input
+                      type="number"
+                      step="1"
+                      min="1"
+                      value={receiveQtyStr}
+                      onChange={(e) => setReceiveQtyStr(e.target.value)}
+                      placeholder="e.g. 10"
+                      className={inputCls}
+                    />
+                  </label>
+                  {(() => {
+                    const old = initialStock?.stockQty ?? 0;
+                    const q = Math.floor(Number(receiveQtyStr) || 0);
+                    if (receiveQtyStr.trim() === "" || q < 1) return null;
+                    const settled = old < 0 ? Math.min(-old, q) : 0;
+                    return (
+                      <p className="mt-2 text-xs font-semibold text-emerald-800">
+                        {old} + {q} = {old + q}
+                        {settled > 0 &&
+                          ` — ${settled} unit${settled === 1 ? "" : "s"} settle the deficit, ${Math.max(old + q, 0)} genuinely available`}
+                      </p>
+                    );
+                  })()}
+                </div>
+              ) : (
+                <div className="mt-3">
+                  <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
+                    <span className="uppercase tracking-wider">
+                      REAL physical count (replaces current stock — recount only)
+                    </span>
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      value={stockQtyStr}
+                      onChange={(e) => setStockQtyStr(e.target.value)}
+                      placeholder="Count from your stocktake"
+                      className={inputCls}
+                    />
+                  </label>
+                  {(() => {
+                    const old = initialStock?.stockQty ?? 0;
+                    if (stockQtyStr.trim() === "")
+                      return (
+                        <p className="mt-2 text-xs font-semibold text-red-700">
+                          {old} → not tracked (stock tracking stops
+                          {old < 0 ? ` and the deficit of ${-old} is erased` : ""})
+                        </p>
+                      );
+                    const sq = Math.floor(Number(stockQtyStr));
+                    if (Number.isNaN(sq) || sq === old) return null;
+                    return (
+                      <p
+                        className={`mt-2 text-xs font-semibold ${old < 0 ? "text-red-700" : "text-foreground/80"}`}
+                      >
+                        {old} → {sq}
+                        {old < 0 &&
+                          ` (deficit of ${-old} ERASED — only do this after a physical recount; use Receive for arriving shipments)`}
+                      </p>
+                    );
+                  })()}
+                </div>
+              )}
+
+              <label className="mt-3 flex flex-col gap-1.5 text-xs font-medium text-muted">
+                <span className="uppercase tracking-wider">Low-stock alert at</span>
+                <input
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={thresholdStr}
+                  onChange={(e) => setThresholdStr(e.target.value)}
+                  placeholder="0"
+                  className={inputCls}
+                />
+              </label>
+            </div>
           )}
           <Field label="Status">
             <label className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-background px-3 py-2 text-sm">

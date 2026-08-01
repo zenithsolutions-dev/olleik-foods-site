@@ -11,6 +11,15 @@ import {
 } from "@/lib/admin/product-images";
 import { autoRecomputeForScope } from "@/lib/admin/recompute";
 import type { ProductUnit } from "@/lib/admin/types";
+// Pure stock math (unit-tested directly by scripts/test-inventory.mjs).
+// NOTE: value imports + declared `export type X =` only — NEVER the
+// `export type { X }` re-export syntax in this "use server" module.
+import {
+  computeReceiveSettlement,
+  deriveOversoldOrders,
+  type OpenMovementRow,
+  type OversoldAttribution,
+} from "@/lib/admin/stock-math";
 
 // Product mutations via the service-role client. Each action re-checks
 // requireAdmin() (server functions are POST endpoints; don't rely on the
@@ -162,6 +171,140 @@ export async function updateProduct(
 
   revalidate();
   return { ok: true, updated, warning };
+  });
+}
+
+// CP-3e: RECEIVE stock — a shipment arrived, ADD it to current stock. This is
+// the primary operation and the one that correctly settles a deficit
+// (-4 + 10 = 6: 4 owed units covered, 6 genuinely available). Distinct from
+// setProductInventory below, which REPLACES the count (physical recount only).
+//
+// Atomicity without a migration: PostgREST can't express `stock = stock + n`,
+// so the add is an optimistic compare-and-swap — UPDATE ... WHERE stock_qty =
+// <the value we just read>, retried on contention. A concurrent confirm/cancel
+// (which lock rows inside the 0010/0011 functions) makes the CAS affect 0 rows
+// and we re-read; stock is never lost or double-added.
+export type ReceiveStockResult =
+  | {
+      ok: true;
+      oldStock: number;
+      newStock: number;
+      settledUnits: number;
+      availableNow: number;
+      oversold: OversoldAttribution;
+    }
+  | { ok: false; message: string };
+
+export async function receiveStock(
+  productId: string,
+  qty: number,
+  lowStockThreshold: number,
+): Promise<ReceiveStockResult> {
+  await requireAdmin();
+  return guardAction("receiveStock", async () => {
+    const admin = getAdminClient();
+    if (!admin) return { ok: false, message: "Supabase is not configured." };
+    if (!Number.isInteger(qty) || qty < 1 || qty > 100000)
+      return { ok: false, message: "Received quantity must be a whole number of 1 or more." };
+    if (!Number.isInteger(lowStockThreshold) || lowStockThreshold < 0)
+      return { ok: false, message: "The low-stock alert level must be a whole number of 0 or more." };
+
+    // Optimistic CAS add (5 attempts is far beyond realistic contention).
+    let oldStock: number | null = null;
+    for (let attempt = 0; attempt < 5 && oldStock === null; attempt++) {
+      const { data: cur, error: readErr } = await admin
+        .from("product_inventory")
+        .select("stock_qty")
+        .eq("product_id", productId)
+        .maybeSingle();
+      if (readErr) {
+        console.error("[admin] receive read failed:", readErr.message);
+        return { ok: false, message: "Could not read current stock. Please try again." };
+      }
+      if (!cur) {
+        return {
+          ok: false,
+          message:
+            "This product isn't tracked yet — enter its initial count with “Set count” first.",
+        };
+      }
+      const seen = (cur as { stock_qty: number }).stock_qty;
+      const { data: upd, error: updErr } = await admin
+        .from("product_inventory")
+        .update({
+          stock_qty: seen + qty,
+          low_stock_threshold: lowStockThreshold,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("product_id", productId)
+        .eq("stock_qty", seen) // CAS guard: someone moved stock → 0 rows → retry
+        .select("stock_qty");
+      if (updErr) {
+        console.error("[admin] receive CAS failed:", updErr.message);
+        return { ok: false, message: "Could not update stock. Please try again." };
+      }
+      if (upd && upd.length > 0) oldStock = seen;
+    }
+    if (oldStock === null) {
+      return { ok: false, message: "Stock is changing rapidly — please retry the receive." };
+    }
+
+    const settlement = computeReceiveSettlement(oldStock, qty);
+    const { error: availErr } = await admin
+      .from("products")
+      .update({ is_available: settlement.newStock > 0 })
+      .eq("id", productId);
+    if (availErr) console.error("[admin] receive availability flip failed:", availErr.message);
+
+    // Deficit attribution (owner-approved read, ADMIN-ONLY): the open
+    // (confirmed/prepared) orders holding ledger movements on this product.
+    // Completed orders already shipped and cancelled orders have no movements,
+    // so "open movements" is exactly the set of orders still owed goods.
+    let oversold: OversoldAttribution = { reliable: true, orders: [] };
+    if (oldStock < 0) {
+      const { data: mvRows, error: mvErr } = await admin
+        .from("order_stock_movements")
+        .select("order_id, qty_decremented, orders(status, stock_decremented_at, customers(business_name))")
+        .eq("product_id", productId);
+      if (mvErr) {
+        console.error("[admin] oversold derivation read failed:", mvErr.message);
+        oversold = { reliable: false, orders: [] }; // numbers only, no guessing
+      } else {
+        type Row = {
+          order_id: string;
+          qty_decremented: number;
+          orders: {
+            status: string;
+            stock_decremented_at: string | null;
+            customers: { business_name: string } | null;
+          } | null;
+        };
+        const open: OpenMovementRow[] = ((mvRows as unknown as Row[]) ?? [])
+          .filter(
+            (r) =>
+              (r.orders?.status === "confirmed" || r.orders?.status === "prepared") &&
+              r.orders?.stock_decremented_at != null,
+          )
+          .map((r) => ({
+            orderId: r.order_id,
+            businessName: r.orders?.customers?.business_name ?? "(unknown customer)",
+            qty: r.qty_decremented,
+            decrementedAt: r.orders?.stock_decremented_at as string,
+          }));
+        oversold = deriveOversoldOrders(open, -oldStock);
+      }
+    }
+
+    revalidate();
+    revalidatePath("/admin/orders");
+    return {
+      ok: true,
+      oldStock,
+      newStock: settlement.newStock,
+      settledUnits: settlement.settledUnits,
+      availableNow: settlement.availableNow,
+      oversold,
+    };
   });
 }
 
