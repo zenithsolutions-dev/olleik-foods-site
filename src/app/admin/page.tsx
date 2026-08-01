@@ -1,4 +1,5 @@
 import { DashboardClient } from "./dashboard-client";
+import { DashboardLive } from "./dashboard-live";
 import { fetchAdminLeads } from "@/lib/admin/leads-data";
 import { fetchAdminProducts } from "@/lib/admin/products-data";
 import { fetchAdminCustomers } from "@/lib/admin/customers-data";
@@ -26,6 +27,7 @@ export default async function AdminDashboardPage() {
         <p className="mt-2 text-sm text-muted">
           Quick view of your catalog, customer base, and incoming leads.
         </p>
+        <DashboardLive />
       </header>
       <DashboardClient
         leads={leads}

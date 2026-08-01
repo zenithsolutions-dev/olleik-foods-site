@@ -3,6 +3,7 @@ import { requireCustomer } from "@/lib/portal/require-customer";
 import { fetchMyOrder } from "@/lib/portal/portal-data";
 import { formatMoney } from "@/lib/portal/format";
 import { StatusChip } from "../status-chip";
+import { PortalOrdersLive } from "../../orders-live";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,7 @@ export default async function PortalOrderDetailPage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
+      <PortalOrdersLive />
       {placed && (
         <p className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
           Order received — thank you! We&apos;ll confirm it shortly.

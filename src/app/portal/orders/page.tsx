@@ -3,6 +3,7 @@ import { requireCustomer } from "@/lib/portal/require-customer";
 import { fetchMyOrders } from "@/lib/portal/portal-data";
 import { formatMoney } from "@/lib/portal/format";
 import { StatusChip } from "./status-chip";
+import { PortalOrdersLive } from "../orders-live";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,8 @@ export default async function PortalOrdersPage() {
         <p className="mt-2 text-sm text-muted">
           Orders can&apos;t be edited after submission — call your Olleik rep for any change.
         </p>
+        {/* CP-3d: status changes appear here on their own (30s poll). */}
+        <PortalOrdersLive />
       </div>
 
       {orders.length === 0 ? (
