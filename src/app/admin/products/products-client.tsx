@@ -334,13 +334,22 @@ export function ProductsClient({
                   {profitAtList != null ? formatMoney(profitAtList) : "—"}
                 </td>
                 {/* CP-3b: tracked stock (admin-only; customers only ever see
-                    the is_available boolean). "—" = not tracked. */}
+                    the is_available boolean). "—" = not tracked. CP-3c: stock
+                    is SIGNED — negative renders as "Oversold by N" (units
+                    owed), the most severe state. */}
                 <td
                   className="px-4 py-3 text-right font-mono"
                   title={s == null ? "Not tracked — edit the product to track stock" : `Alert at ${s.lowStockThreshold}`}
                 >
                   {s == null ? (
                     <span className="text-muted-soft">—</span>
+                  ) : s.stockQty < 0 ? (
+                    <span className="font-semibold text-red-700">
+                      {s.stockQty}
+                      <span className="ml-1.5 rounded-full bg-red-100 px-1.5 py-0.5 font-sans text-[9px] font-semibold uppercase tracking-wider text-red-800">
+                        Oversold by {-s.stockQty}
+                      </span>
+                    </span>
                   ) : (
                     <span
                       className={
@@ -734,6 +743,12 @@ function ProductFormModal({
           {!inventoryEnabled && (
             <p className="sm:col-span-2 -mt-2 text-xs text-amber-700">
               Stock tracking needs migration 0010 — run it to enable these fields.
+            </p>
+          )}
+          {inventoryEnabled && initialStock != null && initialStock.stockQty < 0 && (
+            <p className="sm:col-span-2 -mt-2 text-xs font-semibold text-red-700">
+              Oversold by {-initialStock.stockQty} — customers are owed units. Entering the real
+              physical count here overwrites the deficit.
             </p>
           )}
           {inventoryEnabled && stockQtyStr.trim() !== "" && Number(stockQtyStr) === 0 && (

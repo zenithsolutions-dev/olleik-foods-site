@@ -74,7 +74,8 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
     }
     setShortages(null);
     const parts: string[] = [];
-    if (res.oversold) parts.push("Confirmed with an oversell — short lines took stock to 0.");
+    if (res.oversold)
+      parts.push("Confirmed with an oversell — short lines went negative (units owed).");
     if (res.assigned && res.assigned > 0) {
       parts.push(
         `${res.oversold ? "" : "Confirmed. "}${res.assigned} newly ordered ${res.assigned === 1 ? "product was" : "products were"} added to this customer's catalog at waterfall pricing.`,
@@ -217,8 +218,9 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
             ))}
           </ul>
           <p className="mt-2 text-xs text-amber-800">
-            Confirming anyway takes the short lines&apos; stock to 0 and marks them unavailable in
-            the portal. The order itself is unchanged either way.
+            Confirming anyway deducts the full ordered quantity — short lines go NEGATIVE
+            (&quot;Oversold by N&quot; = units you owe) and show as unavailable in the portal. The
+            order itself is unchanged either way.
           </p>
           <div className="mt-3 flex gap-2">
             <button
@@ -339,19 +341,26 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
                     <p className="text-xs text-muted">
                       {l.sku} · {l.unitSize} / {l.unit}
                       {l.appliedOfferTitle ? ` · ${l.appliedOfferTitle}` : ""}
-                      {/* CP-3b: tracked stock, admin-only. Amber while a NEW
-                          order can't be covered. */}
-                      {l.stockQty != null && (
-                        <span
-                          className={
-                            order.status === "new" && l.stockQty < l.qty
-                              ? "font-semibold text-amber-700"
-                              : ""
-                          }
-                        >
-                          {" "}· in stock {l.stockQty}
-                        </span>
-                      )}
+                      {/* CP-3b/3c: tracked stock, admin-only. This is LIVE
+                          current stock — labelled as such, and HIDDEN on
+                          terminal statuses where it would read as historical
+                          (2026-08-01 finding #3). Amber while a NEW order
+                          can't be covered; red when oversold. */}
+                      {l.stockQty != null &&
+                        !["completed", "cancelled"].includes(order.status) && (
+                          <span
+                            className={
+                              l.stockQty < 0
+                                ? "font-semibold text-red-700"
+                                : order.status === "new" && l.stockQty < l.qty
+                                  ? "font-semibold text-amber-700"
+                                  : ""
+                            }
+                          >
+                            {" "}· current stock {l.stockQty}
+                            {l.stockQty < 0 ? ` (oversold by ${-l.stockQty})` : ""}
+                          </span>
+                        )}
                     </p>
                   </td>
                   <td className="px-3 py-3 text-right font-mono">{l.qty}</td>
