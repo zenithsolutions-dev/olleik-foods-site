@@ -302,13 +302,24 @@ try {
     if (sdCol.error) fail("columns: orders.stock_decremented_at exists", `${sdCol.error.code}`);
     else pass("columns: orders.stock_decremented_at exists");
 
-    // Behavioral: stock can never be negative (uses the probe product).
+    // Behavioral: CP-3c (0011) makes stock SIGNED — negative = units owed.
+    // Pre-0011 the old >= 0 check still rejects, which is a WARN (the deployed
+    // signed-inventory code expects negatives to be storable).
     if (probeProduct) {
       const neg = await admin.from("product_inventory")
         .insert({ product_id: probeProduct, stock_qty: -1 });
-      if (neg.error?.code === "23514") pass("product_inventory_qty_check rejects negative stock");
-      else fail("product_inventory_qty_check rejects negative stock", neg.error ? `${neg.error.code}` : "-1 ACCEPTED");
-      // Accept a valid row, then clean up (products delete would cascade anyway).
+      if (!neg.error) {
+        pass("signed stock: negative stock_qty accepted (0011 applied)");
+      } else if (neg.error.code === "23514") {
+        console.log("  WARN  0011 not applied yet — stock is still unsigned/clamped (phantom-stock fix inactive). Run 0011.");
+      } else {
+        fail("signed stock probe", `${neg.error.code} ${neg.error.message.slice(0, 80)}`);
+      }
+      // Threshold stays physical: negative thresholds must still be rejected.
+      const badThr = await admin.from("product_inventory")
+        .upsert({ product_id: probeProduct, stock_qty: 5, low_stock_threshold: -1 });
+      if (badThr.error?.code === "23514") pass("product_inventory_threshold_check rejects negative thresholds");
+      else fail("product_inventory_threshold_check rejects negative thresholds", badThr.error ? `${badThr.error.code}` : "-1 ACCEPTED");
       const okInv = await admin.from("product_inventory")
         .upsert({ product_id: probeProduct, stock_qty: 5, low_stock_threshold: 2 });
       if (okInv.error) fail("product_inventory accepts a valid tracked row", `${okInv.error.code} ${okInv.error.message.slice(0, 80)}`);

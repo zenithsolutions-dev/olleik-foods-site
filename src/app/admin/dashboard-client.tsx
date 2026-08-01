@@ -51,7 +51,10 @@ export function DashboardClient({
               <h2 className="font-display text-lg font-semibold text-amber-900">Low stock</h2>
               <p className="mt-1 text-xs text-amber-800">
                 {lowStock.length} tracked product{lowStock.length === 1 ? " is" : "s are"} at or
-                below the alert level.
+                below the alert level
+                {lowStock.some((i) => i.stockQty < 0)
+                  ? ` — ${lowStock.filter((i) => i.stockQty < 0).length} OVERSOLD (units owed).`
+                  : "."}
               </p>
             </div>
             <Link
@@ -68,16 +71,25 @@ export function DashboardClient({
                   <p className="truncate font-medium text-foreground">{i.name}</p>
                   <p className="text-xs text-muted">{i.sku}</p>
                 </div>
-                <span
-                  className={`font-mono text-sm font-semibold ${
-                    i.stockQty === 0 ? "text-red-700" : "text-amber-800"
-                  }`}
-                >
-                  {i.stockQty === 0 ? "out of stock" : `${i.stockQty} left`}
-                  <span className="ml-1 font-sans text-[10px] font-normal text-muted">
-                    (alert at {i.lowStockThreshold})
+                {/* CP-3c severity ladder: oversold (negative, most severe) >
+                    out (0) > low. The list arrives sorted by stock ascending,
+                    so oversold rows are already FIRST. */}
+                {i.stockQty < 0 ? (
+                  <span className="rounded-full bg-red-600 px-2.5 py-1 font-sans text-xs font-bold uppercase tracking-wide text-white">
+                    Oversold by {-i.stockQty}
                   </span>
-                </span>
+                ) : (
+                  <span
+                    className={`font-mono text-sm font-semibold ${
+                      i.stockQty === 0 ? "text-red-700" : "text-amber-800"
+                    }`}
+                  >
+                    {i.stockQty === 0 ? "out of stock" : `${i.stockQty} left`}
+                    <span className="ml-1 font-sans text-[10px] font-normal text-muted">
+                      (alert at {i.lowStockThreshold})
+                    </span>
+                  </span>
+                )}
               </li>
             ))}
           </ul>
