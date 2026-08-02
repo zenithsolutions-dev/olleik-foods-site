@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ProductsClient } from "./products-client";
 import { fetchAdminProducts } from "@/lib/admin/products-data";
 import { fetchAdminCategories } from "@/lib/admin/categories-data";
@@ -53,6 +54,21 @@ export default async function ProductsPage({
               range={range}
               keepParams={{ stock: params.stock }}
             />
+          </div>
+          {/* CP-6: printable statements (documents respect the same range). */}
+          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <span className="font-semibold uppercase tracking-wider text-muted">Print:</span>
+            <Link href={`/admin/documents/products${range.preset !== "all" ? `?range=${range.preset === "custom" ? `custom&from=${params.from ?? ""}&to=${params.to ?? ""}` : range.preset}` : ""}`} className="font-medium text-brand hover:text-accent">
+              Product list
+            </Link>
+            <span className="text-muted-soft">·</span>
+            <Link href="/admin/documents/low-stock" className="font-medium text-brand hover:text-accent">
+              Low-stock statement
+            </Link>
+            <span className="text-muted-soft">·</span>
+            <Link href="/admin/documents/out-of-stock" className="font-medium text-brand hover:text-accent">
+              Unavailable statement
+            </Link>
           </div>
         </div>
       </header>

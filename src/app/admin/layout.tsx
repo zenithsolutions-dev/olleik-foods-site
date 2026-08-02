@@ -29,7 +29,7 @@ export default async function AdminLayout({
       <OrderAlertsProvider>
       <div className="flex min-h-screen bg-[#f7f4eb]">
         {/* Sidebar */}
-        <aside className="hidden w-64 shrink-0 flex-col border-r border-[var(--border)] bg-surface md:flex">
+        <aside className="hidden w-64 shrink-0 flex-col border-r border-[var(--border)] bg-surface md:flex print:hidden">
           <div className="border-b border-[var(--border)] px-6 py-5">
             <Link href="/admin" className="flex items-center gap-2.5">
               <span
@@ -81,7 +81,7 @@ export default async function AdminLayout({
 
         {/* Main */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex items-center justify-between border-b border-[var(--border)] bg-surface px-8 py-4 md:hidden">
+          <header className="flex items-center justify-between border-b border-[var(--border)] bg-surface px-8 py-4 md:hidden print:hidden">
             <Link href="/admin" className="font-display text-lg font-semibold text-brand-deep">
               Olleik Admin
             </Link>
