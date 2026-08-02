@@ -3,14 +3,17 @@ import { getAdminClient } from "@/lib/supabase/admin";
 import {
   aggregateDay,
   aggregateProfit,
-  zonedDayStartUTC,
-  zonedPreviousDayStartUTC,
   REVENUE_STATUSES,
   type DayAggregates,
   type DayOrderRow,
   type OrderStatusName,
   type ProfitAggregates,
 } from "./dashboard-math";
+import {
+  zonedDayStartUTC,
+  zonedPreviousDayStartUTC,
+  type ResolvedRange,
+} from "@/lib/dates";
 
 // CP-4 dashboard reads (approved spec). READ-ONLY over what CP-1..CP-3 built:
 // no new tables, no new policies, NO migration. Cost/profit stay on the
@@ -25,12 +28,33 @@ export type DashboardOffer = {
 };
 
 export type DashboardStats = {
-  today: DayAggregates;
+  today: DayAggregates; // the SELECTED period's aggregates (name kept from CP-4)
   todayProfit: ProfitAggregates;
   yesterday: { totalOrders: number; revenueCents: number };
   activeOffers: DashboardOffer[];
   dayStartISO: string; // for display/debug — the exact boundary used
+  // CP-5: what period the aggregates cover — surfaced in every card title so
+  // no figure is ever ambiguous about its period.
+  periodLabel: string;
+  periodPreset: string;
 };
+
+// CP-5: the LIVE operational figures (never period-scoped): orders waiting
+// right now. Cheap — 'new' orders are few by nature.
+export async function fetchPendingNow(): Promise<{ count: number; cents: number }> {
+  const admin = getAdminClient();
+  if (!admin) return { count: 0, cents: 0 };
+  const { data, error } = await admin
+    .from("orders")
+    .select("total_cents")
+    .eq("status", "new");
+  if (error) {
+    if (error.code !== "42P01") console.error("[admin] pending-now read failed:", error.message);
+    return { count: 0, cents: 0 };
+  }
+  const rows = (data as { total_cents: number }[]) ?? [];
+  return { count: rows.length, cents: rows.reduce((n, r) => n + r.total_cents, 0) };
+}
 
 const EXPIRING_SOON_MS = 72 * 60 * 60 * 1000;
 
@@ -41,6 +65,8 @@ const EMPTY_STATS: DashboardStats = {
   yesterday: { totalOrders: 0, revenueCents: 0 },
   activeOffers: [],
   dayStartISO: "",
+  periodLabel: "Today",
+  periodPreset: "today",
 };
 
 type OrderRow = {
@@ -50,23 +76,46 @@ type OrderRow = {
   total_cents: number;
 };
 
-export async function fetchDashboardStats(now = new Date()): Promise<DashboardStats> {
+// CP-5: the dashboard's aggregates can cover ANY resolved range (default
+// Today — nothing changes for someone who never touches the filter). The
+// yesterday comparison only exists on the Today preset (approved D-R3).
+export async function fetchDashboardStats(
+  now = new Date(),
+  range?: ResolvedRange,
+): Promise<DashboardStats> {
   const admin = getAdminClient();
-  if (!admin) return EMPTY_STATS;
+  const isTodayEarly = !range || range.preset === "today";
+  if (!admin)
+    return {
+      ...EMPTY_STATS,
+      periodLabel: isTodayEarly ? "Today" : range.label,
+      periodPreset: isTodayEarly ? "today" : range.preset,
+    };
 
   const todayStart = zonedDayStartUTC(now);
   const yesterdayStart = zonedPreviousDayStartUTC(now);
+  const isToday = isTodayEarly;
+  const periodStart = isToday ? todayStart : range.startUTC;
+  const periodEnd = isToday ? null : range.endUTC;
+  const periodLabel = isToday ? "Today" : range.label;
+  const periodPreset = isToday ? "today" : range.preset;
+
+  let periodQuery = admin.from("orders").select("id, status, fulfillment, total_cents");
+  if (periodStart) periodQuery = periodQuery.gte("created_at", periodStart.toISOString());
+  if (periodEnd) periodQuery = periodQuery.lt("created_at", periodEnd.toISOString());
 
   const [todayRes, yesterdayRes, offersRes] = await Promise.all([
-    admin
-      .from("orders")
-      .select("id, status, fulfillment, total_cents")
-      .gte("created_at", todayStart.toISOString()),
-    admin
-      .from("orders")
-      .select("status, fulfillment, total_cents")
-      .gte("created_at", yesterdayStart.toISOString())
-      .lt("created_at", todayStart.toISOString()),
+    periodQuery,
+    isToday
+      ? admin
+          .from("orders")
+          .select("status, fulfillment, total_cents")
+          .gte("created_at", yesterdayStart.toISOString())
+          .lt("created_at", todayStart.toISOString())
+      : Promise.resolve({ data: [], error: null } as {
+          data: OrderRow[] | null;
+          error: null;
+        }),
     admin
       .from("customer_offers")
       .select("id, title, ends_at")
@@ -77,7 +126,7 @@ export async function fetchDashboardStats(now = new Date()): Promise<DashboardSt
   if (todayRes.error) {
     if (todayRes.error.code !== "42P01")
       console.error("[admin] dashboard today read failed:", todayRes.error.message);
-    return { ...EMPTY_STATS, dayStartISO: todayStart.toISOString() };
+    return { ...EMPTY_STATS, dayStartISO: todayStart.toISOString(), periodLabel, periodPreset };
   }
 
   const toRow = (r: OrderRow): DayOrderRow => ({
@@ -150,6 +199,8 @@ export async function fetchDashboardStats(now = new Date()): Promise<DashboardSt
     todayProfit,
     yesterday: { totalOrders: yAgg.totalOrders, revenueCents: yAgg.revenueCents },
     activeOffers,
-    dayStartISO: todayStart.toISOString(),
+    dayStartISO: (periodStart ?? todayStart).toISOString(),
+    periodLabel,
+    periodPreset,
   };
 }

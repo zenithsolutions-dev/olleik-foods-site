@@ -25,6 +25,7 @@ export function DashboardClient({
   live,
   lowStock,
   stats,
+  pendingNow,
   missingCostCount,
   pendingActivationCount,
 }: {
@@ -34,6 +35,7 @@ export function DashboardClient({
   live: boolean;
   lowStock: LowStockItem[];
   stats: DashboardStats;
+  pendingNow: { count: number; cents: number }; // LIVE right-now figures (never period-scoped)
   missingCostCount: number; // active products without a purchase cost (existing warning logic)
   pendingActivationCount: number; // invited customers who never signed in
 }) {
@@ -45,6 +47,7 @@ export function DashboardClient({
   const newLeads = leads.filter((l) => l.status === "new").length;
 
   const t = stats.today;
+  const isToday = stats.periodPreset === "today";
   const expiringSoon = stats.activeOffers.filter((o) => o.expiringSoon);
   const attentionEmpty =
     lowStock.length === 0 &&
@@ -54,32 +57,38 @@ export function DashboardClient({
 
   return (
     <div className="space-y-8">
-      {/* ---------- Row 1: TODAY ---------- */}
+      {/* ---------- Row 1: the selected period (default Today) ---------- */}
       <section>
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
-          Today
+          {isToday ? "Today" : stats.periodLabel}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* LIVE figure — never period-scoped (approved D-R3): what's waiting
+              RIGHT NOW, regardless of the range being viewed. */}
           <Stat
-            label="New orders"
-            value={`${t.byStatus.new}`}
-            sub={t.byStatus.new > 0 ? "waiting for you in the inbox" : "none waiting — all clear"}
+            label="New orders · right now"
+            value={`${pendingNow.count}`}
+            sub={pendingNow.count > 0 ? "waiting for you in the inbox" : "none waiting — all clear"}
             href="/admin/orders"
-            highlight={t.byStatus.new > 0}
+            highlight={pendingNow.count > 0}
           />
           <Stat
-            label="Today's revenue"
+            label={isToday ? "Today's revenue" : `Revenue (${stats.periodLabel})`}
             value={formatMoney(t.revenueCents)}
-            sub={`accepted orders · yesterday ${formatMoney(stats.yesterday.revenueCents)}`}
+            sub={
+              isToday
+                ? `accepted orders · yesterday ${formatMoney(stats.yesterday.revenueCents)}`
+                : "accepted orders in this period"
+            }
             href="/admin/orders"
           />
           <Stat
-            label="Today's profit"
+            label={isToday ? "Today's profit" : `Profit (${stats.periodLabel})`}
             value={stats.todayProfit.profitCents != null ? formatMoney(stats.todayProfit.profitCents) : "—"}
             sub={
               stats.todayProfit.profitCents == null
                 ? t.revenueCents > 0
-                  ? "no cost snapshots on today's lines"
+                  ? "no cost snapshots on these lines"
                   : "derived from cost snapshots"
                 : stats.todayProfit.linesWithoutCost > 0
                   ? `${stats.todayProfit.linesWithoutCost} line${stats.todayProfit.linesWithoutCost === 1 ? "" : "s"} without cost excluded`
@@ -87,23 +96,23 @@ export function DashboardClient({
             }
           />
           <Stat
-            label="Pickup / Delivery"
+            label={`Pickup / Delivery (${isToday ? "today" : stats.periodLabel})`}
             value={`${t.pickupCount} / ${t.deliveryCount}`}
-            sub="accepted orders to prepare today"
+            sub="accepted orders in this period"
             href="/admin/orders"
           />
         </div>
 
-        {/* D-D1: 'new' money is REAL but not accepted — its own explicit line,
-            never conflated with revenue. */}
-        {t.pendingCount > 0 && (
+        {/* LIVE banner (right now): 'new' money is REAL but not accepted —
+            its own explicit line, never conflated with revenue (D-D1). */}
+        {pendingNow.count > 0 && (
           <Link
             href="/admin/orders"
             className="mt-3 flex items-center justify-between rounded-xl border border-accent/50 bg-accent-soft/40 px-4 py-2.5 text-sm hover:border-accent"
           >
             <span className="font-medium text-accent-deep">
-              Awaiting confirmation: {t.pendingCount} order{t.pendingCount === 1 ? "" : "s"} ·{" "}
-              {formatMoney(t.pendingCents)}
+              Awaiting confirmation right now: {pendingNow.count} order
+              {pendingNow.count === 1 ? "" : "s"} · {formatMoney(pendingNow.cents)}
             </span>
             <span className="text-xs font-semibold text-accent-deep">Review →</span>
           </Link>
@@ -111,16 +120,22 @@ export function DashboardClient({
 
         <p className="mt-3 text-xs text-muted">
           {t.totalOrders === 0 ? (
-            <>No orders yet today — they&apos;ll appear here the moment a customer submits.</>
+            isToday ? (
+              <>No orders yet today — they&apos;ll appear here the moment a customer submits.</>
+            ) : (
+              <>No orders in this period ({stats.periodLabel}).</>
+            )
           ) : (
             <>
-              {t.byStatus.confirmed} confirmed · {t.byStatus.prepared} prepared ·{" "}
-              {t.byStatus.completed} completed
-              {t.byStatus.cancelled > 0 ? ` · ${t.byStatus.cancelled} cancelled` : ""} · yesterday{" "}
-              {stats.yesterday.totalOrders} order{stats.yesterday.totalOrders === 1 ? "" : "s"}
+              {stats.periodLabel}: {t.byStatus.new} new · {t.byStatus.confirmed} confirmed ·{" "}
+              {t.byStatus.prepared} prepared · {t.byStatus.completed} completed
+              {t.byStatus.cancelled > 0 ? ` · ${t.byStatus.cancelled} cancelled` : ""}
+              {isToday
+                ? ` · yesterday ${stats.yesterday.totalOrders} order${stats.yesterday.totalOrders === 1 ? "" : "s"}`
+                : ""}
             </>
           )}
-          <span className="text-muted-soft"> · business day in America/Toronto</span>
+          <span className="text-muted-soft"> · business days in America/Toronto</span>
         </p>
       </section>
 

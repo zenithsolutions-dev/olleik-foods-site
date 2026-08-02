@@ -5,19 +5,32 @@ import { fetchAdminProducts } from "@/lib/admin/products-data";
 import { fetchAdminCustomers, fetchActivationMap } from "@/lib/admin/customers-data";
 import { fetchLowStock } from "@/lib/admin/inventory-data";
 import { fetchProductCosts } from "@/lib/admin/pricing-data";
-import { fetchDashboardStats } from "@/lib/admin/dashboard-data";
+import { fetchDashboardStats, fetchPendingNow } from "@/lib/admin/dashboard-data";
+import { resolveDateRange, type RangeSearchParams } from "@/lib/dates";
+import { DateRangeFilter } from "@/components/date-range-filter";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminDashboardPage() {
-  const [{ leads, live }, { products }, { customers }, lowStock, { costs }, stats] =
+export default async function AdminDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<RangeSearchParams>;
+}) {
+  // CP-5: the dashboard's default period is TODAY (nothing changes for anyone
+  // who never touches the filter); the URL can re-scope every period card.
+  const sp = await searchParams;
+  const hasRangeInput = Boolean(sp.range || sp.from || sp.to);
+  const range = resolveDateRange(hasRangeInput ? sp : { range: "today" });
+
+  const [{ leads, live }, { products }, { customers }, lowStock, { costs }, stats, pendingNow] =
     await Promise.all([
       fetchAdminLeads(),
       fetchAdminProducts(),
       fetchAdminCustomers(),
       fetchLowStock(),
       fetchProductCosts(),
-      fetchDashboardStats(),
+      fetchDashboardStats(new Date(), range),
+      fetchPendingNow(),
     ]);
 
   // Same definition as the products-page warning: ACTIVE products with no
@@ -44,6 +57,9 @@ export default async function AdminDashboardPage() {
         <p className="mt-2 text-sm text-muted">
           Your whole day at a glance — orders, money, stock, and anything that needs attention.
         </p>
+        <div className="mt-4">
+          <DateRangeFilter basePath="/admin" range={range} defaultPreset="today" />
+        </div>
         <DashboardLive />
       </header>
       <DashboardClient
@@ -53,6 +69,7 @@ export default async function AdminDashboardPage() {
         live={live}
         lowStock={lowStock.items}
         stats={stats}
+        pendingNow={pendingNow}
         missingCostCount={missingCostCount}
         pendingActivationCount={pendingActivationCount}
       />

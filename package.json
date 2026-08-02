@@ -12,7 +12,8 @@
     "test:visibility": "node scripts/test-visibility-rls.mjs",
     "test:orders": "node scripts/test-order-security.mjs",
     "test:inventory": "node --experimental-strip-types scripts/test-inventory.mjs",
-    "test:dashboard": "node --experimental-strip-types scripts/test-dashboard.mjs"
+    "test:dashboard": "node --experimental-strip-types scripts/test-dashboard.mjs",
+    "test:dates": "node --experimental-strip-types scripts/test-dates.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",

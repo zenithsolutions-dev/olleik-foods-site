@@ -306,13 +306,20 @@ export type PortalOrderDetail = {
   lines: PortalOrderLine[];
 };
 
-export async function fetchMyOrders(): Promise<PortalOrderSummary[]> {
+// CP-5: optional [startISO, endISO) bound on created_at. SESSION client as
+// always — the date filter only NARROWS the RLS-scoped own-orders set; it can
+// never widen visibility (proven by test:dates).
+export async function fetchMyOrders(range?: {
+  startISO?: string | null;
+  endISO?: string | null;
+}): Promise<PortalOrderSummary[]> {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
+  let q = supabase
     .from("orders")
-    .select("id, status, fulfillment, total_cents, created_at, order_items(product_id)")
-    .order("created_at", { ascending: false })
-    .limit(100);
+    .select("id, status, fulfillment, total_cents, created_at, order_items(product_id)");
+  if (range?.startISO) q = q.gte("created_at", range.startISO);
+  if (range?.endISO) q = q.lt("created_at", range.endISO);
+  const { data, error } = await q.order("created_at", { ascending: false }).limit(100);
   if (error) {
     // 42P01 before migration 0009 — orders simply aren't enabled yet.
     if (error.code !== "42P01") console.error("[portal] orders read failed:", error.message);

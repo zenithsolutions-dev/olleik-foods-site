@@ -1,10 +1,25 @@
 import { fetchAdminOrders } from "@/lib/admin/orders-data";
+import { resolveDateRange, type RangeSearchParams } from "@/lib/dates";
+import { DateRangeFilter } from "@/components/date-range-filter";
 import { OrdersClient } from "./orders-client";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminOrdersPage() {
-  const { orders, countsByStatus, migrationApplied } = await fetchAdminOrders();
+// CP-5: the inbox can be bounded by an order-date range (URL-borne, default
+// All time — nothing changes for anyone who never touches it). The status
+// tabs stay client-side ON TOP of the date-bounded set: both filters are
+// active together.
+
+export default async function AdminOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<RangeSearchParams>;
+}) {
+  const range = resolveDateRange(await searchParams);
+  const { orders, countsByStatus, migrationApplied } = await fetchAdminOrders({
+    startISO: range.startUTC?.toISOString() ?? null,
+    endISO: range.endUTC?.toISOString() ?? null,
+  });
 
   if (!migrationApplied) {
     return (
@@ -18,5 +33,15 @@ export default async function AdminOrdersPage() {
     );
   }
 
-  return <OrdersClient orders={orders} countsByStatus={countsByStatus} />;
+  return (
+    <div className="space-y-4">
+      <DateRangeFilter basePath="/admin/orders" range={range} />
+      <OrdersClient
+        orders={orders}
+        countsByStatus={countsByStatus}
+        periodLabel={range.label}
+        rangeActive={range.preset !== "all"}
+      />
+    </div>
+  );
 }

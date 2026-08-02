@@ -4,15 +4,27 @@ import { fetchMyOrders } from "@/lib/portal/portal-data";
 import { formatMoney } from "@/lib/portal/format";
 import { StatusChip } from "./status-chip";
 import { PortalOrdersLive } from "../orders-live";
+import { resolveDateRange, type RangeSearchParams } from "@/lib/dates";
+import { DateRangeFilter } from "@/components/date-range-filter";
 
 export const dynamic = "force-dynamic";
 
 // CP-3a: the customer's own order history (RLS SELECT-own; immutable to them —
 // there are no edit affordances because no edit capability exists).
+// CP-5: date-filterable (D-R6) — the filter narrows the RLS-scoped set and
+// can never widen it; session client throughout.
 
-export default async function PortalOrdersPage() {
+export default async function PortalOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<RangeSearchParams>;
+}) {
   await requireCustomer();
-  const orders = await fetchMyOrders();
+  const range = resolveDateRange(await searchParams);
+  const orders = await fetchMyOrders({
+    startISO: range.startUTC?.toISOString() ?? null,
+    endISO: range.endUTC?.toISOString() ?? null,
+  });
 
   return (
     <div className="space-y-6">
@@ -25,14 +37,23 @@ export default async function PortalOrdersPage() {
         </p>
         {/* CP-3d: status changes appear here on their own (30s poll). */}
         <PortalOrdersLive />
+        <div className="mt-3">
+          <DateRangeFilter basePath="/portal/orders" range={range} />
+        </div>
       </div>
 
       {orders.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-[var(--border)] bg-surface p-10 text-center text-sm text-muted">
-          No orders yet.{" "}
-          <Link href="/portal/catalog" className="font-medium text-brand hover:text-accent">
-            Browse your catalog →
-          </Link>
+          {range.preset !== "all" ? (
+            <>No orders in this period ({range.label}) — widen the range or clear it above.</>
+          ) : (
+            <>
+              No orders yet.{" "}
+              <Link href="/portal/catalog" className="font-medium text-brand hover:text-accent">
+                Browse your catalog →
+              </Link>
+            </>
+          )}
         </p>
       ) : (
         <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-surface">
