@@ -3,6 +3,7 @@
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { guardAction } from "@/lib/admin/action-guard";
+import { zonedDayStartUTC } from "@/lib/admin/dashboard-math";
 
 // CP-3d admin change-signature polls (approved spec). These return a few
 // bytes, never page data: the client compares signatures and triggers ONE
@@ -61,13 +62,32 @@ export async function pollAdminDashboardSignature(): Promise<DashboardSignatureR
   return guardAction("pollAdminDashboardSignature", async () => {
     const admin = getAdminClient();
     if (!admin) return { ok: false };
-    const [ordersRes, invRes, leadsRes] = await Promise.all([
-      admin.from("orders").select("id", { count: "exact", head: true }).eq("status", "new"),
-      admin
-        .from("product_inventory")
-        .select("product_id, stock_qty, low_stock_threshold"),
-      admin.from("leads").select("id", { count: "exact", head: true }).eq("status", "new"),
-    ]);
+    // CP-4: the fingerprint EXTENDS the CP-3d one (no second mechanism) with
+    // today's order rows (bounded by one Toronto business day — the same
+    // window the dashboard renders), the currently-expiring-soon offer ids,
+    // and the products/costs pair behind the no-cost count. Still a few
+    // bytes on the wire: everything is hashed server-side.
+    const todayStart = zonedDayStartUTC(new Date()).toISOString();
+    const soonCutoff = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString();
+    const nowIso = new Date().toISOString();
+    const [ordersRes, invRes, leadsRes, todayRes, offersRes, prodRes, costRes] =
+      await Promise.all([
+        admin.from("orders").select("id", { count: "exact", head: true }).eq("status", "new"),
+        admin.from("product_inventory").select("product_id, stock_qty, low_stock_threshold"),
+        admin.from("leads").select("id", { count: "exact", head: true }).eq("status", "new"),
+        admin
+          .from("orders")
+          .select("id, status, total_cents")
+          .gte("created_at", todayStart),
+        admin
+          .from("customer_offers")
+          .select("id")
+          .eq("is_active", true)
+          .gt("ends_at", nowIso)
+          .lte("ends_at", soonCutoff),
+        admin.from("products").select("id").eq("is_active", true),
+        admin.from("product_costs").select("product_id"),
+      ]);
     if (ordersRes.error && ordersRes.error.code !== "42P01") {
       console.error("[admin] dashboard poll failed:", ordersRes.error.message);
       return { ok: false };
@@ -81,9 +101,22 @@ export async function pollAdminDashboardSignature(): Promise<DashboardSignatureR
       .map((r) => `${r.product_id}:${r.stock_qty}`)
       .sort()
       .join("|");
+    const today = (((todayRes.data as { id: string; status: string; total_cents: number }[]) ?? []))
+      .map((r) => `${r.id}:${r.status}:${r.total_cents}`)
+      .sort()
+      .join("|");
+    const soon = (((offersRes.data as { id: string }[]) ?? [])).map((o) => o.id).sort().join(",");
+    const costed = new Set(
+      (((costRes.data as { product_id: string }[]) ?? [])).map((r) => r.product_id),
+    );
+    const missingCost = (((prodRes.data as { id: string }[]) ?? [])).filter(
+      (p) => !costed.has(p.id),
+    ).length;
     return {
       ok: true,
-      signature: hash(`o${ordersRes.count ?? 0}|l${leadsRes.count ?? 0}|${low}`),
+      signature: hash(
+        `o${ordersRes.count ?? 0}|l${leadsRes.count ?? 0}|${low}|t${hash(today)}|s${soon}|m${missingCost}`,
+      ),
     };
   });
 }

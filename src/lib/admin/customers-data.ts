@@ -146,13 +146,44 @@ function toOffer(r: OfferRow): Offer {
 //   "active"  -> has signed in at least once
 export type Activation = "none" | "invited" | "active";
 
+// The single derivation both the per-customer badge and the CP-4 dashboard
+// use — extracted (not copied) per the reuse rule.
+function activationFromLastSignIn(lastSignInAt: string | null | undefined): Activation {
+  return lastSignInAt ? "active" : "invited";
+}
+
 export async function fetchCustomerActivation(userId: string | null | undefined): Promise<Activation> {
   if (!userId) return "none";
   const admin = getAdminClient();
   if (!admin) return "invited";
   const { data, error } = await admin.auth.admin.getUserById(userId);
   if (error || !data?.user) return "invited";
-  return data.user.last_sign_in_at ? "active" : "invited";
+  return activationFromLastSignIn(data.user.last_sign_in_at);
+}
+
+// CP-4: activation for MANY customers in ONE auth call (listUsers) instead of
+// N getUserById calls — the dashboard's "invited but never signed in" count.
+// Returns userId -> Activation for every linked user it could see; missing
+// ids degrade to "invited" (same fallback as the single-customer path).
+export async function fetchActivationMap(
+  userIds: string[],
+): Promise<Map<string, Activation>> {
+  const map = new Map<string, Activation>();
+  const admin = getAdminClient();
+  if (!admin || userIds.length === 0) return map;
+  const wanted = new Set(userIds);
+  // One page of 1000 covers a wholesale business's customer list many times
+  // over; if it ever doesn't, unmatched ids just fall back to "invited".
+  const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  if (error) {
+    console.error("[admin] activation listUsers failed:", error.message);
+    return map;
+  }
+  for (const u of data?.users ?? []) {
+    if (wanted.has(u.id)) map.set(u.id, activationFromLastSignIn(u.last_sign_in_at));
+  }
+  for (const id of userIds) if (!map.has(id)) map.set(id, "invited");
+  return map;
 }
 
 export async function fetchAdminCustomer(
