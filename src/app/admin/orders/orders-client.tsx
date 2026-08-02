@@ -30,9 +30,13 @@ const STATUS_CHIP: Record<OrderStatus, string> = {
 export function OrdersClient({
   orders,
   countsByStatus,
+  periodLabel = "All time",
+  rangeActive = false,
 }: {
   orders: AdminOrderSummary[];
   countsByStatus: Record<OrderStatus, number>;
+  periodLabel?: string; // CP-5: the date range these orders/counts cover
+  rangeActive?: boolean;
 }) {
   const [tab, setTab] = useState<OrderStatus | "all">("all");
   const visible = useMemo(
@@ -47,8 +51,9 @@ export function OrdersClient({
           <h1 className="font-display text-2xl font-semibold text-brand-deep">Orders</h1>
           <p className="text-sm text-muted">
             {countsByStatus.new > 0
-              ? `${countsByStatus.new} new ${countsByStatus.new === 1 ? "order" : "orders"} waiting for confirmation.`
-              : "No new orders waiting."}
+              ? `${countsByStatus.new} new ${countsByStatus.new === 1 ? "order" : "orders"} waiting for confirmation`
+              : "No new orders waiting"}
+            {rangeActive ? ` · showing ${periodLabel}` : "."}
           </p>
         </div>
       </div>
@@ -81,7 +86,11 @@ export function OrdersClient({
       {visible.length === 0 ? (
         <div className="grid place-items-center rounded-2xl border border-dashed border-[var(--border)] bg-surface p-14 text-center">
           <Inbox className="text-muted-soft" size={28} />
-          <p className="mt-2 text-sm text-muted">No orders here.</p>
+          <p className="mt-2 text-sm text-muted">
+            {rangeActive
+              ? `No orders in this period (${periodLabel}) — widen the range or clear it above.`
+              : "No orders here."}
+          </p>
         </div>
       ) : (
         <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-surface">

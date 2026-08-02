@@ -32,17 +32,24 @@ const EMPTY_COUNTS: Record<OrderStatus, number> = {
   cancelled: 0,
 };
 
-export async function fetchAdminOrders(): Promise<AdminOrders> {
+// CP-5: optional [startISO, endISO) bound on created_at (resolved by
+// lib/dates — end-exclusive next-midnight, so the end day is fully included).
+// Served by orders_created_idx once migration 0012 runs.
+export async function fetchAdminOrders(range?: {
+  startISO?: string | null;
+  endISO?: string | null;
+}): Promise<AdminOrders> {
   const admin = getAdminClient();
   if (!admin) return { orders: [], countsByStatus: { ...EMPTY_COUNTS }, migrationApplied: true };
 
-  const { data, error } = await admin
+  let q = admin
     .from("orders")
     .select(
       "id, customer_id, status, fulfillment, total_cents, created_at, customers(business_name), order_items(product_id)",
-    )
-    .order("created_at", { ascending: false })
-    .limit(500);
+    );
+  if (range?.startISO) q = q.gte("created_at", range.startISO);
+  if (range?.endISO) q = q.lt("created_at", range.endISO);
+  const { data, error } = await q.order("created_at", { ascending: false }).limit(500);
   if (error) {
     if (error.code !== "42P01") console.error("[admin] orders read failed:", error.message);
     return {

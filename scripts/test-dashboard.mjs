@@ -19,10 +19,12 @@ import { randomUUID } from "node:crypto";
 import {
   aggregateDay,
   aggregateProfit,
-  zonedDayStartUTC,
-  zonedPreviousDayStartUTC,
   REVENUE_STATUSES,
 } from "../src/lib/admin/dashboard-math.ts";
+import {
+  zonedDayStartUTC,
+  zonedPreviousDayStartUTC,
+} from "../src/lib/dates.ts";
 
 const env = Object.fromEntries(
   readFileSync(".env.local", "utf8")

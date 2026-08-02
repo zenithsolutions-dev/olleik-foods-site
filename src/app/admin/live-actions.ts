@@ -3,7 +3,7 @@
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { guardAction } from "@/lib/admin/action-guard";
-import { zonedDayStartUTC } from "@/lib/admin/dashboard-math";
+import { zonedDayStartUTC } from "@/lib/dates";
 
 // CP-3d admin change-signature polls (approved spec). These return a few
 // bytes, never page data: the client compares signatures and triggers ONE

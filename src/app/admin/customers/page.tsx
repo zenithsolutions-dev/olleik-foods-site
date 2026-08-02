@@ -1,10 +1,22 @@
 import { CustomersClient } from "./customers-client";
 import { fetchAdminCustomers } from "@/lib/admin/customers-data";
+import { isoInRange, resolveDateRange, type RangeSearchParams } from "@/lib/dates";
+import { DateRangeFilter } from "@/components/date-range-filter";
 
 export const dynamic = "force-dynamic";
 
-export default async function CustomersPage() {
+export default async function CustomersPage({
+  searchParams,
+}: {
+  searchParams: Promise<RangeSearchParams>;
+}) {
+  // CP-5: bound by created date (default All time). Small table — the shared
+  // predicate applies the same boundaries the SQL surfaces use.
+  const range = resolveDateRange(await searchParams);
   const { customers, counts, live } = await fetchAdminCustomers();
+  const filtered =
+    range.preset === "all" ? customers : customers.filter((c) => isoInRange(c.createdAt, range));
+
   return (
     <div>
       <header className="mb-8">
@@ -16,9 +28,14 @@ export default async function CustomersPage() {
         </h1>
         <p className="mt-2 text-sm text-muted">
           Each customer sees their own assigned product list with negotiated pricing.
+          {range.preset !== "all" &&
+            ` Showing customers ADDED ${range.label} (${filtered.length} of ${customers.length}).`}
         </p>
+        <div className="mt-4">
+          <DateRangeFilter basePath="/admin/customers" range={range} />
+        </div>
       </header>
-      <CustomersClient customers={customers} counts={counts} live={live} />
+      <CustomersClient customers={filtered} counts={counts} live={live} />
     </div>
   );
 }

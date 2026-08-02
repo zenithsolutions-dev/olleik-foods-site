@@ -1,63 +1,11 @@
-// CP-4 pure dashboard math — NO imports, NO IO. Used by the dashboard data
-// layer AND unit-tested directly from scripts/test-dashboard.mjs (the engine
-// pattern), so the tested aggregation is the shipped aggregation.
-
-// ---------- "today" boundary (approved D-D0: America/Toronto) ----------
-
-// Every figure on the dashboard describes the client's business day in
-// Ottawa. The DB stores UTC; this converts "now" to the UTC instant at which
-// the CURRENT Toronto day started. Two-pass correction handles both DST
-// transitions (unit-tested for the spring-forward and fall-back edges).
-export const DASHBOARD_TIME_ZONE = "America/Toronto";
-
-export function zonedDayStartUTC(now: Date, timeZone: string = DASHBOARD_TIME_ZONE): Date {
-  const dateFmt = new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-  const [y, m, d] = dateFmt.format(now).split("-").map(Number);
-
-  const wallFmt = new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    hour12: false,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-  const target = Date.UTC(y, m - 1, d, 0, 0, 0);
-  let ts = target;
-  for (let i = 0; i < 2; i++) {
-    const parts = wallFmt.formatToParts(new Date(ts));
-    const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
-    // Some engines render midnight as "24" with hour12:false — normalize.
-    const wall = Date.UTC(
-      get("year"),
-      get("month") - 1,
-      get("day"),
-      get("hour") % 24,
-      get("minute"),
-      get("second"),
-    );
-    ts += target - wall;
-  }
-  return new Date(ts);
-}
-
-// Start of the PREVIOUS Toronto day (for the approved yesterday comparison):
-// take an instant safely inside yesterday (12h before today's start — immune
-// to the 23/25-hour DST days) and find ITS day start.
-export function zonedPreviousDayStartUTC(
-  now: Date,
-  timeZone: string = DASHBOARD_TIME_ZONE,
-): Date {
-  const todayStart = zonedDayStartUTC(now, timeZone);
-  return zonedDayStartUTC(new Date(todayStart.getTime() - 12 * 60 * 60 * 1000), timeZone);
-}
+// CP-4 pure dashboard math — no IO; its ONLY import is the shared pure date
+// module. Used by the dashboard data layer AND unit-tested directly from
+// scripts/test-dashboard.mjs (the engine pattern), so the tested aggregation
+// is the shipped aggregation.
+//
+// CP-5: the America/Toronto day-boundary helpers were MOVED to src/lib/dates
+// (the portal needs them too). Import them from there — this module keeps NO
+// second time-boundary implementation.
 
 // ---------- order aggregation (approved D-D1) ----------
 
