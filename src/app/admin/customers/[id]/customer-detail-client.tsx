@@ -2,7 +2,17 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Pencil, Plus, X, RotateCcw, Copy, Search } from "lucide-react";
+import {
+  ArrowLeft,
+  Pencil,
+  Plus,
+  X,
+  RotateCcw,
+  Copy,
+  Search,
+  FileText,
+  Lock,
+} from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
 import { formatDiscount } from "@/lib/admin/offers-format";
 import { applyOffersToPrice, offerAppliesToProduct } from "@/lib/pricing";
@@ -389,7 +399,23 @@ export function CustomerDetailClient({
               {customer.contactName} · {customer.email} · {customer.phone}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* CP-7: two explicit statements, two separate routes. The customer
+                copy's page never even queries cost data; the internal one is
+                labelled here and banner+watermarked on the document itself. */}
+            <Link
+              href={`/admin/customers/${customer.id}/statement`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-surface px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent hover:text-accent-deep"
+            >
+              <FileText size={14} /> Customer copy
+            </Link>
+            <Link
+              href={`/admin/customers/${customer.id}/statement/internal`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-surface px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent hover:text-accent-deep"
+              title="Includes cost and profit — do not hand to the customer"
+            >
+              <Lock size={14} /> My copy
+            </Link>
             <button
               type="button"
               onClick={() => {
