@@ -239,6 +239,18 @@ export function resolveDateRange(
   }
 }
 
+// CP-7: re-serialize the range params for a link that must keep the current
+// period (e.g. switching between the two statement copies). Returns "" or
+// "?range=…", never a partial/dangling query.
+export function rangeQueryString(params: RangeSearchParams): string {
+  const sp = new URLSearchParams();
+  if (params.range) sp.set("range", params.range);
+  if (params.from) sp.set("from", params.from);
+  if (params.to) sp.set("to", params.to);
+  const s = sp.toString();
+  return s ? `?${s}` : "";
+}
+
 // Shared predicate for the small already-fetched tables (products, customers,
 // leads): the same boundaries the SQL path uses, applied to an ISO timestamp.
 export function isoInRange(iso: string, range: ResolvedRange): boolean {

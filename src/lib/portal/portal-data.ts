@@ -6,6 +6,12 @@ import {
   applyOffersToPrice,
   offerAppliesToProduct,
 } from "@/lib/pricing";
+// CP-7: the SHARED statement cap and the cost-free statement input shape —
+// the customer's own statement is built from the exact model the admin prints.
+import {
+  MAX_STATEMENT_ORDERS,
+  type StatementOrderInput,
+} from "@/lib/documents/customer-statement-model";
 
 // Customer portal reads. EVERY query here uses the SESSION-BOUND anon client so
 // Postgres RLS enforces tenant isolation (a customer sees only their own
@@ -401,6 +407,79 @@ export async function fetchMyOrder(id: string): Promise<PortalOrderDetail | null
         lineTotalCents: i.line_total_cents,
       }))
       .sort((a, b) => a.name.localeCompare(b.name)),
+  };
+}
+
+// ---- CP-7: my own statement (approved D-S6) ----
+//
+// SESSION CLIENT ONLY, exactly like every other portal read — RLS scopes this
+// to the caller's own orders, so a customer cannot produce anyone else's
+// statement. Nothing new is exposed: these are the same orders /portal/orders
+// lists and the same frozen snapshot lines the customer can already print one
+// invoice at a time since CP-6. A statement is those invoices aggregated.
+//
+// No cost data is read or readable here: the admin-only order cost table is
+// deny-all to customer sessions (and naming it in this file would rightly trip
+// the portal guard), and this function feeds the cost-free customer model.
+export async function fetchMyStatement(range?: {
+  startISO?: string | null;
+  endISO?: string | null;
+}): Promise<{ orders: StatementOrderInput[]; truncated: boolean }> {
+  const supabase = await createSupabaseServerClient();
+  let q = supabase
+    .from("orders")
+    .select(
+      "id, status, fulfillment, total_cents, created_at, order_items(name, sku, unit, unit_size, qty, unit_price_cents, line_total_cents, applied_offer_title)",
+    );
+  if (range?.startISO) q = q.gte("created_at", range.startISO);
+  if (range?.endISO) q = q.lt("created_at", range.endISO);
+  const { data, error } = await q
+    .order("created_at", { ascending: false })
+    .limit(MAX_STATEMENT_ORDERS + 1);
+  if (error) {
+    if (error.code !== "42P01") console.error("[portal] statement read failed:", error.message);
+    return { orders: [], truncated: false };
+  }
+  type ItemRow = {
+    name: string;
+    sku: string;
+    unit: string;
+    unit_size: string;
+    qty: number;
+    unit_price_cents: number;
+    line_total_cents: number;
+    applied_offer_title: string | null;
+  };
+  type Row = {
+    id: string;
+    status: OrderStatus;
+    fulfillment: OrderFulfillment;
+    total_cents: number;
+    created_at: string;
+    order_items: ItemRow[] | null;
+  };
+  const all = (data as unknown as Row[]) ?? [];
+  const truncated = all.length > MAX_STATEMENT_ORDERS;
+  const rows = truncated ? all.slice(0, MAX_STATEMENT_ORDERS) : all;
+  return {
+    truncated,
+    orders: rows.map((r) => ({
+      orderId: r.id,
+      status: r.status,
+      createdAt: r.created_at,
+      fulfillment: r.fulfillment,
+      totalCents: r.total_cents,
+      lines: (r.order_items ?? []).map((i) => ({
+        name: i.name,
+        sku: i.sku,
+        unit: i.unit,
+        unitSize: i.unit_size,
+        qty: i.qty,
+        unitPriceCents: i.unit_price_cents,
+        lineTotalCents: i.line_total_cents,
+        appliedOfferTitle: i.applied_offer_title,
+      })),
+    })),
   };
 }
 

@@ -4,7 +4,7 @@ import { fetchMyOrders } from "@/lib/portal/portal-data";
 import { formatMoney } from "@/lib/portal/format";
 import { StatusChip } from "./status-chip";
 import { PortalOrdersLive } from "../orders-live";
-import { resolveDateRange, type RangeSearchParams } from "@/lib/dates";
+import { rangeQueryString, resolveDateRange, type RangeSearchParams } from "@/lib/dates";
 import { DateRangeFilter } from "@/components/date-range-filter";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +20,8 @@ export default async function PortalOrdersPage({
   searchParams: Promise<RangeSearchParams>;
 }) {
   await requireCustomer();
-  const range = resolveDateRange(await searchParams);
+  const sp = await searchParams;
+  const range = resolveDateRange(sp);
   const orders = await fetchMyOrders({
     startISO: range.startUTC?.toISOString() ?? null,
     endISO: range.endUTC?.toISOString() ?? null,
@@ -40,6 +41,16 @@ export default async function PortalOrdersPage({
         <div className="mt-3">
           <DateRangeFilter basePath="/portal/orders" range={range} />
         </div>
+        {/* CP-7 (D-S6): print your own statement for any period — the same
+            document your Olleik rep prints, built from these same orders. */}
+        <p className="mt-3 text-xs text-muted">
+          <Link
+            href={`/portal/orders/statement${rangeQueryString(sp)}`}
+            className="font-medium text-brand hover:text-accent"
+          >
+            Print a statement for a period →
+          </Link>
+        </p>
       </div>
 
       {orders.length === 0 ? (

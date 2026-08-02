@@ -14,7 +14,8 @@
     "test:inventory": "node --experimental-strip-types scripts/test-inventory.mjs",
     "test:dashboard": "node --experimental-strip-types scripts/test-dashboard.mjs",
     "test:dates": "node --experimental-strip-types scripts/test-dates.mjs",
-    "test:documents": "node --experimental-strip-types scripts/test-documents.mjs"
+    "test:documents": "node --experimental-strip-types scripts/test-documents.mjs",
+    "test:statements": "node --experimental-strip-types scripts/test-statements.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
