@@ -111,6 +111,13 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
           </Link>
           <h1 className="mt-1 font-display text-2xl font-semibold text-brand-deep">
             Order <span className="font-mono">#{order.id.slice(0, 8)}</span>
+            {/* CP-6: the customer document — snapshot figures, never costs. */}
+            <Link
+              href={`/admin/orders/${order.id}/invoice`}
+              className="ml-3 inline-flex items-center gap-1 rounded-full border border-[var(--border-strong)] px-3 py-1 text-xs font-semibold text-foreground/80 hover:border-accent hover:text-accent-deep"
+            >
+              Invoice
+            </Link>
           </h1>
           <p className="text-xs text-muted">
             Placed{" "}

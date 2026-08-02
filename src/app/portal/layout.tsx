@@ -18,7 +18,7 @@ export default async function PortalLayout({
   return (
     <CartProvider>
     <div className="min-h-screen bg-[#f7f4eb]">
-      <header className="border-b border-[var(--border)] bg-surface">
+      <header className="border-b border-[var(--border)] bg-surface print:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-4">
           <Link href="/portal" className="flex items-center gap-2.5">
             <span

@@ -51,6 +51,14 @@ export default async function PortalOrderDetailPage({
           </Link>
           <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight text-brand-deep">
             Order <span className="font-mono">#{order.id.slice(0, 8)}</span>
+            {/* CP-6 (D-C3): the customer's own invoice — same session-scoped
+                data this page already shows. */}
+            <Link
+              href={`/portal/orders/${order.id}/invoice`}
+              className="ml-3 inline-flex items-center gap-1 rounded-full border border-[var(--border-strong)] px-3 py-1 text-xs font-semibold text-foreground/80 hover:border-brand hover:text-brand"
+            >
+              Invoice
+            </Link>
           </h1>
           <p className="text-xs text-muted">
             {new Date(order.createdAt).toLocaleString("en-CA", {
