@@ -16,6 +16,7 @@ import {
 import { formatMoney } from "@/lib/admin/store";
 import { formatDiscount } from "@/lib/admin/offers-format";
 import { applyOffersToPrice, offerAppliesToProduct } from "@/lib/pricing";
+import { summarizeApplyEffect } from "@/lib/admin/offers-overview";
 import type {
   Category,
   Offer,
@@ -369,7 +370,56 @@ export function CustomerDetailClient({
       return;
     }
     setApplyTemplateOpen(false);
-    setNotice(`Applied template "${templateNameById[templateId] ?? "offer"}" to this customer.`);
+
+    // CP-8a (gap F2): say what actually changed, not just that something did.
+    // Before = today's price (current offers); after = the same pure pipeline
+    // with the new offer added — the exact math the portal will run.
+    const tpl = offerTemplates.find((t) => t.id === templateId);
+    const name = overrides.title?.trim() || templateNameById[templateId] || "offer";
+    if (tpl && tpl.discountKind != null && tpl.discountValue != null) {
+      const now = new Date();
+      const newOffer = {
+        isActive: true,
+        startsAt: overrides.startsAt,
+        endsAt: overrides.endsAt,
+        productId: overrides.productId,
+        discountKind: tpl.discountKind,
+        discountValue: tpl.discountValue,
+      };
+      const rows = assigned
+        .filter((a) => offerAppliesToProduct(newOffer, a.productId, now))
+        .map((a) => {
+          const before =
+            offerPriceByProduct[a.productId]?.finalCents ?? (a.priceCents ?? a.listPriceCents);
+          const after = applyOffersToPrice(before, [
+            { discountKind: tpl.discountKind as OfferDiscountKind, discountValue: tpl.discountValue as number },
+          ]).finalCents;
+          return { name: a.name, beforeCents: before, afterCents: after };
+        });
+      const fx = summarizeApplyEffect(rows, overrides.endsAt);
+      if (fx.affectedCount === 0) {
+        setNotice(
+          newOffer.startsAt && new Date(newOffer.startsAt) > now
+            ? `Applied "${name}" — scheduled: it starts ${new Date(newOffer.startsAt).toLocaleDateString("en-CA", { dateStyle: "medium" })} and changes no price until then.`
+            : `Applied "${name}" — but it lowers NO price right now (existing prices are already at or below it). Nothing changed for the customer.`,
+        );
+      } else {
+        setNotice(
+          `Applied "${name}": ${fx.affectedCount} of ${fx.totalProducts} product${fx.totalProducts === 1 ? "" : "s"} drop${fx.affectedCount === 1 ? "s" : ""} ` +
+            `an average ${fx.averageDropPct?.toFixed(1)}%` +
+            (fx.example
+              ? ` (e.g. ${fx.example.name} ${formatMoney(fx.example.beforeCents)} → ${formatMoney(fx.example.afterCents)})`
+              : "") +
+            (fx.endsAt
+              ? ` until ${new Date(fx.endsAt).toLocaleDateString("en-CA", { dateStyle: "medium" })}.`
+              : " — no end date: it runs until you deactivate it."),
+        );
+      }
+    } else {
+      setNotice(
+        `Applied "${name}" — announcement only (no discount), so no price changes.`,
+      );
+    }
   }
 
   return (
@@ -704,6 +754,42 @@ export function CustomerDetailClient({
             </button>
           </div>
         </header>
+
+        {/* CP-8a: what the offers are DOING right now, not just that they exist.
+            Derived from the same offerPriceByProduct the price columns use. */}
+        {offers.length > 0 && (
+          <div className="border-b border-[var(--border)] bg-brand-mist/20 px-6 py-3 text-xs text-muted">
+            {(() => {
+              const discounted = assigned.filter(
+                (a) => offerPriceByProduct[a.productId]?.discounted,
+              );
+              const liveEnds = offers
+                .filter(
+                  (o) =>
+                    o.isActive &&
+                    o.endsAt &&
+                    new Date(o.endsAt) > new Date() &&
+                    (!o.startsAt || new Date(o.startsAt) <= new Date()),
+                )
+                .map((o) => o.endsAt as string)
+                .sort();
+              return (
+                <>
+                  <span className="font-semibold text-brand-deep">
+                    {discounted.length === 0
+                      ? "No product price is lowered by an offer right now."
+                      : `${discounted.length} of ${assigned.length} assigned products are discounted right now.`}
+                  </span>{" "}
+                  {liveEnds.length > 0 &&
+                    `Soonest expiry: ${new Date(liveEnds[0]).toLocaleDateString("en-CA", { dateStyle: "medium" })}.`}{" "}
+                  <Link href="/admin/offers?tab=running" className="font-medium text-brand hover:text-accent">
+                    All running offers →
+                  </Link>
+                </>
+              );
+            })()}
+          </div>
+        )}
 
         {offers.length === 0 ? (
           <p className="px-6 py-12 text-center text-sm text-muted">No offers for this customer yet.</p>
