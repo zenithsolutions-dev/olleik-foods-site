@@ -14,6 +14,8 @@ import {
   zonedPreviousDayStartUTC,
   type ResolvedRange,
 } from "@/lib/dates";
+import { offerIsActiveNow } from "@/lib/pricing";
+import { offerEndsWithin, EXPIRING_SOON_HOURS } from "./offers-overview";
 
 // CP-4 dashboard reads (approved spec). READ-ONLY over what CP-1..CP-3 built:
 // no new tables, no new policies, NO migration. Cost/profit stay on the
@@ -55,8 +57,6 @@ export async function fetchPendingNow(): Promise<{ count: number; cents: number 
   const rows = (data as { total_cents: number }[]) ?? [];
   return { count: rows.length, cents: rows.reduce((n, r) => n + r.total_cents, 0) };
 }
-
-const EXPIRING_SOON_MS = 72 * 60 * 60 * 1000;
 
 const EMPTY_DAY: DayAggregates = aggregateDay([]);
 const EMPTY_STATS: DashboardStats = {
@@ -118,7 +118,7 @@ export async function fetchDashboardStats(
         }),
     admin
       .from("customer_offers")
-      .select("id, title, ends_at")
+      .select("id, title, starts_at, ends_at")
       .eq("is_active", true)
       .order("ends_at", { ascending: true, nullsFirst: false }),
   ]);
@@ -179,20 +179,26 @@ export async function fetchDashboardStats(
     }
   }
 
-  const soonCutoff = now.getTime() + EXPIRING_SOON_MS;
+  // CP-8a fix (gap F-class): "active" now means the SAME thing pricing means —
+  // offerIsActiveNow (flag AND date window). Previously an expired-window offer
+  // still counted here while pricing rightly ignored it, so the dashboard and
+  // customer prices disagreed. The 72h flag now goes through the ONE shared
+  // time-to-expiry helper (offers-overview) — no second threshold to diverge.
   const activeOffers: DashboardOffer[] = (((offersRes.data as {
     id: string;
     title: string;
+    starts_at: string | null;
     ends_at: string | null;
-  }[]) ?? [])).map((o) => ({
-    id: o.id,
-    title: o.title,
-    endsAt: o.ends_at,
-    expiringSoon:
-      o.ends_at != null &&
-      new Date(o.ends_at).getTime() <= soonCutoff &&
-      new Date(o.ends_at).getTime() > now.getTime(),
-  }));
+  }[]) ?? []))
+    .filter((o) =>
+      offerIsActiveNow({ isActive: true, startsAt: o.starts_at, endsAt: o.ends_at }, now),
+    )
+    .map((o) => ({
+      id: o.id,
+      title: o.title,
+      endsAt: o.ends_at,
+      expiringSoon: offerEndsWithin({ endsAt: o.ends_at }, now, EXPIRING_SOON_HOURS),
+    }));
 
   return {
     today,
