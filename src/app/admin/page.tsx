@@ -6,6 +6,8 @@ import { fetchAdminCustomers, fetchActivationMap } from "@/lib/admin/customers-d
 import { fetchLowStock } from "@/lib/admin/inventory-data";
 import { fetchProductCosts } from "@/lib/admin/pricing-data";
 import { fetchDashboardStats, fetchPendingNow } from "@/lib/admin/dashboard-data";
+import { fetchProductSales, fetchCustomerSales } from "@/lib/admin/analytics-data";
+import { rankProducts, rankCustomers, splitByActivity } from "@/lib/admin/analytics-math";
 import { resolveDateRange, type RangeSearchParams } from "@/lib/dates";
 import { DateRangeFilter } from "@/components/date-range-filter";
 
@@ -22,16 +24,58 @@ export default async function AdminDashboardPage({
   const hasRangeInput = Boolean(sp.range || sp.from || sp.to);
   const range = resolveDateRange(hasRangeInput ? sp : { range: "today" });
 
-  const [{ leads, live }, { products }, { customers }, lowStock, { costs }, stats, pendingNow] =
-    await Promise.all([
-      fetchAdminLeads(),
-      fetchAdminProducts(),
-      fetchAdminCustomers(),
-      fetchLowStock(),
-      fetchProductCosts(),
-      fetchDashboardStats(new Date(), range),
-      fetchPendingNow(),
-    ]);
+  const bounds = {
+    startISO: range.startUTC?.toISOString() ?? null,
+    endISO: range.endUTC?.toISOString() ?? null,
+  };
+  const [
+    { leads, live },
+    { products },
+    { customers },
+    lowStock,
+    { costs },
+    stats,
+    pendingNow,
+    productSales,
+    customerSales,
+    allTimeCustomers,
+  ] = await Promise.all([
+    fetchAdminLeads(),
+    fetchAdminProducts(),
+    fetchAdminCustomers(),
+    fetchLowStock(),
+    fetchProductCosts(),
+    fetchDashboardStats(new Date(), range),
+    fetchPendingNow(),
+    fetchProductSales(bounds),
+    fetchCustomerSales(bounds),
+    fetchCustomerSales({ startISO: null, endISO: null }),
+  ]);
+
+  // CP-8b: the period-scoped top-3s — the SAME figures /admin/analytics ranks
+  // (same reads, same pure ranking), truncated to 3. Full tables stay one
+  // click away, not on the dashboard.
+  const topProducts = rankProducts(productSales.rows, "revenue").slice(0, 3);
+  const topCustomers = rankCustomers(
+    customerSales.rows.filter((r) => r.status === "active"),
+    "revenue",
+  ).slice(0, 3);
+  // Attention-row inactive line (30-day default; the analytics page has the
+  // full 30/60/90 view). All-time facts by definition.
+  const lastOrderById = new Map(
+    allTimeCustomers.rows.map((r) => [r.customerId, r.lastOrderAt]),
+  );
+  const inactiveCount = splitByActivity(
+    customers
+      .filter((c) => c.status === "active")
+      .map((c) => ({
+        customerId: c.id,
+        businessName: c.businessName,
+        lastOrderAt: lastOrderById.get(c.id) ?? null,
+      })),
+    30,
+    new Date(),
+  ).inactive.length;
 
   // Same definition as the products-page warning: ACTIVE products with no
   // purchase cost (margin rules can't price them).
@@ -72,6 +116,9 @@ export default async function AdminDashboardPage({
         pendingNow={pendingNow}
         missingCostCount={missingCostCount}
         pendingActivationCount={pendingActivationCount}
+        topProducts={topProducts}
+        topCustomers={topCustomers}
+        inactiveCount={inactiveCount}
       />
     </div>
   );
