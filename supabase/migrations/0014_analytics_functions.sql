@@ -143,3 +143,12 @@ grant execute on function analytics_customer_sales(timestamptz, timestamptz) to 
 --    window query should show an Index Scan on orders_created_idx; if it
 --    still seq-scans AND is slow, that is the measured justification for a
 --    composite index — not before.
+--
+--    MEASURED BASELINES (owner-run EXPLAIN in prod, 2026-08, 35 orders /
+--    45 lines — re-measure against these at scale rather than guessing):
+--      analytics_product_sales:  Function Scan, 726 shared buffers hit,
+--                                planning 0.080 ms, execution 4.127 ms
+--      analytics_customer_sales: Function Scan, 504 shared buffers hit,
+--                                planning 0.077 ms, execution 2.962 ms
+--    Both an order of magnitude below network latency (~185 ms floor), which
+--    validated moving aggregation into Postgres.

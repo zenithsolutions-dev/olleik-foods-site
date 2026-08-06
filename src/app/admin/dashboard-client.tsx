@@ -361,6 +361,7 @@ export function DashboardClient({
           <QuickLink href="/admin/pricing" label="Pricing" sub="rules & autopilot" />
           <QuickLink href="/admin/offers" label="Offers" sub={`${stats.activeOffers.length} running`} />
           <QuickLink href="/admin/analytics" label="Analytics" sub="best sellers & quiet customers" />
+          <QuickLink href="/admin/reports" label="Reports" sub="build & print any period" />
           <QuickLink href="/admin/categories" label="Categories" sub="catalog structure" />
           <QuickLink href="/admin/leads" label="Leads" sub={`${newLeads} new`} />
         </div>
