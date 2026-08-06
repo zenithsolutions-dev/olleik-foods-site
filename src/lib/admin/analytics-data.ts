@@ -1,6 +1,7 @@
 import "server-only";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { REVENUE_STATUSES } from "./dashboard-math";
+import { bucketKeyFor, bucketOrdersFallback } from "./analytics-buckets";
 import type { CustomerSales, ProductSales } from "./analytics-math";
 
 // CP-8b analytics reads (ADMIN ONLY — service role; the RPCs themselves are
@@ -205,5 +206,69 @@ export async function fetchCustomerSales(range: {
         businessName: names.get(r.customerId)!.businessName,
         status: names.get(r.customerId)!.status,
       })),
+  };
+}
+
+// ---------- CP-8 charts follow-on: time-bucketed revenue ----------
+//
+// RPC-first (migration 0015); pre-0015 the same figures come from bucketing
+// raw rows here — correct but row-shipping, so the UI names the path. The
+// bucket size itself is chosen by the caller (chooseBucket) and stated on
+// the chart.
+
+export async function fetchRevenueBuckets(
+  range: { startISO: string | null; endISO: string | null },
+  bucket: "day" | "week" | "month",
+): Promise<{
+  sums: { bucketKey: string; revenueCents: number; ordersCount: number }[];
+  source: AnalyticsSource;
+  truncated: boolean;
+}> {
+  const admin = getAdminClient();
+  if (!admin) return { sums: [], source: "fallback", truncated: false };
+
+  const { data, error } = await admin.rpc("analytics_revenue_buckets", {
+    p_start: range.startISO,
+    p_end: range.endISO,
+    p_bucket: bucket,
+  });
+  if (!error) {
+    type Row = { bucket_start: string; revenue_cents: number; orders_count: number };
+    return {
+      source: "rpc",
+      truncated: false,
+      sums: (((data as Row[]) ?? [])).map((r) => ({
+        // The SQL bucket_start is the UTC instant of the Toronto boundary —
+        // re-keying through the same helper the fallback uses guarantees the
+        // two paths can never disagree about which bucket a sum belongs to.
+        bucketKey: bucketKeyFor(r.bucket_start, bucket),
+        revenueCents: Number(r.revenue_cents),
+        ordersCount: Number(r.orders_count),
+      })),
+    };
+  }
+  if (error.code !== "42883" && error.code !== "PGRST202")
+    console.error("[admin] analytics_revenue_buckets failed:", error.message);
+
+  // ---- fallback: bucket raw rows in the app (pre-0015) ----
+  let q = admin
+    .from("orders")
+    .select("created_at, total_cents")
+    .in("status", REVENUE_STATUSES as unknown as string[]);
+  if (range.startISO) q = q.gte("created_at", range.startISO);
+  if (range.endISO) q = q.lt("created_at", range.endISO);
+  const { data: orders, error: oErr } = await q.limit(FALLBACK_SCAN_LIMIT);
+  if (oErr) {
+    if (oErr.code !== "42P01") console.error("[admin] revenue-buckets fallback failed:", oErr.message);
+    return { sums: [], source: "fallback", truncated: false };
+  }
+  const rows = ((orders as { created_at: string; total_cents: number }[]) ?? []).map((o) => ({
+    createdAt: o.created_at,
+    totalCents: o.total_cents,
+  }));
+  return {
+    source: "fallback",
+    truncated: rows.length >= FALLBACK_SCAN_LIMIT,
+    sums: bucketOrdersFallback(rows, bucket),
   };
 }

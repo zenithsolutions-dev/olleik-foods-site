@@ -28,6 +28,12 @@ import {
   splitByActivity,
 } from "../src/lib/admin/analytics-math.ts";
 import { aggregateDay, REVENUE_STATUSES } from "../src/lib/admin/dashboard-math.ts";
+import {
+  bucketKeyFor,
+  bucketOrdersFallback,
+  buildRevenueSeries,
+  chooseBucket,
+} from "../src/lib/admin/analytics-buckets.ts";
 
 const env = Object.fromEntries(
   readFileSync(".env.local", "utf8")
@@ -126,6 +132,56 @@ console.log("\n--- inactive vs never-ordered (D-N3 boundaries) ---");
   );
   note(custRank[0].customerId === "x" && rankCustomers(custRank, "revenue")[0].customerId === "y",
     "top customers re-rank by orders vs revenue");
+}
+
+// ---------- pure: time buckets (charts follow-on) ----------
+console.log("\n--- revenue buckets: thresholds, Toronto boundaries, zero-filling ---");
+{
+  const d = (n) => new Date(Date.UTC(2026, 0, 1) + n * 86400_000);
+  note(chooseBucket(d(0), d(31)) === "day" && chooseBucket(d(0), d(32)) === "week",
+    "bucket thresholds: <=31 days daily, then weekly (boundary exact)");
+  note(chooseBucket(d(0), d(140)) === "week" && chooseBucket(d(0), d(141)) === "month",
+    "<=140 days weekly, then monthly");
+  note(chooseBucket(null, null) === "month", "All time (unbounded) -> monthly");
+
+  // Toronto boundary: 03:00 UTC Aug 3 is 23:00 Aug 2 in Toronto (EDT).
+  note(bucketKeyFor("2026-08-03T03:00:00Z", "day") === "2026-08-02",
+    "TORONTO DAY: 03:00 UTC belongs to the PREVIOUS Toronto business day");
+  note(bucketKeyFor("2026-08-03T03:00:00Z", "week") === "2026-07-27",
+    "week bucket = the Monday of that Toronto date (Jul 27) — CP-5 Monday rule");
+  note(bucketKeyFor("2026-08-03T03:00:00Z", "month") === "2026-08",
+    "month bucket keys as YYYY-MM of the Toronto date");
+
+  const sums = bucketOrdersFallback(
+    [
+      { createdAt: "2026-06-02T12:00:00Z", totalCents: 1000 },
+      { createdAt: "2026-06-02T18:00:00Z", totalCents: 500 },
+      { createdAt: "2026-06-05T12:00:00Z", totalCents: 2000 },
+    ],
+    "day",
+  );
+  note(
+    sums.length === 2 && sums[0].revenueCents === 1500 && sums[0].ordersCount === 2,
+    "fallback bucketing sums same-day orders (2 orders -> $15.00 bucket)",
+  );
+
+  const series = buildRevenueSeries({
+    sums,
+    bucket: "day",
+    rangeStartISO: "2026-06-01T04:00:00Z", // Toronto midnight Jun 1
+    rangeEndISO: "2026-06-08T04:00:00Z", // exclusive: series must END Jun 7
+  });
+  note(series.length === 7, "zero-filled series covers the WHOLE range (7 daily buckets)");
+  note(
+    series[0].revenueCents === 0 && series[1].revenueCents === 1500 && series[4].revenueCents === 2000,
+    "gaps are ZERO buckets, not absent — the trend line cannot fake smoothness",
+  );
+  note(series[series.length - 1].bucketKey === "2026-06-07",
+    "the EXCLUSIVE end instant does not spawn a bucket beyond the period");
+  note(series.reduce((n, b) => n + b.revenueCents, 0) === 3500,
+    "series total equals the sum of its orders — chart and tables agree");
+  note(buildRevenueSeries({ sums: [], bucket: "day", rangeStartISO: null, rangeEndISO: null }).length === 0,
+    "no data + unbounded range -> empty series (designed empty state upstream)");
 }
 
 // ---------- live ----------
@@ -244,6 +300,43 @@ try {
     const denied = await asC.rpc("analytics_product_sales", { p_start: null, p_end: null });
     note(denied.error != null,
       `authenticated customer calling the aggregate is DENIED (${denied.error?.code ?? "error"}) — D-O0 holds`);
+
+    // ---- 0015 buckets (auto-detects; loud skip pre-migration) ----
+    const brpc = await svc.rpc("analytics_revenue_buckets", {
+      p_start: windowStart, p_end: windowEnd, p_bucket: "day",
+    });
+    if (brpc.error && (brpc.error.code === "42883" || brpc.error.code === "PGRST202")) {
+      console.log("\n⚠ 0015 bucket checks SKIPPED: migration 0015 not applied yet.");
+      console.log("  After applying 0015, rerun: npm run test:analytics — RPC-vs-fallback");
+      console.log("  bucket parity and the customer-denial check run automatically.");
+    } else if (brpc.error) {
+      note(false, `analytics_revenue_buckets errored unexpectedly: ${brpc.error.message}`);
+    } else {
+      console.log("\n--- 0015 buckets (applied): parity + boundaries ---");
+      const { data: rawOrders } = await svc
+        .from("orders")
+        .select("created_at, total_cents")
+        .in("status", REVENUE_STATUSES)
+        .gte("created_at", windowStart).lt("created_at", windowEnd)
+        .in("customer_id", [custA, custB]);
+      const fb = bucketOrdersFallback(
+        (rawOrders ?? []).map((o) => ({ createdAt: o.created_at, totalCents: o.total_cents })),
+        "day",
+      );
+      const mineKeys = new Set(fb.map((b) => b.bucketKey));
+      const rpcMine = (brpc.data ?? [])
+        .map((r) => ({ bucketKey: bucketKeyFor(r.bucket_start, "day"), revenueCents: Number(r.revenue_cents), ordersCount: Number(r.orders_count) }))
+        .filter((r) => mineKeys.has(r.bucketKey));
+      note(
+        JSON.stringify(rpcMine.sort((a, b) => a.bucketKey.localeCompare(b.bucketKey))) ===
+          JSON.stringify(fb),
+        "RPC buckets === fallback buckets, key for key, cent for cent (seeded days)",
+      );
+      note(rpcMine.reduce((n, b) => n + b.revenueCents, 0) === 9000,
+        "bucket sums equal the period total ($90.00) — the chart cannot disagree with the tables");
+      const bDenied = await asC.rpc("analytics_revenue_buckets", { p_start: null, p_end: null, p_bucket: "day" });
+      note(bDenied.error != null, "authenticated customer calling the bucket aggregate is DENIED — D-O0 holds");
+    }
   }
 } catch (e) {
   console.log("ERROR:", e.message);
