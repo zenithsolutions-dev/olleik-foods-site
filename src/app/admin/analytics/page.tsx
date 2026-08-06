@@ -1,4 +1,5 @@
-import { fetchProductSales, fetchCustomerSales } from "@/lib/admin/analytics-data";
+import { fetchProductSales, fetchCustomerSales, fetchRevenueBuckets } from "@/lib/admin/analytics-data";
+import { buildRevenueSeries, chooseBucket } from "@/lib/admin/analytics-buckets";
 import { fetchAdminProducts } from "@/lib/admin/products-data";
 import { fetchAdminCustomers } from "@/lib/admin/customers-data";
 import {
@@ -42,14 +43,23 @@ export default async function AnalyticsPage({
     startISO: range.startUTC?.toISOString() ?? null,
     endISO: range.endUTC?.toISOString() ?? null,
   };
-  const [productSales, customerSales, allTimeCustomers, { products }, { customers }] =
+  // Charts follow-on: bucket size chosen FROM the range (stated on the chart).
+  const bucket = chooseBucket(range.startUTC, range.endUTC);
+  const [productSales, customerSales, allTimeCustomers, { products }, { customers }, buckets] =
     await Promise.all([
       fetchProductSales(bounds),
       fetchCustomerSales(bounds),
       fetchCustomerSales({ startISO: null, endISO: null }),
       fetchAdminProducts(),
       fetchAdminCustomers(),
+      fetchRevenueBuckets(bounds, bucket),
     ]);
+  const revenueSeries = buildRevenueSeries({
+    sums: buckets.sums,
+    bucket,
+    rangeStartISO: bounds.startISO,
+    rangeEndISO: bounds.endISO,
+  });
 
   const now = new Date();
   const slowMovers = buildSlowMovers(
@@ -93,6 +103,8 @@ export default async function AnalyticsPage({
       inactive={activity.inactive}
       neverOrdered={activity.neverOrdered}
       activeRecently={activity.activeRecently}
+      revenueSeries={revenueSeries}
+      bucket={bucket}
       rangeFilter={
         <DateRangeFilter
           basePath="/admin/analytics"

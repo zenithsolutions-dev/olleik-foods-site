@@ -15,6 +15,10 @@ import {
   type SlowMoverRow,
 } from "@/lib/admin/analytics-math";
 import type { AnalyticsSource, CustomerSalesRow } from "@/lib/admin/analytics-data";
+import type { BucketSize, RevenueBucket } from "@/lib/admin/analytics-buckets";
+import { BestSellersChart, RevenueTrendChart } from "./analytics-charts";
+import { DegradedHint, useLiveRefresh } from "@/lib/poll/use-live-refresh";
+import { pollAdminDashboardSignature } from "../live-actions";
 
 // CP-8b analytics UI. Every section's heading carries the period label (CP-5
 // rule) — a screenshot is never ambiguous about what it covers. Sorting is
@@ -88,6 +92,8 @@ export function AnalyticsClient({
   inactive,
   neverOrdered,
   activeRecently,
+  revenueSeries,
+  bucket,
   rangeFilter,
 }: {
   periodLabel: string;
@@ -102,8 +108,23 @@ export function AnalyticsClient({
   inactive: { customerId: string; businessName: string; lastOrderAt: string | null; daysSilent: number }[];
   neverOrdered: { customerId: string; businessName: string }[];
   activeRecently: number;
+  revenueSeries: RevenueBucket[];
+  bucket: BucketSize;
   rangeFilter: ReactNode;
 }) {
+  // Charts live updates: the SAME CP-3d mechanism and the SAME existing
+  // dashboard signature action at its existing 30s cadence — no second poller,
+  // no frequency change. A change refreshes the server data; the charts stay
+  // mounted (stable keys per period) so values morph in place instead of
+  // replaying the entry animation.
+  const { degraded } = useLiveRefresh({
+    intervalMs: 30_000,
+    fetchSignature: async () => {
+      const res = await pollAdminDashboardSignature();
+      return res.ok ? res.signature : null;
+    },
+  });
+
   const [productSort, setProductSort] = useState<ProductSortKey>("revenue");
   const [customerSort, setCustomerSort] = useState<CustomerSortKey>("revenue");
   const [showAllSlow, setShowAllSlow] = useState(false);
@@ -154,7 +175,30 @@ export function AnalyticsClient({
         {analyticsSource === "rpc" && truncated && (
           <p className="mt-2 text-xs font-medium text-amber-800">Some figures were truncated.</p>
         )}
+        <DegradedHint degraded={degraded} />
       </header>
+
+      {/* CP-8 charts follow-on — the ONLY two charts, screen-only. Keyed on
+          period+bucket: a period change remounts (entry animation re-runs); a
+          30s live refresh does not (values transition in place). */}
+      <div className="grid gap-6 print:hidden lg:grid-cols-2">
+        <RevenueTrendChart
+          key={`rev-${periodLabel}-${bucket}`}
+          series={revenueSeries}
+          bucket={bucket}
+          periodLabel={periodLabel}
+        />
+        <BestSellersChart
+          key={`best-${periodLabel}`}
+          rows={rankProducts(productSales, "revenue").map((r) => ({
+            productId: r.productId,
+            name: r.name,
+            revenueCents: r.revenueCents,
+            units: r.units,
+          }))}
+          periodLabel={periodLabel}
+        />
+      </div>
 
       {/* Best sellers (approved D-N2) */}
       <Card
