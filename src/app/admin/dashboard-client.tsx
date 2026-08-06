@@ -5,6 +5,8 @@ import { useAdmin, formatMoney } from "@/lib/admin/store";
 import type { Customer, Lead, LeadStatus, Product } from "@/lib/admin/types";
 import type { LowStockItem } from "@/lib/admin/inventory-data";
 import type { DashboardStats } from "@/lib/admin/dashboard-data";
+import type { ProductRankRow } from "@/lib/admin/analytics-math";
+import type { CustomerSalesRow } from "@/lib/admin/analytics-data";
 
 // CP-4 command center (approved spec): the merchant opens /admin each morning
 // and understands the day at a glance. Priority order:
@@ -28,6 +30,9 @@ export function DashboardClient({
   pendingNow,
   missingCostCount,
   pendingActivationCount,
+  topProducts,
+  topCustomers,
+  inactiveCount,
 }: {
   leads: Lead[];
   products: Product[];
@@ -38,6 +43,11 @@ export function DashboardClient({
   pendingNow: { count: number; cents: number }; // LIVE right-now figures (never period-scoped)
   missingCostCount: number; // active products without a purchase cost (existing warning logic)
   pendingActivationCount: number; // invited customers who never signed in
+  // CP-8b: period-scoped top-3s (same reads + ranking as /admin/analytics)
+  // and the 30-day inactive count for the attention row.
+  topProducts: ProductRankRow[];
+  topCustomers: CustomerSalesRow[];
+  inactiveCount: number;
 }) {
   const { reset } = useAdmin();
 
@@ -53,7 +63,8 @@ export function DashboardClient({
     lowStock.length === 0 &&
     pendingActivationCount === 0 &&
     missingCostCount === 0 &&
-    expiringSoon.length === 0;
+    expiringSoon.length === 0 &&
+    inactiveCount === 0;
 
   return (
     <div className="space-y-8">
@@ -137,6 +148,65 @@ export function DashboardClient({
           )}
           <span className="text-muted-soft"> · business days in America/Toronto</span>
         </p>
+
+        {/* CP-8b: period-scoped top-3s — the same figures /admin/analytics
+            ranks, truncated to three. Full tables stay one click away. */}
+        {(topProducts.length > 0 || topCustomers.length > 0) && (
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <div className="rounded-2xl border border-[var(--border)] bg-surface p-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Top products · {stats.periodLabel}
+              </p>
+              {topProducts.length === 0 ? (
+                <p className="mt-2 text-sm text-muted">No counted sales in this period.</p>
+              ) : (
+                <ul className="mt-2 space-y-1.5 text-sm">
+                  {topProducts.map((p, i) => (
+                    <li key={p.productId} className="flex items-center justify-between gap-2">
+                      <span>
+                        <span className="mr-1.5 font-mono text-xs text-muted">{i + 1}.</span>
+                        {p.name}
+                      </span>
+                      <span className="font-mono text-xs">
+                        {p.units} units · {formatMoney(p.revenueCents)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Link href="/admin/analytics" className="mt-2 inline-block text-xs font-medium text-brand hover:text-accent">
+                Full analytics →
+              </Link>
+            </div>
+            <div className="rounded-2xl border border-[var(--border)] bg-surface p-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Top customers · {stats.periodLabel}
+              </p>
+              {topCustomers.length === 0 ? (
+                <p className="mt-2 text-sm text-muted">No counted orders in this period.</p>
+              ) : (
+                <ul className="mt-2 space-y-1.5 text-sm">
+                  {topCustomers.map((c, i) => (
+                    <li key={c.customerId} className="flex items-center justify-between gap-2">
+                      <span>
+                        <span className="mr-1.5 font-mono text-xs text-muted">{i + 1}.</span>
+                        <Link href={`/admin/customers/${c.customerId}`} className="text-brand hover:text-accent">
+                          {c.businessName}
+                        </Link>
+                      </span>
+                      <span className="font-mono text-xs">
+                        {c.ordersCount} orders · {formatMoney(c.revenueCents)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Link href="/admin/analytics" className="mt-2 inline-block text-xs font-medium text-brand hover:text-accent">
+                Full analytics →
+              </Link>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ---------- Row 2: NEEDS ATTENTION ---------- */}
@@ -147,7 +217,7 @@ export function DashboardClient({
         {attentionEmpty ? (
           <p className="rounded-2xl border border-emerald-200 bg-emerald-50/60 px-5 py-4 text-sm font-medium text-emerald-800">
             ✓ Nothing needs attention — stock is healthy, every active product has a cost, all
-            invited customers are signed in, and no offer is about to expire.
+            invited customers are signed in, no offer is about to expire, and nobody has gone quiet.
           </p>
         ) : (
           <div className="space-y-4">
@@ -170,6 +240,16 @@ export function DashboardClient({
                   value={`${missingCostCount}`}
                   blurb="Margin rules can't price these and their profit shows as “—”."
                   href="/admin/products"
+                />
+              )}
+              {/* CP-8b: win-back signal — one line, >0 only, full list one
+                  click away on the analytics page. */}
+              {inactiveCount > 0 && (
+                <AttentionCard
+                  label="Customers gone quiet"
+                  value={`${inactiveCount}`}
+                  blurb="Ordered before, silent 30+ days — win-back targets. Full list in Analytics."
+                  href="/admin/analytics"
                 />
               )}
               {expiringSoon.length > 0 && (
@@ -280,6 +360,7 @@ export function DashboardClient({
           <QuickLink href="/admin/assign" label="Assign products" sub="catalogs & pricing" />
           <QuickLink href="/admin/pricing" label="Pricing" sub="rules & autopilot" />
           <QuickLink href="/admin/offers" label="Offers" sub={`${stats.activeOffers.length} running`} />
+          <QuickLink href="/admin/analytics" label="Analytics" sub="best sellers & quiet customers" />
           <QuickLink href="/admin/categories" label="Categories" sub="catalog structure" />
           <QuickLink href="/admin/leads" label="Leads" sub={`${newLeads} new`} />
         </div>

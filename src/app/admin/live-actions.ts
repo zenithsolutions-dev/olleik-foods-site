@@ -112,10 +112,31 @@ export async function pollAdminDashboardSignature(): Promise<DashboardSignatureR
     const missingCost = (((prodRes.data as { id: string }[]) ?? [])).filter(
       (p) => !costed.has(p.id),
     ).length;
+
+    // CP-8b: the fingerprint EXTENDS again (still ONE mechanism) with the
+    // 30-day gone-quiet count — the one new dashboard figure that can change
+    // WITHOUT any row changing (a customer silently crossing the threshold).
+    // The top-3 cards need nothing extra: they only move when today's orders
+    // move, which the today-rows hash already captures. Pre-0014 the RPC is
+    // absent → the component is a constant and the rest of the signature
+    // still drives refreshes.
+    let quiet = "i-";
+    {
+      const { data: act, error: actErr } = await admin.rpc("analytics_customer_sales", {
+        p_start: null,
+        p_end: null,
+      });
+      if (!actErr) {
+        const cutoff = Date.now() - 30 * 24 * 3600_000;
+        quiet = `i${(((act as { last_order_at: string | null }[]) ?? [])).filter(
+          (r) => r.last_order_at != null && new Date(r.last_order_at).getTime() < cutoff,
+        ).length}`;
+      }
+    }
     return {
       ok: true,
       signature: hash(
-        `o${ordersRes.count ?? 0}|l${leadsRes.count ?? 0}|${low}|t${hash(today)}|s${soon}|m${missingCost}`,
+        `o${ordersRes.count ?? 0}|l${leadsRes.count ?? 0}|${low}|t${hash(today)}|s${soon}|m${missingCost}|${quiet}`,
       ),
     };
   });
