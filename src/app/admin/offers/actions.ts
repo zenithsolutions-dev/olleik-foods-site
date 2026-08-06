@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
+import { guardAction } from "@/lib/admin/action-guard";
+import { BULK_BATCH_CAP } from "@/lib/admin/bulk-offers";
 import type { OfferDiscountKind } from "@/lib/admin/types";
 
 // Offer-template library (admin-only, service-role) + apply-to-customer. Every
@@ -168,4 +170,143 @@ export async function applyTemplateToCustomer(
   revalidatePath(`/admin/customers/${customerId}`);
   revalidatePath("/admin/customers");
   return { ok: true };
+}
+
+// ---------- CP-8a-2: bulk application (approved spec) ----------
+//
+// THE atomicity guarantee: one INSERT carrying every row of the batch — a
+// single SQL statement, so a half-applied batch is structurally impossible.
+// Idempotency: batch_id is generated when the PREVIEW is shown; if rows with
+// that id already exist, the action reports the earlier success and writes
+// nothing (double-click / resubmit safe). Cap: BULK_BATCH_CAP, refused loudly,
+// never truncated. An all-skipped batch creates NOTHING anywhere.
+
+export type BulkApplyLine = {
+  customerId: string;
+  title: string;
+};
+
+export type BulkApplyResult =
+  | { ok: true; applied: number; alreadyApplied: boolean }
+  | { ok: false; message: string };
+
+export async function applyTemplateBulk(args: {
+  batchId: string;
+  templateId: string;
+  customers: BulkApplyLine[];
+  productId: string | null;
+  startsAt: string | null;
+  endsAt: string | null;
+}): Promise<BulkApplyResult> {
+  await requireAdmin();
+  const res = await guardAction("applyTemplateBulk", async (): Promise<BulkApplyResult> => {
+    const admin = getAdminClient();
+    if (!admin) return { ok: false, message: "Supabase is not configured." };
+
+    if (!/^[0-9a-f-]{36}$/i.test(args.batchId)) {
+      return { ok: false, message: "Invalid batch id — reload and try again." };
+    }
+    if (args.customers.length === 0) {
+      // Approved: an empty batch must not exist as a row anywhere.
+      return { ok: false, message: "Every targeted customer was skipped — nothing to apply, so nothing was created." };
+    }
+    if (args.customers.length > BULK_BATCH_CAP) {
+      return {
+        ok: false,
+        message: `This batch targets ${args.customers.length} customers — above the ${BULK_BATCH_CAP} cap. Narrow the selection and apply in parts.`,
+      };
+    }
+
+    // Idempotency: same preview submitted twice writes once.
+    // (42703 pre-0013 → guardAction maps it to the schema-out-of-date message.)
+    const { count: existingCount, error: exErr } = await admin
+      .from("customer_offers")
+      .select("id", { count: "exact", head: true })
+      .eq("batch_id", args.batchId);
+    if (exErr) throw exErr;
+    if ((existingCount ?? 0) > 0) {
+      return { ok: true, applied: existingCount ?? 0, alreadyApplied: true };
+    }
+
+    const { data: tpl, error: tErr } = await admin
+      .from("offer_templates")
+      .select("id, name, description, discount_kind, discount_value, is_archived")
+      .eq("id", args.templateId)
+      .maybeSingle();
+    if (tErr) throw tErr;
+    if (!tpl) return { ok: false, message: "Template not found." };
+    if (tpl.is_archived) return { ok: false, message: "This template is archived — restore it before applying." };
+
+    // Server-side re-validation of the targets (never trust the client list):
+    // every target must be an ACTIVE customer.
+    const ids = args.customers.map((c) => c.customerId);
+    const { data: activeRows, error: aErr } = await admin
+      .from("customers")
+      .select("id")
+      .in("id", ids)
+      .eq("status", "active");
+    if (aErr) throw aErr;
+    const activeSet = new Set(((activeRows as { id: string }[]) ?? []).map((r) => r.id));
+    const invalid = ids.filter((id) => !activeSet.has(id));
+    if (invalid.length > 0) {
+      return {
+        ok: false,
+        message: `${invalid.length} targeted customer${invalid.length === 1 ? " is" : "s are"} not active any more — refresh the preview and retry. Nothing was applied.`,
+      };
+    }
+
+    // ONE atomic INSERT: the whole batch or none of it.
+    const size = args.customers.length;
+    const { error: insErr } = await admin.from("customer_offers").insert(
+      args.customers.map((c) => ({
+        customer_id: c.customerId,
+        title: c.title.trim() || tpl.name,
+        description: tpl.description ?? null,
+        product_id: args.productId,
+        discount_kind: tpl.discount_kind,
+        discount_value: tpl.discount_value,
+        starts_at: args.startsAt,
+        ends_at: args.endsAt,
+        is_active: true,
+        template_id: args.templateId,
+        batch_id: args.batchId,
+        batch_size: size,
+      })),
+    );
+    if (insErr) throw insErr;
+
+    revalidateOffers();
+    revalidatePath("/admin/customers");
+    return { ok: true, applied: size, alreadyApplied: false };
+  });
+  return res as BulkApplyResult;
+}
+
+// Undo: DELETE scoped by batch identity — touching a row outside the batch is
+// structurally impossible (the WHERE clause IS the identity). Second undo
+// finds zero rows and says so; an expired batch deletes inert rows harmlessly.
+export type BulkUndoResult =
+  | { ok: true; removed: number; alreadyUndone: boolean }
+  | { ok: false; message: string };
+
+export async function undoOfferBatch(batchId: string): Promise<BulkUndoResult> {
+  await requireAdmin();
+  const res = await guardAction("undoOfferBatch", async (): Promise<BulkUndoResult> => {
+    const admin = getAdminClient();
+    if (!admin) return { ok: false, message: "Supabase is not configured." };
+    if (!/^[0-9a-f-]{36}$/i.test(batchId)) {
+      return { ok: false, message: "Invalid batch id." };
+    }
+    const { data: removedRows, error } = await admin
+      .from("customer_offers")
+      .delete()
+      .eq("batch_id", batchId)
+      .select("id");
+    if (error) throw error;
+    const removed = ((removedRows as { id: string }[]) ?? []).length;
+    revalidateOffers();
+    revalidatePath("/admin/customers");
+    return { ok: true, removed, alreadyUndone: removed === 0 };
+  });
+  return res as BulkUndoResult;
 }

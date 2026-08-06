@@ -28,6 +28,12 @@ function OfferRow({ o, marker }: { o: OverviewOffer; marker?: string }) {
           </Link>{" "}
           · {o.productLabel ?? "all their products"} ·{" "}
           {discount ?? <span className="font-medium">no discount (announcement only)</span>}
+          {/* CP-8a-2: bulk-applied rows say so — behaviour is identical either way. */}
+          {o.batchId && (
+            <span className="ml-2 inline-flex rounded-full bg-brand-mist/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-deep">
+              batch of {o.batchSize ?? "?"}
+            </span>
+          )}
         </p>
       </div>
       <p className="text-xs text-muted">

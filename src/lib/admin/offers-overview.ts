@@ -45,6 +45,10 @@ export type OverviewOffer = {
   isActive: boolean;
   startsAt: string | null;
   endsAt: string | null;
+  // CP-8a-2: present when the row was bulk-applied (null pre-0013 or for
+  // hand-applied offers). Identity only — pricing never reads these.
+  batchId?: string | null;
+  batchSize?: number | null;
 };
 
 export type OffersOverview = {

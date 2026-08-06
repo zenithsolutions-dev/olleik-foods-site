@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import { Plus, Pencil, Archive, RotateCcw } from "lucide-react";
+import { Plus, Pencil, Archive, RotateCcw, Users } from "lucide-react";
 import type { OfferDiscountKind, OfferTemplate } from "@/lib/admin/types";
 import { formatDiscount } from "@/lib/admin/offers-format";
 import {
@@ -95,6 +96,15 @@ export function OffersClient({
                   {t.description && <p className="mt-1 text-sm text-muted">{t.description}</p>}
                 </div>
                 <div className="flex shrink-0 items-center gap-3 text-xs font-medium">
+                  {/* CP-8a-2: push this offer to many customers at once. */}
+                  {!t.isArchived && (
+                    <Link
+                      href={`/admin/offers/apply/${t.id}`}
+                      className="inline-flex items-center gap-1 text-brand hover:text-accent"
+                    >
+                      <Users size={13} /> Apply to many…
+                    </Link>
+                  )}
                   {!t.isArchived && (
                     <button
                       type="button"

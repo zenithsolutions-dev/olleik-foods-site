@@ -4,6 +4,8 @@ import { RunningNow } from "./running-now";
 import { fetchAdminOfferTemplates } from "@/lib/admin/offer-templates-data";
 import { fetchOffersOverviewRows } from "@/lib/admin/offers-overview-data";
 import { buildOffersOverview } from "@/lib/admin/offers-overview";
+import { summarizeBatches } from "@/lib/admin/bulk-offers";
+import { BatchesPanel } from "./batches-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +24,9 @@ export default async function OffersPage({
     fetchOffersOverviewRows(),
     searchParams,
   ]);
-  const overview = buildOffersOverview(overviewRows.offers, new Date());
+  const now = new Date();
+  const overview = buildOffersOverview(overviewRows.offers, now);
+  const batches = summarizeBatches(overviewRows.batches, now);
   const showRunning = tab === "running";
 
   const tabClass = (active: boolean) =>
@@ -56,7 +60,10 @@ export default async function OffersPage({
         </div>
       </header>
       {showRunning ? (
-        <RunningNow overview={overview} />
+        <div className="space-y-5">
+          <BatchesPanel batches={batches} />
+          <RunningNow overview={overview} />
+        </div>
       ) : (
         <OffersClient templates={templates} live={live} />
       )}
