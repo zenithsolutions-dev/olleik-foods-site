@@ -6,6 +6,7 @@ import { Poster } from "./Poster";
 import { FPS, H, VH, VW, W } from "./theme";
 import type { VideoId } from "./data/types";
 import { PromoRoot } from "./promo/PromoRoot";
+import { V2Root } from "./v2/V2Root";
 
 const manual = (id: string, video: VideoId, w: number, h: number) => (
   <Composition
@@ -45,6 +46,7 @@ export function Root() {
         calculateMetadata={({ props }) => ({ height: sheetHeight(props.items.length, props.columns ?? 4, props.aspect ?? 16 / 9) })}
       />
       <PromoRoot />
+      <V2Root />
     </>
   );
 }

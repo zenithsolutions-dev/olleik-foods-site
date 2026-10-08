@@ -13,8 +13,8 @@ const which = process.argv[2] ? [process.argv[2]] : ["VISITOR", "ADMIN", "VISITO
 let serveUrl = await bundle({ entryPoint: resolve("src/index.ts") });
 const bundles = [serveUrl];
 const still = async (id, output, inputProps, frame = 0, scale = 1) => {
-  const composition = await selectComposition({ serveUrl, id, inputProps });
-  await renderStill({ serveUrl, composition, output: resolve(output), inputProps, frame, scale });
+  const composition = await selectComposition({ serveUrl, id, inputProps, port: 3997 });
+  await renderStill({ serveUrl, composition, output: resolve(output), inputProps, frame, scale, port: 3997 });
 };
 mkdirSync("public/board", { recursive: true });
 mkdirSync("out/storyboards", { recursive: true });

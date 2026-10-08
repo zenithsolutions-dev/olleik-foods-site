@@ -46,10 +46,10 @@ async function render(cut, only) {
     for (const square of CUTS[cut].square ? [false, true] : [false]) {
       const id = square ? `Promo-${cut}-square` : `Promo-${cut}`;
       const props = { cut, opening: op, audio: false };
-      const comp = await selectComposition({ serveUrl: s, id, inputProps: props });
+      const comp = await selectComposition({ serveUrl: s, id, inputProps: props, port: 3997 });
       const out = resolve(`${OUT}/video/${fileBase(cut, op, square)}-picture.mp4`);
       const t0 = Date.now();
-      await renderMedia({ serveUrl: s, composition: comp, inputProps: props, codec: "h264", crf: 16, muted: true, outputLocation: out, concurrency: Number(process.env.CONC ?? 4), x264Preset: "slow", pixelFormat: "yuv420p", colorSpace: "bt709" });
+      await renderMedia({ serveUrl: s, composition: comp, inputProps: props, codec: "h264", crf: 16, muted: true, outputLocation: out, concurrency: Number(process.env.CONC ?? 4), x264Preset: "slow", pixelFormat: "yuv420p", colorSpace: "bt709", port: 3997 });
       console.log(`${out}  ${((Date.now() - t0) / 1000).toFixed(0)} s`);
     }
   }

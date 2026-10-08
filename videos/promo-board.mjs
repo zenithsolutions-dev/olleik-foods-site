@@ -14,8 +14,8 @@ const bundles = [];
 let serveUrl = await bundle({ entryPoint: resolve("src/index.ts") });
 bundles.push(serveUrl);
 const still = async (id, output, inputProps, frame, scale) => {
-  const composition = await selectComposition({ serveUrl, id, inputProps });
-  await renderStill({ serveUrl, composition, output: resolve(output), inputProps, frame, scale });
+  const composition = await selectComposition({ serveUrl, id, inputProps, port: 3997 });
+  await renderStill({ serveUrl, composition, output: resolve(output), inputProps, frame, scale, port: 3997 });
 };
 const label = (s) => s.caption ?? (s.kind === "slam2" || s.kind === "question" || s.kind === "status" ? `Hook ${s.hook}: ${s.props.text}` : s.props?.text ?? s.props?.headline ?? s.props?.lines?.join(" ") ?? (s.kind === "steps" ? `How it works: ${s.props.items.join(" · ")}` : s.kind));
 const sheets = [];
