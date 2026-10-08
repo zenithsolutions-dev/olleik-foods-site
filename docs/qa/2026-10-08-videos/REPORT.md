@@ -123,3 +123,21 @@ texture). No admin screens in any promo cut. No licence or disclaimer line appli
    1:1), the two angle cuts, the hero loop; three openings for the master and the 45 s; SRTs, posters, three thumbnails,
    `CUE_SHEET.md`, `PROMO_CAMPAIGN.md`; −14 LUFS / ≤ −1 dBTP on every encoded file.
 3. Delete the local demo database; verify zero demo accounts remain; merge after green CI (Rebase and merge).
+
+## Addendum: re-run check (2026-10-08, evening)
+
+The owner re-ran the same command. Nothing was rebuilt, because the stop-gate deliverables were already complete and `main`
+has no new commits since this branch was cut, so the captures are still current. An independent check was done instead:
+
+- Proof MP4 re-measured after encoding: −14.0 LUFS integrated, −1.9 dBTP, 20.0 s, 1920×1080, 30 fps. Passes.
+- Proof frames reviewed at full size, 1 per second: the hook shows from frame 0; no clipped text; no admin screens; no real data.
+- Copy claims re-verified in the code:
+  - "Only the products set up for your kitchen" holds (`customer_products` + RLS, migrations 0001/0003/0008).
+  - "A real team confirms every order" holds (orders go `new → confirmed` by an admin action, migration 0010).
+  - **Reviewer note:** a cancelled order is never confirmed, so "every" is a slight generalisation. Proposed safer wording
+    (Pending Review): "A real team confirms your orders."
+- **Fix queued for the final pass:** the outlined phone icon in the "One portal" pill reads like a missing-glyph box at
+  phone size. Use a filled or more detailed icon, or drop the icon.
+- PR #38 is still open and not merged. No dev server or local stack is running. No demo account exists outside the local stand-in.
+
+Still waiting for "Go" on gates A and B. The open questions in section 6 are unchanged.
