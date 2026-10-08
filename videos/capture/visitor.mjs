@@ -56,6 +56,21 @@ try {
     await p.close();
   });
 
+  await step("phone-apply", async () => {
+    const m = await phone.newPage();
+    await go(m, "/apply");
+    await m.evaluate(() => {
+      const f = document.querySelector("form");
+      if (f) window.scrollTo(0, f.getBoundingClientRect().top + window.scrollY - 70);
+    });
+    const boxes = { form: "form", businessName: "input[name=businessName]", contactName: "input[name=contactName]", email: "input[name=email]", phone: "input[name=phone]", address: "input[name=address]", submit: "form button[type=submit]" };
+    await shot(m, "visitor/p-apply-empty", "Apply on a phone: empty form", { boxes });
+    for (const [k, v] of Object.entries(APPLY)) await typeInto(m, `input[name=${k}]`, v, 5);
+    await typeInto(m, "input[name=address]", "14 Example Street, Ottawa, ON", 5);
+    await shot(m, "visitor/p-apply-filled", "Apply on a phone: filled (not submitted)", { boxes });
+    await m.close();
+  });
+
   await step("portal", async () => {
     const m = await phone.newPage();
     await go(m, "/login");

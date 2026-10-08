@@ -43,10 +43,10 @@ def main():
                 it = idx.get(name, {})
                 rows_m.append(f"| mixkit-{name}.wav | {role} | Mixkit #{name} “{it.get('title', '')}” | {it.get('page', 'https://mixkit.co/free-sound-effects/')} (file: {it.get('wav', f'https://assets.mixkit.co/active_storage/sfx/{name}/{name}.wav')}) | Mixkit Sound Effects Free License | licenses/mixkit-sfx-free-license-2026-10-05.txt / .jpg |")
     L = [
-        "# Audio Licences (promo v3)",
+        "# Audio Licences (Olleik Foods videos)",
         "",
         "Every audio file the promo can use is listed here with its source, its licence and the saved licence evidence. Sources were",
-        "checked on 2026-10-05. Accepted: CC0 / public domain, and licences that explicitly allow commercial video and online",
+        "checked on 2026-10-05 when the toolkit sourced them; the same files and the saved licence evidence were copied into this project on 2026-10-08 (no new downloads). Accepted: CC0 / public domain, and licences that explicitly allow commercial video and online",
         "advertising without attribution and without a login. Rejected: CC-BY, CC-BY-SA, NC, anything unclear, and anything behind",
         "a login. Raw files are kept out of git (Mixkit forbids redistributing items on their own); they live in",
         "`videos/audio-library/raw/` and `videos/audio-library/_src/` on this machine.",
@@ -75,7 +75,6 @@ def main():
     for cid, c in music2.CANDIDATES.items():
         L.append(f"| {cid} “{c['title']}” ({c['bpm']} BPM) | Original MIDI composed in code (`audio/music2.py`), rendered with FluidSynth + GeneralUser GS (GM programs: kit {c['kit']}, bass {c['bass']}, keys {c['keys']}, pad {c['pad']}, lead {c['lead']}/{c['lead2']}) | Ours + GeneralUser GS licence |")
     L += [
-        "| D reference “What About Action?” (sourced) | Mixkit stock music #474, https://mixkit.co/free-stock-music/ (file https://assets.mixkit.co/music/474/474.mp3) | **Mixkit Stock Music Free License**: allows online marketing ads, social media and YouTube*; **not allowed: TV and radio broadcast, CDs/DVDs, video games, remixing**; *YouTube claims possible. Evidence: licenses/mixkit-music-free-license-2026-10-05.txt / .jpg. Offered only as a reference; not recommended for the campaign. |",
         "",
         "## Sound effects: Kenney (CC0)",
         "",

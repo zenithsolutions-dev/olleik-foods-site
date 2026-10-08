@@ -2,7 +2,7 @@
 size, loudness and true peak of every MP4 measured with ffmpeg ebur128, the onset check of each cut's audio, and a
 licence / copy scan. Writes final-audit.json and prints a Markdown table.
 
-  python audio/final_audit.py D:/interviewes/marwahamer-videos/promo/final
+  python audio/final_audit.py D:/olleik-videos/promo
 """
 import glob
 import json

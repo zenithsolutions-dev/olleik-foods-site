@@ -29,50 +29,52 @@ def chord(root, kind):
 
 
 CANDIDATES = {
+    # Three original compositions for Olleik Foods (warm, confident, kitchen-morning energy). Motifs written for this
+    # project; the progressions are common-practice harmony. GM programs from the GeneralUser GS SoundFont.
     "A": {
-        "title": "Clear Launch",
+        "title": "Market Morning",
         "bpm": 120,
-        "kit": 24,  # Electronic
-        "bass": 38,  # Synth Bass 1
-        "keys": 5,  # Electric Piano 2 (FM, brighter)
+        "kit": 0,  # Standard kit
+        "bass": 33,  # Fingered Bass
+        "keys": 4,  # Electric Piano 1 (Rhodes-like)
         "pad": 89,  # Warm Pad
-        "lead": 11,  # Vibraphone
-        "lead2": 9,  # Glockenspiel (double, quiet)
-        "prog": [(50, "maj9"), (54, "m7"), (55, "maj7"), (57, "sus4")],  # D F#m G A(sus→7)
-        "late": (57, "7"),
-        "motif": [(0, 74, 1), (1, 76, 0.5), (1.5, 78, 0.5), (2, 81, 1.5), (4, 79, 1), (5, 78, 0.5), (5.5, 76, 0.5), (6, 74, 2)],
-        "bass_rhythm": [0, 1.5, 2, 3, 3.5],
-        "tonic": (50, "maj9"),
+        "lead": 12,  # Marimba
+        "lead2": 11,  # Vibraphone (double, quiet)
+        "prog": [(52, "maj9"), (49, "m7"), (57, "maj7"), (59, "sus4")],  # E C#m A B(sus→7)
+        "late": (59, "7"),
+        "motif": [(0, 76, 0.5), (0.5, 78, 0.5), (1, 80, 1), (2, 83, 0.5), (2.5, 80, 0.5), (3, 78, 1), (4, 76, 0.5), (4.5, 80, 0.5), (5, 78, 0.5), (5.5, 76, 0.5), (6, 73, 2)],
+        "bass_rhythm": [0, 1, 1.5, 2.5, 3],
+        "tonic": (52, "maj9"),
     },
     "B": {
-        "title": "Bright Pulse",
+        "title": "Open Kitchen",
         "bpm": 124,
-        "kit": 0,  # Standard
-        "bass": 39,  # Synth Bass 2
+        "kit": 16,  # Power kit
+        "bass": 38,  # Synth Bass 1
         "keys": 0,  # Acoustic Grand
         "pad": 48,  # Strings
         "lead": 45,  # Pizzicato
         "lead2": 80,  # Square lead, very quiet
-        "prog": [(57, "add9"), (52, "maj"), (54, "m7"), (50, "maj9")],  # A E F#m D
+        "prog": [(55, "add9"), (50, "maj"), (52, "m7"), (48, "maj9")],  # G D Em C
         "late": None,
-        "motif": [(0, 76, 0.5), (0.5, 81, 0.5), (1, 80, 0.5), (1.5, 76, 1), (2.5, 73, 0.5), (3, 76, 1), (4, 78, 0.5), (4.5, 81, 0.5), (5, 83, 1), (6, 81, 0.5), (6.5, 80, 0.5), (7, 76, 1)],
-        "bass_rhythm": [0.5, 1.5, 2.5, 3.5],  # off-beat house bass
-        "tonic": (57, "add9"),
+        "motif": [(0, 79, 0.5), (0.5, 81, 0.5), (1, 83, 0.5), (1.5, 86, 1), (2.5, 83, 0.5), (3, 81, 1), (4, 79, 0.5), (4.5, 83, 0.5), (5, 81, 0.5), (5.5, 79, 0.5), (6, 74, 1), (7, 76, 1)],
+        "bass_rhythm": [0.5, 1.5, 2.5, 3.5],  # off-beat bass
+        "tonic": (55, "add9"),
     },
     "C": {
-        "title": "Warm Momentum",
-        "bpm": 104,
-        "kit": 8,  # Room
-        "bass": 33,  # Fingered Bass
-        "keys": 24,  # Nylon Guitar (arpeggio)
+        "title": "Slow Simmer",
+        "bpm": 100,
+        "kit": 40,  # Brush kit
+        "bass": 32,  # Acoustic Bass
+        "keys": 25,  # Steel-string guitar (arpeggio)
         "pad": 49,  # Slow Strings
-        "lead": 12,  # Marimba
+        "lead": 73,  # Flute
         "lead2": 0,  # Piano, doubles the motif an octave down, quiet
-        "prog": [(53, "maj9"), (57, "m7"), (58, "maj7"), (60, "sus4")],  # F Am Bb C(sus→7)
-        "late": (60, "7"),
-        "motif": [(0, 72, 0.75), (0.75, 74, 0.75), (1.5, 77, 1.5), (3, 76, 1), (4, 74, 0.75), (4.75, 72, 0.75), (5.5, 69, 1.5), (7, 72, 1)],
+        "prog": [(58, "maj9"), (55, "m7"), (51, "maj7"), (53, "sus4")],  # Bb Gm Eb F(sus→7)
+        "late": (53, "7"),
+        "motif": [(0, 74, 0.75), (0.75, 77, 0.75), (1.5, 79, 1.5), (3, 77, 1), (4, 74, 0.75), (4.75, 72, 0.75), (5.5, 70, 1.5), (7, 74, 1)],
         "bass_rhythm": [0, 0.75, 2, 2.75, 3.5],
-        "tonic": (53, "maj9"),
+        "tonic": (58, "maj9"),
     },
 }
 
