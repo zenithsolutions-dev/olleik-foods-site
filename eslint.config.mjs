@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Video tooling (Remotion, capture scripts, local demo stack) has its own package and is not app code.
+    "videos/**",
   ]),
   // GOVERNING SECURITY RULE (Phase D): customer-portal code must NEVER use the
   // service-role admin client. All portal reads go through the session-bound

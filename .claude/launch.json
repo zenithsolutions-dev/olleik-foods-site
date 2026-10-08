@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "olleik-video-demo",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["videos/devstack/dev.mjs"],
+      "port": 3100
     }
   ]
 }

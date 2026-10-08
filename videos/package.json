@@ -1,0 +1,30 @@
+{
+  "name": "olleik-videos",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Olleik Foods manual + promo videos (Remotion). Own install: npm install inside videos/ only.",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "stack": "node devstack/stack.mjs",
+    "seed": "node devstack/seed.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@remotion/bundler": "^4.0.529",
+    "@remotion/cli": "^4.0.529",
+    "@remotion/fonts": "^4.0.529",
+    "@remotion/media-utils": "^4.0.529",
+    "@remotion/paths": "^4.0.529",
+    "@remotion/renderer": "^4.0.529",
+    "@types/react": "^19.3.0",
+    "embedded-postgres": "^18.4.0-beta.17",
+    "pg": "^8.23.1",
+    "playwright-core": "^1.64.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "remotion": "^4.0.529",
+    "typescript": "^5.9.3"
+  }
+}

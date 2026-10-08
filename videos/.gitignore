@@ -1,0 +1,16 @@
+node_modules/
+out/
+devstack/_data/
+devstack/_bin/
+devstack/_storage/
+devstack/_keys.json
+devstack/_postgrest.conf
+devstack/_logs/
+public/footage/
+public/promo/
+public/board/
+public/audio/
+audio-library/raw/
+audio-library/_src/
+audio-library/_tools/
+__pycache__/
