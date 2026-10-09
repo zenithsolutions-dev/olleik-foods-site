@@ -28,7 +28,7 @@ def main():
         src = os.path.join(LIB, "_src", pack, "License.txt")
         if os.path.exists(src):
             shutil.copy(src, os.path.join(lic, f"{pack}-License.txt"))
-    rows_k, rows_m = [], []
+    rows_k, rows_m, rows_o = [], [], []
     seen = set()
     for role, items in bank.BANK.items():
         for src, name in items:
@@ -39,6 +39,8 @@ def main():
                 pack, base = name.split("/")
                 title, page, z = KENNEY_PAGES[pack]
                 rows_k.append(f"| {base}.ogg | {role} | Kenney · {title} | {page} (zip: {z}) | CC0 1.0 | licenses/{pack}-License.txt |")
+            elif src == "oga":
+                rows_o.append(f"| {name}.mp3 | {role} | OpenGameArt “Various Paper Sound Effects” | https://opengameart.org/content/various-paper-sound-effects (file: https://opengameart.org/sites/default/files/{name}.mp3) | CC0 1.0 | licenses/opengameart-various-paper-sound-effects-CC0.txt |")
             else:
                 it = idx.get(name, {})
                 rows_m.append(f"| mixkit-{name}.wav | {role} | Mixkit #{name} “{it.get('title', '')}” | {it.get('page', 'https://mixkit.co/free-sound-effects/')} (file: {it.get('wav', f'https://assets.mixkit.co/active_storage/sfx/{name}/{name}.wav')}) | Mixkit Sound Effects Free License | licenses/mixkit-sfx-free-license-2026-10-05.txt / .jpg |")
@@ -88,6 +90,29 @@ def main():
         "|---|---|---|---|---|---|",
         *sorted(rows_m),
         "",
+        "## Sound effects: OpenGameArt (CC0)",
+        "",
+        "| File | Role | Item | Source | Licence | Evidence |",
+        "|---|---|---|---|---|---|",
+        *sorted(rows_o),
+        "",
+        "## V2 sounds (sourced 2026-10-09 for the story film, all with licences recorded above before use)",
+        "",
+        "- Door bell: Mixkit #2864 “Doorbell tone”, #333 “Doorbell single press” (also the end-card bell, pitched down).",
+        "- Stapler: Mixkit #2995 “Stapling paper” (the paper-snap layer of the rubber stamp).",
+        "- Tape: Mixkit #3102 “Duct tape bandage”.",
+        "- Paper tear: OpenGameArt “Various Paper Sound Effects”, paper_ripped_-_1.mp3 (CC0).",
+        "- Thermal printer: Mixkit #2383 “Paper scroll in an office” (real paper feed, looped over the print time) plus a faint",
+        "  synthesised stepper-motor chirp (−32 dB). No real thermal-printer recording with a clear licence was found on Mixkit,",
+        "  Kenney or OpenGameArt.",
+        "- Phone buzz: a synthesised 165 Hz vibration-motor hum (on/off pattern of a phone) layered with REAL rattles of a hard",
+        "  object on a counter (Kenney Impact Sounds, CC0). No phone-vibration recording with a clear licence was found.",
+        "- Knife on a board: Mixkit #2152 “Quick knife slice cutting” refused the download (HTTP 403); replaced by a real light",
+        "  wood impact (Kenney impactWood_light, CC0). Not used: Mixkit #2152.",
+        "- Box thuds, stamp body and punch, footsteps, mug: Kenney Impact Sounds (CC0), listed above.",
+        "- Room tone: synthesised (very low brown noise, low-passed), about 34 dB under the effects.",
+        "- Problem-card pluck and the episodes' two-note “coming up” sting: rendered by the music engine (FluidSynth + GeneralUser GS).",
+        "",
         "Keystroke “clacks” are short slices (about 90 ms each) cut from Mixkit #1388 “Keyboard random typing”, #1386 “Keyboard typing”,",
         "#1387 “Fast keyboard typing”, #1390 “Hard typing” and #2538 “Hard laptop keyboard typing” (all listed above where used as",
         "sources), combined with Kenney switch recordings into blue-switch keystrokes. Permitted: the Mixkit licence allows modifying",
@@ -101,7 +126,7 @@ def main():
             it = idx.get(str(extra), {})
             L.insert(L.index("## Sound effects: Mixkit") + 4, f"| mixkit-{extra}.wav | key_clack_src | Mixkit #{extra} “{it.get('title', '')}” | {it.get('page', '')} (file: https://assets.mixkit.co/active_storage/sfx/{extra}/{extra}.wav) | Mixkit Sound Effects Free License | licenses/mixkit-sfx-free-license-2026-10-05.txt / .jpg |")
     open(os.path.join(LIB, "LICENSES.md"), "w", encoding="utf8").write("\n".join(L) + "\n")
-    print(os.path.join(LIB, "LICENSES.md"), len(rows_k), "Kenney,", len(rows_m), "Mixkit rows")
+    print(os.path.join(LIB, "LICENSES.md"), len(rows_k), "Kenney,", len(rows_m), "Mixkit,", len(rows_o), "OpenGameArt rows")
 
 
 if __name__ == "__main__":

@@ -285,12 +285,32 @@ def sting_events(cid):
     return ev
 
 
-def render(cid, music, frames, seed="promo"):
+def sparsen(stems_ev, kicks, parts):
+    """V2 'quiet bed' arrangement: kick (soft) + shaker only, bass and keys softer, pad kept, lead only on the end card."""
+    end_start = parts.index("End") if "End" in parts else len(parts)
+    keep_drum = {36: 0.55, 82: 0.6, 70: 0.6, 49: 0.8, 57: 0.6}
+
+    def scale(ev, k):
+        return [(b, kind, ch, a, int(max(1, min(127, v * k))) if kind == "on" else v) for (b, kind, ch, a, v) in ev]
+
+    drums = []
+    for (b, kind, ch, a, v) in stems_ev["drums"]:
+        if kind in ("on", "off") and a not in keep_drum:
+            continue
+        drums.append((b, kind, ch, a, int(v * keep_drum.get(a, 1)) if kind == "on" else v))
+    lead = [e for e in stems_ev["lead"] if e[1] not in ("on", "off") or e[0] >= end_start]
+    chords = [(b, kind, ch, a, int(v * (0.65 if ch == 1 else 0.9)) if kind == "on" else v) for (b, kind, ch, a, v) in stems_ev["chords"]]
+    return {"drums": drums, "bass": scale(stems_ev["bass"], 0.75), "chords": chords, "lead": lead}, kicks
+
+
+def render(cid, music, frames, seed="promo", sparse=False):
     """Stems for candidate `cid` following `music` (scene map in 30 fps frames) over `frames` frames."""
     C = CANDIDATES[cid]
     bpm = C["bpm"]
     parts = parts_per_beat(music, frames, bpm)
     stems_ev, kicks = compose(cid, parts, seed)
+    if sparse:
+        stems_ev, kicks = sparsen(stems_ev, kicks, parts)
     seconds = frames / 30
     stems = {}
     for k, ev in stems_ev.items():

@@ -1,7 +1,7 @@
 import React from "react";
 import { Composition } from "remotion";
 import { CharSheet } from "./CharSheet";
-import { HeroFilm, heroFrames } from "./HeroFilm";
+import { Film, filmFrames, HeroFilm, heroFrames } from "./HeroFilm";
 import { Episode } from "./Episode";
 import { episodeOf } from "./episodes.mjs";
 
@@ -20,6 +20,7 @@ export function V2Root() {
         defaultProps={{ ep: "EP1" }}
         calculateMetadata={({ props }) => ({ durationInFrames: episodeOf(props.ep)?.frames ?? 300 })}
       />
+      <Composition id="V2-Film" component={Film} durationInFrames={450} fps={30} width={1920} height={1080} defaultProps={{ cut: "anim15" } as { cut: string; audioSrc?: string }} calculateMetadata={({ props }) => ({ durationInFrames: filmFrames(String(props.cut)) })} />
       <Composition id="V2-CharSheet" component={CharSheet} durationInFrames={1} fps={30} width={1920} height={1080} />
     </>
   );

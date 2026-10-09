@@ -1,11 +1,11 @@
 import React from "react";
-import { AbsoluteFill, interpolate, Sequence, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Audio, interpolate, Sequence, spring, staticFile, useCurrentFrame } from "remotion";
 import { F } from "../theme";
 import { Mark, Wordmark } from "../components/Chrome";
 import { BoxShape, DriverHands, Marco, Salma } from "./characters";
 import { BACK, ez, EXPO, INOUT, K, wob } from "./look";
 import { Bubble, Chip, FilmFX, Monitor, MorningKitchen, NightKitchen, Phone, RubberStamp, Ticket, Warehouse } from "./props";
-import { HERO } from "./hero.mjs";
+import { CHAOS, FILMS, TAP } from "./hero.mjs";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type HeroScene = any;
@@ -42,30 +42,23 @@ function Clock({ text, f, at = 0, dark = true }: { text: string; f: number; at?:
 }
 
 // ——— Scenes ————————————————————————————————————————————————————————————————————————————————————————————————
-const CHAOS = [
-  { kind: "file" as const, text: "price list v3 (final) (2)", sub: "PDF · 4 pages", x: 1020, y: 180, z: 0 },
-  { kind: "in" as const, text: "Can you do 4 cases by Fri??", x: 1180, y: 360, z: 6 },
-  { kind: "missed" as const, text: "Missed call (3)", x: 980, y: 520, z: 12 },
-  { kind: "voice" as const, text: "0:47", x: 1240, y: 650, z: 18 },
-  { kind: "in" as const, text: "price changed again?", sub: "$?? → $??", x: 960, y: 760, z: 24 },
-  { kind: "out" as const, text: "send me the new list pls", x: 1300, y: 260, z: 30 },
-];
 
 /** S01–S02: 11:04 PM, the chaos. Bubbles fly from the phone at the camera; fast rhythm cuts between wide and close. */
-function Chaos({ f, len }: { f: number; len: number }) {
-  const close = f > 75 && Math.floor((f - 75) / 12) % 2 === 1; // rhythm cut wide/close every 12 frames in the second half
+function Chaos({ f, len, sc }: { f: number; len: number; sc: HeroScene }) {
+  const closeFrom = sc.t?.close ?? 75;
+  const close = f > closeFrom && Math.floor((f - closeFrom) / 12) % 2 === 1; // rhythm cut wide/close every 12 frames in the second half
   const zoom = close ? 2.1 : 1 + 0.06 * (f / len);
   const blink = f % 70 > 66 ? 1 : 0;
   return (
     <AbsoluteFill>
       <NightKitchen f={f} />
-      {/* close: Marco's face centred (head at 670, 468 in the wide frame) */}
-      <AbsoluteFill style={{ transformOrigin: "0 0", transform: close ? `translate(${720 - 670 * zoom}px, ${470 - 468 * zoom}px) scale(${zoom})` : `scale(${zoom})` }}>
+      {/* close: Marco's face right of centre (head at 670, 468 in the wide frame), so the hook line keeps the dark wall */}
+      <AbsoluteFill style={{ transformOrigin: "0 0", transform: close ? `translate(${1180 - 670 * zoom}px, ${500 - 468 * zoom}px) scale(${zoom})` : `scale(${zoom})` }}>
         <div style={{ position: "absolute", left: 470, top: 300, width: 400, height: 600 }}>
           <Marco expr={f > 90 ? "surprised" : "tired"} tilt={-6 + wob(1, f, 2)} blink={blink} turn={0.2} armR={{ sh: 62, el: 72 }} armL={{ sh: 8, el: 12 }} hold={{ right: <g transform="rotate(-20) translate(-20 -60)"><rect width={52} height={96} rx={10} fill="#101714" /><rect x={5} y={6} width={42} height={84} rx={6} fill={K.lamp} opacity={0.9} /></g> }} />
         </div>
       </AbsoluteFill>
-      {CHAOS.map((c, i) => {
+      {(CHAOS as any[]).map((c, i) => {
         const t = f - c.z;
         if (t < 0) return null;
         const p = ez(t, 0, 16, 0, 1, EXPO);
@@ -79,36 +72,41 @@ function Chaos({ f, len }: { f: number; len: number }) {
         );
       })}
       <Clock text="11:04 PM" f={f} />
-      <KType text="One more text." at={48} f={f} x={110} y={850} size={110} color="#fff" dir={-1} />
+      {/* the hook line sits on the dark wall under the clock, on a soft dark plate, never over Marco's white jacket */}
+      {f >= (sc.hook?.at ?? 48) && <div style={{ position: "absolute", left: 70, top: 150, width: 980, height: 150, borderRadius: 30, background: "radial-gradient(closest-side, rgba(6,20,14,0.55), rgba(6,20,14,0))", opacity: ez(f, sc.hook?.at ?? 48, (sc.hook?.at ?? 48) + 8) }} />}
+      <KType text={sc.hook?.text ?? "One more text."} at={sc.hook?.at ?? 48} f={f} x={110} y={176} size={96} color="#fff" dir={-1} />
       <FilmFX f={f} dark />
     </AbsoluteFill>
   );
 }
 
 /** S03: the tap. Time freezes (speed ramp), one finger, one amber ripple, then the bubbles snap into a clean grid. */
-function Tap({ f, len }: { f: number; len: number }) {
-  const ripple = ez(f, 12, 34);
-  const snap = ez(f, 30, 48, 0, 1, BACK);
+function Tap({ f, len, sc }: { f: number; len: number; sc: HeroScene }) {
+  const T_ = { ...TAP, ...(sc.t ?? {}) };
+  const ripple = ez(f, T_.tap, T_.tap + 22);
+  const snap = ez(f, T_.snap, T_.snap + T_.dur + 5 * T_.stagger, 0, 1, BACK);
+  const snapOf = (i: number) => ez(f, T_.snap + i * T_.stagger, T_.snap + i * T_.stagger + T_.dur, 0, 1, BACK);
   const grid = (i: number) => ({ x: 640 + (i % 3) * 230, y: 300 + Math.floor(i / 3) * 230 });
   return (
     <AbsoluteFill>
       <NightKitchen f={f} warm={ez(f, 20, len)} />
       <AbsoluteFill style={{ background: `rgba(11,31,23,${0.55 - 0.3 * snap})` }} />
-      {CHAOS.map((c, i) => {
+      {(CHAOS as any[]).map((c, i) => {
         const g = grid(i);
-        const x = c.x + (g.x - c.x) * snap;
-        const y = c.y + (g.y - c.y) * snap;
-        const tile = snap > 0.6;
+        const si = snapOf(i);
+        const x = c.x + (g.x - c.x) * si;
+        const y = c.y + (g.y - c.y) * si;
+        const tile = si > 0.6;
         return (
-          <div key={i} style={{ position: "absolute", left: x, top: y, transform: `translate(-50%, -50%) scale(${1 - 0.45 * snap})`, transition: "none" }}>
-            {tile ? <div style={{ width: 360, height: 360, borderRadius: 40, background: i % 2 ? K.amberSoft : K.white, boxShadow: "0 20px 40px rgba(0,0,0,0.3)", display: "grid", placeItems: "center", fontFamily: F.serif, fontSize: 110, color: K.green, opacity: (snap - 0.6) / 0.4 }}>{"ABCDEF"[i]}</div> : <Bubble text={c.text} kind={c.kind} sub={c.sub} w={400} />}
+          <div key={i} style={{ position: "absolute", left: x, top: y, transform: `translate(-50%, -50%) scale(${1 - 0.45 * si})`, transition: "none" }}>
+            {tile ? <div style={{ width: 360, height: 360, borderRadius: 40, background: i % 2 ? K.amberSoft : K.white, boxShadow: "0 20px 40px rgba(0,0,0,0.3)", display: "grid", placeItems: "center", fontFamily: F.serif, fontSize: 110, color: K.green, opacity: Math.min(1, (si - 0.6) / 0.4) }}>{"ABCDEF"[i]}</div> : <Bubble text={c.text} kind={c.kind} sub={c.sub} w={400} />}
           </div>
         );
       })}
       {/* the finger + ripple */}
       <div style={{ position: "absolute", left: 960, top: 560, transform: "translate(-50%, -50%)" }}>
-        {f >= 12 && <div style={{ position: "absolute", left: -260 * ripple, top: -260 * ripple, width: 520 * ripple, height: 520 * ripple, borderRadius: "50%", border: `${8 * (1 - ripple) + 2}px solid ${K.amber}`, opacity: 1 - ripple }} />}
-        <div style={{ position: "absolute", left: -34, top: -34 - 60 * (1 - ez(f, 0, 12)), width: 68, height: 68, borderRadius: 34, background: "#c98b62", boxShadow: "0 10px 20px rgba(0,0,0,0.35)", opacity: 1 - ez(f, 24, 32) }} />
+        {f >= T_.tap && <div style={{ position: "absolute", left: -260 * ripple, top: -260 * ripple, width: 520 * ripple, height: 520 * ripple, borderRadius: "50%", border: `${8 * (1 - ripple) + 2}px solid ${K.amber}`, opacity: 1 - ripple }} />}
+        <div style={{ position: "absolute", left: -34, top: -34 - 60 * (1 - ez(f, T_.tap - 12, T_.tap)), width: 68, height: 68, borderRadius: 34, background: "#c98b62", boxShadow: "0 10px 20px rgba(0,0,0,0.35)", opacity: 1 - ez(f, T_.tap + 12, T_.tap + 20) }} />
       </div>
       <FilmFX f={f} dark />
     </AbsoluteFill>
@@ -161,22 +159,28 @@ function OnThePhone({ f, len, sc }: { f: number; len: number; sc: HeroScene }) {
 }
 
 /** S07: the slip prints out of the phone; Marco finally exhales. Ends on a whip to the right (match cut). */
-function Print({ f, len }: { f: number; len: number }) {
-  const printed = ez(f, 6, 46, 0, 1, INOUT);
-  const fly = ez(f, len - 16, len, 0, 1, INOUT);
+function Print({ f, len, sc }: { f: number; len: number; sc: HeroScene }) {
+  const t = { print: [6, 46], fly: len - 16, word: 34, ...(sc.t ?? {}) };
+  const printed = ez(f, t.print[0], t.print[1], 0, 1, INOUT);
+  const fly = ez(f, t.fly, t.fly + 16, 0, 1, INOUT);
   return (
     <AbsoluteFill>
       <NightKitchen f={f} warm={0.6} />
       <div style={{ position: "absolute", left: 300, top: 300, width: 400, height: 600 }}>
         <Marco expr={f > 30 ? "smile" : "neutral"} blink={f > 52 && f < 56 ? 1 : 0} turn={0.4} armR={{ sh: 70, el: 60 }} />
       </div>
-      <div style={{ position: "absolute", left: 980, top: 200, transform: `translateX(${fly * 1200}px) rotate(${fly * 8}deg)` }}>
-        <div style={{ width: 360, height: 40, borderRadius: 12, background: "#101714" }} />
-        <div style={{ marginLeft: 30 }}>
-          <Ticket w={300} printed={printed} lines={ORDER_LINES} />
+      {/* his phone (the real "Order received" screen) on the counter; the slip rises out of its top edge, then whips right */}
+      <div style={{ position: "absolute", left: 1010, top: 360, transform: `translateX(${fly * 1300}px) rotate(${-3 + fly * 8}deg)` }}>
+        <div style={{ position: "absolute", left: 22, bottom: 0, width: 256, height: 256 * 1.35 * printed, overflow: "hidden" }}>
+          <div style={{ position: "absolute", left: 0, top: 0 }}>
+            <Ticket w={256} printed={1} lines={ORDER_LINES} />
+          </div>
+        </div>
+        <div style={{ position: "absolute", left: 0, top: 0 }}>
+          <Phone w={300} src="visitor/p-placed" cam={{ rect: { x: 20, y: 170, w: 350, h: 300 }, z: 1.2 }} glow={0.7} />
         </div>
       </div>
-      <KType text="Done." at={34} f={f} x={140} y={150} size={120} italic accent={K.amber} dir={-1} />
+      <KType text="Done." at={t.word} f={f} x={140} y={150} size={120} italic accent={K.amber} dir={-1} />
       <FilmFX f={f} dark />
     </AbsoluteFill>
   );
@@ -267,16 +271,18 @@ function Morning({ f, len, sc }: { f: number; len: number; sc: HeroScene }) {
         const s = spring({ frame: f - at, fps: 30, config: { damping: 11, stiffness: 220 } });
         if (f < at) return null;
         return (
-          <svg key={i} width={260} height={210} style={{ position: "absolute", left: 1330 + i * 120, top: 640 - i * 150, transform: `translateY(${(1 - s) * -300}px)`, overflow: "visible" }}>
-            <BoxShape w={240} h={180} label={i === 0 ? "COPPERLEAF" : undefined} />
+          // the second box lands ON the first (its base on the first box's top face), both in front of the door
+          <svg key={i} width={260} height={210} style={{ position: "absolute", left: i === 0 ? 1330 : 1354, top: i === 0 ? 640 : 506, transform: `translateY(${(1 - s) * -300}px)`, overflow: "visible" }}>
+            <BoxShape w={i === 0 ? 240 : 196} h={i === 0 ? 180 : 150} label={i === 0 ? "COPPERLEAF" : undefined} />
           </svg>
         );
       })}
-      <div style={{ position: "absolute", left: 520, top: 300, width: 400, height: 600 }}>
+      <div style={{ position: "absolute", left: 640, top: 300, width: 400, height: 600 }}>
         <Marco expr={f > t.boxes + 10 ? "smile" : "neutral"} turn={0.6} blink={f % 80 > 76 ? 1 : 0} armL={{ sh: 40, el: 100 }} armR={f > t.boxes + 20 ? { sh: 150, el: 20 } : { sh: 10, el: 10 }} hold={{ left: <g transform="translate(-26 -40)"><rect width={52} height={60} rx={8} fill={K.amber} /><path d="M 52 14 q 22 4 0 28" stroke={K.amber} strokeWidth={8} fill="none" /></g> }} />
       </div>
       <Clock text="Morning." f={f} at={4} dark={false} />
-      <KType text="Your catalog. Your prices." at={t.line} f={f} x={110} y={300} size={76} color={K.deep} dir={-1} out={t.stampSent - 4} />
+      <KType text="Your catalog." at={t.line} f={f} x={110} y={420} size={78} color={K.deep} dir={-1} out={t.stampSent - 4} />
+      <KType text="Your prices." at={t.line + 4} f={f} x={110} y={515} size={84} italic accent={K.amber} dir={-1} out={t.stampSent - 4} />
       {f >= t.stampSent && (
         <div style={{ position: "absolute", left: 1290, top: 520, transform: `translate(-50%, -50%) rotate(-10deg) scale(${2.4 - 1.4 * stamp})`, opacity: stamp, border: `14px solid ${K.stamp}`, borderRadius: 18, padding: "6px 40px", color: K.stamp, fontFamily: F.sans, fontWeight: 900, fontSize: 210, letterSpacing: "0.08em", mixBlendMode: "multiply" }}>SENT</div>
       )}
@@ -310,13 +316,13 @@ function SceneBody({ sc }: { sc: HeroScene }) {
   const len = sc.to - sc.from;
   switch (sc.kind) {
     case "chaos":
-      return <Chaos f={f} len={len} />;
+      return <Chaos f={f} len={len} sc={sc} />;
     case "tap":
-      return <Tap f={f} len={len} />;
+      return <Tap f={f} len={len} sc={sc} />;
     case "phone":
       return <OnThePhone f={f} len={len} sc={sc} />;
     case "print":
-      return <Print f={f} len={len} />;
+      return <Print f={f} len={len} sc={sc} />;
     case "warehouse":
       return <WarehouseScene f={f} len={len} sc={sc} />;
     case "handoff":
@@ -330,17 +336,21 @@ function SceneBody({ sc }: { sc: HeroScene }) {
   }
 }
 
-/** The hero cut (60 s 16:9). Scenes overlap by 0 frames: every transition is a cut on action, a whip or a match cut. */
-export function HeroFilm() {
+/** A V2 film cut (the 60 s hero or the 15 s animatic, from FILMS in hero.mjs). Scenes do not overlap: every transition
+ *  is a cut on action, a whip or a match cut. An optional audio file plays along (proofs). */
+export function Film({ cut = "hero", audioSrc }: { cut?: string; audioSrc?: string }) {
+  const F_ = (FILMS as Record<string, { frames: number; scenes: HeroScene[] }>)[cut];
   return (
     <AbsoluteFill style={{ background: K.night }}>
-      {HERO.scenes.map((sc: HeroScene) => (
+      {F_.scenes.map((sc: HeroScene) => (
         <Sequence key={sc.id} from={sc.from} durationInFrames={sc.to - sc.from} name={`${sc.id} ${sc.kind}`}>
           <SceneBody sc={sc} />
         </Sequence>
       ))}
+      {audioSrc && <Audio src={staticFile(audioSrc)} />}
     </AbsoluteFill>
   );
 }
-export const heroFrames = HERO.frames;
-void useVideoConfig;
+export const HeroFilm = () => <Film cut="hero" />;
+export const filmFrames = (cut: string) => (FILMS as Record<string, { frames: number }>)[cut].frames;
+export const heroFrames = filmFrames("hero");

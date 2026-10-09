@@ -1,11 +1,11 @@
 import React from "react";
-import { AbsoluteFill, Img, Sequence, spring, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Audio, Img, interpolate, Sequence, spring, staticFile, useCurrentFrame } from "remotion";
 import manifest from "../../public/footage/manifest.json";
 import { Mark, Wordmark } from "../components/Chrome";
 import { F } from "../theme";
 import { Marco, Salma, type Arm } from "./characters";
-import { episodeOf } from "./episodes.mjs";
-import { ez, INOUT, K, wob } from "./look";
+import { beatTiming, episodeOf } from "./episodes.mjs";
+import { BACK, ez, INOUT, K, wob } from "./look";
 import { FilmFX, Phone, RoughArrow, RoughCircle } from "./props";
 
 type Rect = { x: number; y: number; w: number; h: number };
@@ -14,18 +14,56 @@ type Beat = any;
 const SHOTS = (manifest as { shots: Record<string, { device: string; boxes: Record<string, Rect> }> }).shots;
 
 /** The guide in a round window, bottom-left: blinks, nods on the caption, and gestures (point, thumbs up, wave). */
-function GuideBubble({ who, f, gesture, expr = "smile" }: { who: "marco" | "salma"; f: number; gesture?: string; expr?: "smile" | "focus" | "tired" | "neutral" | "surprised" | "wink" }) {
+function GuideBubble({ who, f, len, gesture, expr = "smile" }: { who: "marco" | "salma"; f: number; len: number; gesture?: string; expr?: "smile" | "focus" | "tired" | "neutral" | "surprised" | "wink" }) {
   const P = who === "marco" ? Marco : Salma;
-  const g = ez(f, 10, 22, 0, 1, INOUT);
-  const arm: Arm = gesture === "point" ? { sh: 30 + 85 * g, el: -20 * g } : gesture === "thumbs" ? { sh: 10 + 60 * g, el: 10 + 70 * g } : gesture === "wave" ? { sh: 150, el: 20 + 25 * Math.sin(f / 4) } : { sh: 10, el: 10 };
-  const thumb = gesture === "thumbs" && g > 0.8 ? <path d="M -6 -10 L -6 -34 Q 2 -40 8 -30 L 8 -10 Z" fill={who === "marco" ? "#c98b62" : "#8d5a3b"} /> : null;
-  const nod = Math.sin(Math.min(f, 24) / 4) * 3 * (f < 24 ? 1 : 0);
+  // gesture weight: in with a small overshoot (8→22), held, out before the beat ends (len−16 → len−4)
+  const gin = interpolate(f, [8, 22], [0, 1], { easing: BACK, extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const gout = ez(f, len - 16, len - 4, 0, 1, INOUT);
+  const g = gin * (1 - gout);
+  const rest: Arm = { sh: 10, el: 12 };
+  const pose: Arm = gesture === "point" ? { sh: 115, el: -20 } : gesture === "thumbs" ? { sh: 70, el: 80 } : gesture === "wave" ? { sh: 150, el: 20 + 22 * Math.sin(f / 4) } : rest;
+  const arm: Arm = { sh: rest.sh + (pose.sh - rest.sh) * g, el: rest.el + (pose.el - rest.el) * g };
+  const thumb = gesture === "thumbs" && g > 0.85 ? <path d="M -6 -10 L -6 -34 Q 2 -40 8 -30 L 8 -10 Z" fill={who === "marco" ? "#c98b62" : "#8d5a3b"} /> : null;
+  // a damped nod as the caption lands (frame 6), plus a slow idle breath
+  const t = f - 6;
+  const nod = t >= 0 ? 5 * Math.exp(-t / 9) * Math.sin(t / 2.6) : 0;
+  const breath = 1.2 * Math.sin(f / 18);
   const pop = spring({ frame: f, fps: 30, config: { damping: 13, stiffness: 160 } });
   return (
     <div style={{ position: "absolute", left: 50, bottom: 40, width: 290, height: 290, borderRadius: 145, background: who === "marco" ? K.amberSoft : "#dfe9e2", overflow: "hidden", border: `6px solid ${K.white}`, boxShadow: "0 20px 50px rgba(20,32,26,0.25)", transform: `scale(${0.6 + 0.4 * pop})`, zIndex: 50 }}>
-      <div style={{ position: "absolute", left: -10, top: 20, width: 310, height: 465 }}>
+      <div style={{ position: "absolute", left: -10, top: 20 + breath, width: 310, height: 465 }}>
         <P expr={expr} blink={f % 75 > 71 ? 1 : 0} turn={0.35} tilt={nod} armR={arm} hold={{ right: thumb }} />
       </div>
+    </div>
+  );
+}
+
+/** The pointer (desktop arrow) or finger (phone) that travels to the target and taps it; drawn in capture pixels. */
+function Pointer({ x, y, tap, f, phone, scale }: { x: number; y: number; tap: number; f: number; phone: boolean; scale: number }) {
+  const t = f - tap;
+  if (phone) {
+    const vis = Math.max(t < 0 ? 1 - Math.min(1, -t / 10) : 0, t >= 0 && t < 14 ? 1 - t / 14 : 0);
+    if (vis <= 0) return null;
+    const press = t >= 0 && t < 6 ? 1 - 0.25 * Math.sin((t / 6) * Math.PI) : 1;
+    return (
+      <div style={{ position: "absolute", left: x, top: y, transform: `scale(${scale})`, zIndex: 30 }}>
+        {t >= 0 && t < 16 && <div style={{ position: "absolute", left: -46 * (0.4 + t / 16), top: -46 * (0.4 + t / 16), width: 92 * (0.4 + t / 16), height: 92 * (0.4 + t / 16), borderRadius: "50%", border: `3px solid ${K.amber}`, opacity: 1 - t / 16 }} />}
+        <div style={{ position: "absolute", left: -22, top: -22, width: 44, height: 44, borderRadius: 22, background: "rgba(14,44,32,0.3)", border: "2px solid rgba(255,255,255,0.9)", transform: `scale(${press})`, opacity: vis }} />
+      </div>
+    );
+  }
+  const travel = ez(f, tap - 22, tap - 2, 0, 1, INOUT);
+  const px = x + 260 * (1 - travel);
+  const py = y + 180 * (1 - travel);
+  const press = t >= 0 && t < 6 ? 1 - 0.15 * Math.sin((t / 6) * Math.PI) : 1;
+  const o = ez(f, tap - 24, tap - 16) * (1 - ez(f, tap + 24, tap + 32));
+  if (o <= 0) return null;
+  return (
+    <div style={{ position: "absolute", left: px, top: py, transform: `scale(${scale * press})`, transformOrigin: "0 0", zIndex: 30, opacity: o }}>
+      {t >= 0 && t < 18 && <div style={{ position: "absolute", left: -40 * (0.3 + t / 18), top: -40 * (0.3 + t / 18), width: 80 * (0.3 + t / 18), height: 80 * (0.3 + t / 18), borderRadius: "50%", border: `3px solid ${K.amber}`, opacity: 1 - t / 18 }} />}
+      <svg width="30" height="38" viewBox="0 0 30 38" style={{ filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.35))" }}>
+        <path d="M2 2 L2 30 L9 23 L14 35 L19 33 L14 21 L24 21 Z" fill="#fff" stroke="#0e2c20" strokeWidth="2" strokeLinejoin="round" />
+      </svg>
     </div>
   );
 }
@@ -70,7 +108,8 @@ function DesktopShot({ b, f, len }: { b: Beat; f: number; len: number }) {
   const hy = H / 2 / s;
   const cx = Math.min(1440 - hx, Math.max(hx, r.x + r.w / 2));
   const cy = Math.min(900 - hy, Math.max(hy, r.y + r.h / 2));
-  const swap = b.then && f > len * 0.55 ? ez(f, len * 0.55, len * 0.55 + 8) : 0;
+  const T = beatTiming(b);
+  const swap = T.swap != null ? ez(f, T.swap, T.swap + 8) : 0;
   const rise = spring({ frame: f, fps: 30, config: { damping: 18, stiffness: 120 } });
   return (
     <div style={{ position: "absolute", left: 500, top: 56, width: W, transform: `translateY(${(1 - rise) * 80}px) rotate(${wob(4, f, 0.25, 0.04)}deg)`, opacity: rise }}>
@@ -84,8 +123,11 @@ function DesktopShot({ b, f, len }: { b: Beat; f: number; len: number }) {
             <Img src={staticFile(`footage/${b.shot}.png`)} style={{ position: "absolute", width: 1440, height: 900 }} />
             {b.then && <Img src={staticFile(`footage/${b.then}.png`)} style={{ position: "absolute", width: 1440, height: 900, opacity: swap }} />}
             <svg width={1440} height={900} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
-              <RoughCircle r={r} p={ez(f, 26, 44)} width={5 / z} seed={b.box.length} />
+              <g opacity={1 - swap}>
+                <RoughCircle r={r} p={ez(f, T.circle[0], T.circle[1])} width={5 / z} seed={b.box.length} />
+              </g>
             </svg>
+            {T.tap != null && <Pointer x={r.x + r.w / 2} y={r.y + r.h / 2} tap={T.tap} f={f} phone={false} scale={1.3 / z} />}
           </div>
         </div>
       </div>
@@ -97,19 +139,23 @@ function DesktopShot({ b, f, len }: { b: Beat; f: number; len: number }) {
 function PhoneShot({ b, f, len }: { b: Beat; f: number; len: number }) {
   const r: Rect = SHOTS[b.shot].boxes[b.box];
   const z = 1.15 + 0.05 * (f / len);
-  const swap = b.then ? (f > len * 0.55 ? ez(f, len * 0.55, len * 0.55 + 8) : 0) : 0;
+  const T = beatTiming(b);
+  const swap = T.swap != null ? ez(f, T.swap, T.swap + 8) : 0;
   const rise = spring({ frame: f, fps: 30, config: { damping: 18, stiffness: 110 } });
   return (
     <>
       <div style={{ position: "absolute", left: 1000, top: 540, transform: `translate(-50%, -50%) translateY(${(1 - rise) * 200}px) rotate(${-3 + wob(5, f, 0.8, 0.05)}deg)` }}>
         <Phone w={430} src={b.then ?? b.shot} prev={b.then ? b.shot : undefined} mix={b.then ? swap : 1} cam={{ rect: { x: 0, y: Math.max(0, r.y - 330), w: 390, h: 660 }, z }}>
           <svg width={390} height={844} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
-            <RoughCircle r={r} p={ez(f, 24, 42)} width={4} seed={b.box.length} />
+            <g opacity={1 - swap}>
+              <RoughCircle r={r} p={ez(f, T.circle[0], T.circle[1])} width={4} seed={b.box.length} />
+            </g>
           </svg>
+          {T.tap != null && <Pointer x={r.x + r.w / 2} y={r.y + r.h / 2} tap={T.tap} f={f} phone scale={1} />}
         </Phone>
       </div>
       <svg width={1920} height={1080} style={{ position: "absolute", inset: 0, overflow: "visible", zIndex: 30 }}>
-        <RoughArrow from={{ x: 560, y: 300 }} to={{ x: 760, y: 460 }} p={ez(f, 36, 52)} />
+        <RoughArrow from={{ x: 560, y: 300 }} to={{ x: 760, y: 460 }} p={ez(f, T.arrow[0], T.arrow[1])} />
       </svg>
     </>
   );
@@ -124,7 +170,7 @@ function ScreenBeat({ b, f, len, guide }: { b: Beat; f: number; len: number; gui
       </svg>
       {phone ? <PhoneShot b={b} f={f} len={len} /> : <DesktopShot b={b} f={f} len={len} />}
       {b.step && <StepTicket n={b.step} f={f} />}
-      <GuideBubble who={guide} f={f} gesture={b.gesture} expr={b.gesture ? "smile" : "focus"} />
+      <GuideBubble who={guide} f={f} len={len} gesture={b.gesture} expr={b.gesture ? "smile" : "focus"} />
       <Caption text={b.caption} f={f} len={len} />
       <FilmFX f={f} />
     </AbsoluteFill>
@@ -217,7 +263,7 @@ function BeatBody({ b, guide }: { b: Beat; guide: "marco" | "salma" }) {
 }
 
 /** One manual episode (V2): the visitor manual or an admin episode, from episodes.mjs. */
-export function Episode({ ep }: { ep: string }) {
+export function Episode({ ep, audioSrc }: { ep: string; audioSrc?: string }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const E: any = episodeOf(ep);
   return (
@@ -227,6 +273,7 @@ export function Episode({ ep }: { ep: string }) {
           <BeatBody b={b} guide={E.guide} />
         </Sequence>
       ))}
+      {audioSrc && <Audio src={staticFile(audioSrc)} />}
     </AbsoluteFill>
   );
 }

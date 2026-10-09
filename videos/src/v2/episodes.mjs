@@ -30,15 +30,28 @@ const RAW = [
     ],
   },
   {
+    id: "VISITOR-CH4", title: "Marco's First Order · Chapter 4: Ordering (proof)", guide: "marco", length: "about 38 s",
+    beats: [
+      { kind: "title", seconds: 4, title: "Chapter 4: Ordering", line: "Cart, checkout, and the order on its way." },
+      V("visitor/p-catalog-card", "addToCart", 5, "Add what you need to the cart.", { step: 1, then: "visitor/p-catalog-added", gesture: "point" }),
+      V("visitor/p-cart", "checkout", 5, "Check the cart, then go to checkout.", { tap: true }),
+      V("visitor/p-checkout-filled", "delivery", 6, "Delivery or pickup, plus a note.", { step: 2, tap: true }),
+      V("visitor/p-checkout-filled", "submit", 5, "Submit. Payment stays on your usual terms.", { then: "visitor/p-placed", gesture: "thumbs" }),
+      V("visitor/p-placed", "banner", 5, "Received: the team confirms it next.", { step: 3 }),
+      V("visitor/p-orders", "first", 5, "Follow it: received, confirmed, ready, completed.", { gesture: "point" }),
+      { kind: "next", seconds: 3, line: "Next: your statement." },
+    ],
+  },
+  {
     id: "EP1", title: "Admin Episode 1 · Orders", guide: "salma", length: "about 40 s",
     beats: [
       { kind: "problem", seconds: 4, line: "Three new orders, and the day just started." },
       V("admin/dashboard", "newOrders", 5, "New orders show first on your dashboard.", { step: 1, gesture: "point" }),
-      V("admin/orders-new", "newTab", 5, "Open the New tab."),
+      V("admin/orders-new", "newTab", 5, "Open the New tab.", { tap: true }),
       V("admin/order-new", "note", 6, "Read the items, the profit and the customer's note.", { step: 2 }),
       V("admin/order-new", "confirm", 5, "Confirm: the stock is deducted.", { then: "admin/order-confirmed", gesture: "thumbs" }),
-      V("admin/order-prepared", "complete", 5, "Packed? Mark it prepared, then complete it.", { step: 3 }),
-      V("admin/invoice", "print", 5, "Every order has an invoice to print or save."),
+      V("admin/order-prepared", "complete", 5, "Packed? Mark it prepared, then complete it.", { step: 3, tap: true }),
+      V("admin/invoice", "print", 5, "Every order has an invoice to print or save.", { tap: true }),
       { kind: "next", seconds: 3, line: "Next: a new customer." },
     ],
   },
@@ -104,3 +117,41 @@ export const EPISODES = RAW.map((ep) => {
   return { ...ep, beats, frames: total, seconds: Math.round(total / FPS) };
 });
 export const episodeOf = (id) => EPISODES.find((e) => e.id === id);
+
+/** Timing inside a screen beat (frames from the beat start), shared by Episode.tsx and the sound events. */
+export function beatTiming(b) {
+  const len = b.to - b.from;
+  const swap = b.then ? Math.round(len * 0.55) : null;
+  const tap = b.tap || b.then ? (swap ?? Math.round(len * 0.55)) - 4 : null;
+  return { len, swap, tap, circle: [26, 44], arrow: [36, 52], step: [4, 18], gesture: [8, 22], gestureOut: [len - 16, len - 4], nod: 6 };
+}
+
+/** Sound events for one episode (manuals: sound design only, −16 LUFS). */
+export function episodeEvents(id) {
+  const E = episodeOf(id);
+  const ev = [];
+  for (const b of E.beats) {
+    const T = beatTiming(b);
+    const add = (f, sfx, extra = {}) => {
+      if (f >= 0 && f < T.len) ev.push({ f: b.from + f, sfx, vel: 0.7, pan: 0, pitch: 0, ...extra });
+    };
+    if (b.from > 0) add(0, "whoosh", { vel: 0.35, sweep: [0.4, -0.4], dur: 8, note: "beat change" });
+    if (b.kind === "screen") {
+      add(2, "pop", { vel: 0.45, pitch: -2, note: "guide bubble" });
+      if (b.step) add(T.step[0], "ticket", { dur: T.step[1] - T.step[0], vel: 0.5, note: `step ticket ${b.step} prints` });
+      add(T.circle[0], "marker", { dur: T.circle[1] - T.circle[0], note: "marker circle draws" });
+      if (T.tap != null) add(T.tap, SHOT_DEVICE(b.shot) === "phone" ? "tap" : "click", { note: "tap / click on the target" });
+      if (b.gesture === "thumbs") add(T.gesture[1], "tick", { vel: 0.4, pitch: 3, note: "thumbs up" });
+    } else if (b.kind === "problem") {
+      add(4, "pluck", { note: "problem line (low pluck)" });
+    } else if (b.kind === "next") {
+      add(4, "sting2", { note: "'coming up' two-note sting" });
+    } else if (b.kind === "title") {
+      add(6, "printer", { dur: 34, vel: 0.55, note: "the how-to ticket prints" });
+    } else if (b.kind === "outro") {
+      add(6, "bell", { vel: 0.6, note: "outro bell" });
+    }
+  }
+  return { cut: id, engine: "v2", frames: E.frames, target_lufs: -16, room: true, music: false, events: ev.sort((a, c) => a.f - c.f) };
+}
+const SHOT_DEVICE = (shot) => (shot.startsWith("visitor/p-") ? "phone" : "desktop");

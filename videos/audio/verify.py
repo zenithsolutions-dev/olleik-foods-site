@@ -17,7 +17,7 @@ from dsp import SR, SPF  # noqa: E402
 
 TOL = 0.033  # ±1 frame at 30 fps
 # Swells are designed to grow out of silence: their "onset" is not a transient, so they are reported, not scored.
-SWELLS = {"riser", "tail", "line", "icon", "cam"}
+SWELLS = {"riser", "tail", "line", "icon", "cam", "rampdown", "marker"}  # rampdown: reversed whoosh grows into the cut; marker: soft line swell
 HOP = 128
 
 
@@ -92,7 +92,9 @@ def verify(cut_dir, seconds=None):
     off_grid = [e for e in grid if e["f"] % 15 not in (0, 8)]
     # Placement check: each SFX type rendered on its own track (same events, same seeds) so a quiet sound is not hidden
     # by a louder one; this measures where each sound starts relative to its frame.
-    if "cand" in data:  # v3 / final cuts: real-recording SFX (sfx2) through mix3
+    if data.get("engine") == "v2":  # V2 story film and episodes: sfx_v2 through mix_v2
+        import mix_v2 as mixmod
+    elif "cand" in data:  # v3 / final cuts: real-recording SFX (sfx2) through mix3
         import mix3 as mixmod
     else:
         import mix as mixmod

@@ -15,9 +15,11 @@ SR = 48000
 LIB = os.path.join(os.path.dirname(__file__), "..", "audio-library")
 KEN = os.path.join(LIB, "_src")
 MIX = os.path.join(LIB, "raw", "mixkit")
+OGA = os.path.join(LIB, "raw", "opengameart")
 
 K = lambda pack, name: ("kenney", f"{pack}/{name}")  # noqa: E731
 M = lambda i: ("mixkit", str(i))  # noqa: E731
+O = lambda name: ("oga", name)  # noqa: E731  OpenGameArt CC0 items
 
 BANK = {
     # Blue-switch typing: real switch clicks (click jacket) + real keystroke bottom-outs sliced from typing takes.
@@ -40,12 +42,29 @@ BANK = {
     "confirm": [M(i) for i in (2865, 2867, 2573)] + [K("kenney_interface-sounds", f"confirmation_00{i}") for i in range(1, 5)],
     "swish": [K("kenney_interface-sounds", f"maximize_00{i}") for i in range(1, 10)],
     "drop": [K("kenney_interface-sounds", f"drop_00{i}") for i in range(1, 5)],
+    # ——— V2 (story film): sourced 2026-10-09, licences in LICENSES.md ———
+    "doorbell": [M(2864)],
+    "doorbell_press": [M(333)],
+    "stapler": [M(2995)],
+    "tape": [M(3102)],
+    "paper_feed": [M(2383)],
+    "tear": [O("paper_ripped_-_1")],
+    "box_thud": [K("kenney_impact-sounds", f"impactSoft_heavy_00{i}") for i in range(5)],
+    "box_body": [K("kenney_impact-sounds", f"impactWood_heavy_00{i}") for i in range(5)],
+    "stamp_body": [K("kenney_impact-sounds", f"impactWood_medium_00{i}") for i in range(5)],
+    "stamp_punch": [K("kenney_impact-sounds", f"impactPunch_medium_00{i}") for i in range(5)],
+    "chop": [K("kenney_impact-sounds", f"impactWood_light_00{i}") for i in range(5)],
+    "rattle": [K("kenney_impact-sounds", f"impactPlate_light_00{i}") for i in range(5)] + [K("kenney_impact-sounds", f"impactWood_light_00{i}") for i in range(5)],
+    "step": [K("kenney_impact-sounds", f"footstep_concrete_00{i}") for i in range(5)],
+    "mug": [K("kenney_impact-sounds", f"impactGlass_light_00{i}") for i in range(5)],
 }
 
 
 def _find(src, name):
     if src == "mixkit":
         return os.path.join(MIX, f"{name}.wav")
+    if src == "oga":
+        return os.path.join(OGA, f"{name}.mp3")
     pack, base = name.split("/")
     hits = glob.glob(os.path.join(KEN, pack, "**", base + ".ogg"), recursive=True)
     if not hits:
