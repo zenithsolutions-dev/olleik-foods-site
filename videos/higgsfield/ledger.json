@@ -1,0 +1,1085 @@
+[
+ {
+  "job_id": "f546c66e-0649-4dd6-bc04-7ac063047d67",
+  "kind": "product-anchor",
+  "model": "nano_banana_pro",
+  "file": "higgsfield/products/anchor-a.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144125_f546c66e-0649-4dd6-bc04-7ac063047d67.png",
+  "prompt": "[SUBJECT]\nCatalog photograph of a cluster of six ripe red tomatoes still attached to a fresh green vine, two loose tomatoes beside it.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "unused take (fill card visible)"
+ },
+ {
+  "job_id": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20",
+  "kind": "product-photo",
+  "sku": "PRD-001",
+  "product": "Vine-Ripe Tomatoes",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": null,
+  "file": "videos/higgsfield/products/raw/PRD-001.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144125_cc1b8fd0-cc9b-4137-b674-d1e69aee1c20.png",
+  "prompt": "[SUBJECT]\nCatalog photograph of a cluster of six ripe red tomatoes still attached to a fresh green vine, two loose tomatoes beside it.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: PRD-001 + style anchor element"
+ },
+ {
+  "job_id": "0647880c-25c2-4119-8ca4-37a25ba47020",
+  "kind": "product-photo",
+  "sku": "PRD-002",
+  "product": "Yellow Onions",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/PRD-002.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144326_0647880c-25c2-4119-8ca4-37a25ba47020.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a small pile of whole yellow onions with papery golden-brown skins, one onion halved showing its pale rings.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "e1ae1b55-29e5-42ae-b7dc-8ac3c2b3ef40",
+  "kind": "product-photo",
+  "sku": "PRD-003",
+  "product": "Romaine Hearts",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/PRD-003.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144327_e1ae1b55-29e5-42ae-b7dc-8ac3c2b3ef40.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of three crisp romaine lettuce hearts lying side by side, pale green to white at the base, fresh and dewy.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "92042a2e-2ed4-4078-bd30-70bf955360b1",
+  "kind": "product-photo",
+  "sku": "PRD-004",
+  "product": "Lemons",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/PRD-004.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144326_92042a2e-2ed4-4078-bd30-70bf955360b1.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a loose heap of bright yellow lemons with dimpled skins and a few green leaves, one lemon halved.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "b0f8aa32-f573-4dcc-8cb2-6328fa0daba6",
+  "kind": "product-photo",
+  "sku": "PRD-005",
+  "product": "Fresh Basil",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/PRD-005.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144326_b0f8aa32-f573-4dcc-8cb2-6328fa0daba6.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a generous bunch of fresh sweet basil with large glossy green leaves and stems.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "f513e99b-bbc9-4413-9247-e7fe90696899",
+  "kind": "product-photo",
+  "sku": "PRD-006",
+  "product": "Russet Potatoes",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/PRD-006.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144326_f513e99b-bbc9-4413-9247-e7fe90696899.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of russet potatoes with earthy brown skins spilling from an open plain undyed burlap sack.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "aaad3c4f-477a-4087-94d3-e3338a077932",
+  "kind": "product-photo",
+  "sku": "DRY-101",
+  "product": "Aged Cheddar Block",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/DRY-101.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144326_aaad3c4f-477a-4087-94d3-e3338a077932.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a large block of aged pale-orange cheddar cheese on a small worn wooden board, one corner cut away showing crumbly texture.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "13e7e550-93f9-4214-a3db-923f45e6f976",
+  "kind": "product-photo",
+  "sku": "DRY-102",
+  "product": "Whole Milk Mozzarella, Shredded",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/DRY-102.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144449_13e7e550-93f9-4214-a3db-923f45e6f976.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a shallow white ceramic bowl heaped with fluffy shredded mozzarella, a few strands on the paper.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "daff3e69-d7ea-4a1c-ae55-e7307b7dcd3c",
+  "kind": "product-photo",
+  "sku": "DRY-103",
+  "product": "Large Eggs, Grade A",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/DRY-103.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144448_daff3e69-d7ea-4a1c-ae55-e7307b7dcd3c.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of large brown eggs sitting in a plain grey moulded pulp egg tray, two eggs set on the paper in front.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "c0e29049-bda8-4ad1-86bd-41908c8268db",
+  "kind": "product-photo",
+  "sku": "DRY-104",
+  "product": "Unsalted Butter",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/DRY-104.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144450_c0e29049-bda8-4ad1-86bd-41908c8268db.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of two blocks of pale yellow butter, one wrapped in plain unprinted parchment, one unwrapped with a few thick slices cut.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "a0023e9d-4a33-4da2-abd9-998e39718a2d",
+  "kind": "product-photo",
+  "sku": "DRY-105",
+  "product": "Heavy Cream 36%",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/DRY-105.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144449_a0023e9d-4a33-4da2-abd9-998e39718a2d.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a small clear glass jug of thick fresh cream beside a plain white unprinted one-litre carton.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "13c42e20-f14c-4d45-b7ac-a372070ca066",
+  "kind": "product-photo",
+  "sku": "MEAT-201",
+  "product": "Boneless Chicken Breast",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/MEAT-201.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144449_13c42e20-f14c-4d45-b7ac-a372070ca066.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of three raw boneless skinless chicken breasts, pale pink and fresh, on a sheet of plain white butcher paper.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "b1f24849-212d-42f5-9507-2cedf2786698",
+  "kind": "product-photo",
+  "sku": "MEAT-202",
+  "product": "Ground Beef 80/20",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/MEAT-202.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144449_b1f24849-212d-42f5-9507-2cedf2786698.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a neat mound of fresh coarse-ground raw beef with visible fat flecks on plain white butcher paper.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "d88f3604-7c15-4a77-a712-49fda0bab3bf",
+  "kind": "product-photo",
+  "sku": "MEAT-203",
+  "product": "Beef Burger Patties 6 oz",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/MEAT-203-take1.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144449_d88f3604-7c15-4a77-a712-49fda0bab3bf.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a short stack of thick raw round beef burger patties separated by small squares of wax paper, one patty in front.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "superseded (backdrop drifted); replaced by 02cd24c9"
+ },
+ {
+  "job_id": "096fa0d5-77a3-4324-a558-e04046a435f4",
+  "kind": "product-photo",
+  "sku": "MEAT-204",
+  "product": "Chicken Wings, Split",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/MEAT-204.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144449_096fa0d5-77a3-4324-a558-e04046a435f4.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of raw split chicken wings, flats and drumettes, arranged loosely on plain white butcher paper.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "63dafb74-f5dd-465c-b26c-77d3bf62045f",
+  "kind": "product-photo",
+  "sku": "SEA-301",
+  "product": "Frozen Shrimp 21-25 ct",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/SEA-301.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144448_63dafb74-f5dd-465c-b26c-77d3bf62045f.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of raw shell-on grey-blue shrimp with a light frost, piled in a shallow stainless steel tray with a few crushed ice pieces.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "09cfb757-d999-4693-a0e8-6d34a2547555",
+  "kind": "product-photo",
+  "sku": "SEA-302",
+  "product": "Atlantic Salmon Fillet",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/SEA-302.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144449_09cfb757-d999-4693-a0e8-6d34a2547555.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a fresh skin-on side of Atlantic salmon fillet, bright coral with fine white fat lines, on plain parchment.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "b2d1b669-8194-4267-a5e8-00cbebb4978a",
+  "kind": "product-photo",
+  "sku": "DRY-401",
+  "product": "Extra Virgin Olive Oil",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/DRY-401.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144449_b2d1b669-8194-4267-a5e8-00cbebb4978a.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a plain unlabelled dark green glass bottle of olive oil and a small shallow dish of golden-green oil.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "21ae7fad-5d42-4101-9dab-a9093e18d5f6",
+  "kind": "product-photo",
+  "sku": "DRY-402",
+  "product": "All-Purpose Flour",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/DRY-402.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144449_21ae7fad-5d42-4101-9dab-a9093e18d5f6.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a plain unprinted white paper flour sack with its top rolled open, a steel scoop of flour in front and a light dusting of flour on the paper.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "c42db4a5-b06c-47fe-8a9b-f5a8d8da306d",
+  "kind": "product-photo",
+  "sku": "DRY-403",
+  "product": "Crushed San Marzano Tomatoes",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/DRY-403.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144600_c42db4a5-b06c-47fe-8a9b-f5a8d8da306d.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a large open plain unlabelled steel food-service can filled with crushed red tomatoes, a small bowl of crushed tomatoes beside it.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "3d4a77b9-2538-43de-ba87-98704f7d44de",
+  "kind": "product-photo",
+  "sku": "DRY-404",
+  "product": "Long Grain Rice",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/DRY-404.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144600_3d4a77b9-2538-43de-ba87-98704f7d44de.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of an open plain undyed cotton sack of long-grain white rice with a wooden scoop of rice resting in front.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "c82ce947-11e7-49b7-a208-4c85a4243dac",
+  "kind": "product-photo",
+  "sku": "DRY-405",
+  "product": "Canola Fry Oil",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/DRY-405.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144601_c82ce947-11e7-49b7-a208-4c85a4243dac.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a plain unlabelled clear plastic jug of light golden cooking oil with a plain white cap, a small glass of oil beside it.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "29038c64-e758-4041-9f55-a51b033ee7f3",
+  "kind": "product-photo",
+  "sku": "BEV-501",
+  "product": "Whole Bean Coffee, Medium Roast",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/BEV-501.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144600_29038c64-e758-4041-9f55-a51b033ee7f3.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a plain unprinted kraft paper coffee bag, open, with medium-roast whole coffee beans spilling onto the paper.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "82ef74c6-c93d-4b10-ba50-652b5b3b0608",
+  "kind": "product-photo",
+  "sku": "BEV-502",
+  "product": "Oat Barista Milk",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/BEV-502.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144600_82ef74c6-c93d-4b10-ba50-652b5b3b0608.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of two plain white unprinted one-litre cartons and a short clear glass of creamy oat milk.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "52c39f79-b2fc-48f2-98ff-038a6ea11d72",
+  "kind": "product-photo",
+  "sku": "FRZ-601",
+  "product": "Shoestring French Fries",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/FRZ-601.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144601_52c39f79-b2fc-48f2-98ff-038a6ea11d72.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a heap of frozen pale thin shoestring potato fries with a light frost, in a shallow stainless steel pan.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "322fd450-c4b5-4503-95ce-c91bedf9a62c",
+  "kind": "product-photo",
+  "sku": "FRZ-602",
+  "product": "Brioche Burger Buns",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/FRZ-602.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144601_322fd450-c4b5-4503-95ce-c91bedf9a62c.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a row of four glossy golden brioche burger buns, one split open showing soft crumb.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "709aa7fb-fb58-4e59-800f-585e75d246c6",
+  "kind": "product-photo",
+  "sku": "PKG-701",
+  "product": "Pizza Boxes 12\"",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/PKG-701.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144600_709aa7fb-fb58-4e59-800f-585e75d246c6.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a neat stack of plain unprinted brown corrugated kraft pizza boxes, the top box open and empty.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "da0d7a23-4252-4f75-80b5-09510b0e1395",
+  "kind": "product-photo",
+  "sku": "PKG-702",
+  "product": "Burger Clamshell, Compostable",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/PKG-702.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144600_da0d7a23-4252-4f75-80b5-09510b0e1395.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of three plain unprinted off-white moulded plant-fibre burger clamshell containers, one open and empty.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "946a5396-eef4-422f-ac78-b65229e05c1f",
+  "kind": "product-photo",
+  "sku": "PKG-703",
+  "product": "Hot Cups 12 oz",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/PKG-703.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144601_946a5396-eef4-422f-ac78-b65229e05c1f.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of a stack of plain white unprinted paper hot cups with plain white lids, one cup standing with its lid on.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "1de30c08-585b-41f6-a7b8-fb715bec7b50",
+  "kind": "product-photo",
+  "sku": "PKG-704",
+  "product": "Kraft Takeout Bags",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor, element olleik-demo-catalog-style)",
+  "file": "videos/higgsfield/products/raw/PKG-704.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144600_1de30c08-585b-41f6-a7b8-fb715bec7b50.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of plain unprinted brown kraft paper takeout bags with flat paper handles, one standing open, two folded flat.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "f159d35e-6870-4609-89a2-256200ac432c",
+  "kind": "character-sheet",
+  "model": "nano_banana_pro",
+  "file": "people/sheets/marco-a.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144719_f159d35e-6870-4609-89a2-256200ac432c.png",
+  "prompt": "Split-screen character sheet composition, left side a full-body shot of the character standing upright in a neutral straight standing pose facing the camera with both feet flat on the ground and arms relaxed at the sides, full head-to-toe framing with the whole body and both feet visible, right side a tight close-up chest-up portrait of the same character, identical original male character on both sides, single subject only exactly one person with only the character in frame, pure white seamless studio background, professional character sheet presentation, a man in his mid-forties of Mediterranean heritage with warm olive skin, rectangular face with a defined mature jawline and strong cheekbones, slightly crooked straight nose, medium lips with a natural matte finish, deep-set dark brown eyes with faint tired shadows beneath them and naturally muted catchlights, no oversized specular glare in the iris, thick dark eyebrows with a few grey hairs, short dark brown hair greying at the temples with a slightly messy natural finish, short neat salt-and-pepper beard, visible fine skin texture with natural pores, fine lines at the eyes and forehead, subtle asymmetries, a small scar through the left eyebrow, faint redness on the nose from kitchen heat, slight natural sheen rather than glossy finish, no digital smoothing, no beauty filter, no AI-airbrushed look, matte-to-natural complexion, average build with slightly broad shoulders and strong forearms, wearing a plain white double-breasted chef jacket with cloth knot buttons and sleeves rolled to the forearm, a plain charcoal grey cotton bib apron, black chef trousers with a fine grey check, black non-slip kitchen clogs, a plain steel wristwatch on the left wrist, a white kitchen towel tucked into the apron string, no hat, no bag, natural anatomy, high-end but unretouched commercial photography style, soft diffused studio lighting without harsh reflections, cinematic realism, clean white background, 4K quality, sharp focus on skin texture detail, single subject only, exactly one person, no other people, no duplicate figures, no mannequin, no props, no furniture, no background objects, left panel standing full-body head-to-toe not cropped not sitting, right panel tight close-up not full body, no babyface, no beauty filter, no plastic skin, the character is original and does not resemble any real celebrity, no text, no watermark, no logos, no embroidery, no frame borders. resolution: 2k",
+  "prompt_group": "marco-sheet",
+  "model_requested": "nano_banana_pro 16:9 2k"
+ },
+ {
+  "job_id": "1ce43595-bc08-4351-b06c-7c0b2c8ba86f",
+  "kind": "character-sheet",
+  "model": "nano_banana_pro",
+  "file": "people/sheets/marco-b.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144720_1ce43595-bc08-4351-b06c-7c0b2c8ba86f.png",
+  "prompt": "Split-screen character sheet composition, left side a full-body shot of the character standing upright in a neutral straight standing pose facing the camera with both feet flat on the ground and arms relaxed at the sides, full head-to-toe framing with the whole body and both feet visible, right side a tight close-up chest-up portrait of the same character, identical original male character on both sides, single subject only exactly one person with only the character in frame, pure white seamless studio background, professional character sheet presentation, a man in his mid-forties of Mediterranean heritage with warm olive skin, rectangular face with a defined mature jawline and strong cheekbones, slightly crooked straight nose, medium lips with a natural matte finish, deep-set dark brown eyes with faint tired shadows beneath them and naturally muted catchlights, no oversized specular glare in the iris, thick dark eyebrows with a few grey hairs, short dark brown hair greying at the temples with a slightly messy natural finish, short neat salt-and-pepper beard, visible fine skin texture with natural pores, fine lines at the eyes and forehead, subtle asymmetries, a small scar through the left eyebrow, faint redness on the nose from kitchen heat, slight natural sheen rather than glossy finish, no digital smoothing, no beauty filter, no AI-airbrushed look, matte-to-natural complexion, average build with slightly broad shoulders and strong forearms, wearing a plain white double-breasted chef jacket with cloth knot buttons and sleeves rolled to the forearm, a plain charcoal grey cotton bib apron, black chef trousers with a fine grey check, black non-slip kitchen clogs, a plain steel wristwatch on the left wrist, a white kitchen towel tucked into the apron string, no hat, no bag, natural anatomy, high-end but unretouched commercial photography style, soft diffused studio lighting without harsh reflections, cinematic realism, clean white background, 4K quality, sharp focus on skin texture detail, single subject only, exactly one person, no other people, no duplicate figures, no mannequin, no props, no furniture, no background objects, left panel standing full-body head-to-toe not cropped not sitting, right panel tight close-up not full body, no babyface, no beauty filter, no plastic skin, the character is original and does not resemble any real celebrity, no text, no watermark, no logos, no embroidery, no frame borders. resolution: 2k",
+  "prompt_group": "marco-sheet",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "USED: Marco reference element"
+ },
+ {
+  "job_id": "cd3f6329-c7a2-412d-8a8a-b6e4f0927ae7",
+  "kind": "character-sheet",
+  "model": "nano_banana_pro",
+  "file": "people/sheets/salma-a.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144719_cd3f6329-c7a2-412d-8a8a-b6e4f0927ae7.png",
+  "prompt": "Split-screen character sheet composition (same scaffold as marco-sheet), identical original female character on both sides, a woman in her late thirties of North African heritage with warm medium-brown skin, oval face with a defined mature jawline and high cheekbones, straight nose with a slight bump, full lips with a natural rosy-nude matte finish, calm almond-shaped dark brown eyes with naturally muted catchlights, softly arched dark eyebrows, thick dark brown hair pulled back into a practical low bun with a few loose strands at the temples, visible fine skin texture with natural pores, faint laugh lines, subtle asymmetries, a few faint freckles across the nose, almost no makeup, no digital smoothing, no beauty filter, medium athletic build, wearing a plain heather-grey crew-neck t-shirt under a plain navy zip-up work fleece with the sleeves pushed up, dark olive work trousers with side pockets, a plain black belt, brown leather safety boots, a small plain silver hoop in each ear, a black analog watch, a short pencil tucked behind the right ear, no bag, high-end but unretouched commercial photography style, soft diffused studio lighting, single subject only, no babyface, the character is original and does not resemble any real celebrity, no text, no watermark, no logos, no frame borders. resolution: 2k",
+  "prompt_group": "salma-sheet",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "USED: Salma reference element"
+ },
+ {
+  "job_id": "4f791402-db3d-400f-957a-5c093f7e1a49",
+  "kind": "character-sheet",
+  "model": "nano_banana_pro",
+  "file": "people/sheets/salma-b.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144719_4f791402-db3d-400f-957a-5c093f7e1a49.png",
+  "prompt": "Split-screen character sheet composition (same scaffold as marco-sheet), identical original female character on both sides, a woman in her late thirties of North African heritage with warm medium-brown skin, oval face with a defined mature jawline and high cheekbones, straight nose with a slight bump, full lips with a natural rosy-nude matte finish, calm almond-shaped dark brown eyes with naturally muted catchlights, softly arched dark eyebrows, thick dark brown hair pulled back into a practical low bun with a few loose strands at the temples, visible fine skin texture with natural pores, faint laugh lines, subtle asymmetries, a few faint freckles across the nose, almost no makeup, no digital smoothing, no beauty filter, medium athletic build, wearing a plain heather-grey crew-neck t-shirt under a plain navy zip-up work fleece with the sleeves pushed up, dark olive work trousers with side pockets, a plain black belt, brown leather safety boots, a small plain silver hoop in each ear, a black analog watch, a short pencil tucked behind the right ear, no bag, high-end but unretouched commercial photography style, soft diffused studio lighting, single subject only, no babyface, the character is original and does not resemble any real celebrity, no text, no watermark, no logos, no frame borders. resolution: 2k",
+  "prompt_group": "salma-sheet",
+  "model_requested": "nano_banana_pro 16:9 2k"
+ },
+ {
+  "job_id": "2e542e3d-5315-44e0-a342-fb13d70fdd9a",
+  "kind": "character-sheet",
+  "model": "nano_banana_pro",
+  "file": "people/sheets/driver-a.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144719_2e542e3d-5315-44e0-a342-fb13d70fdd9a.png",
+  "prompt": "Three-panel character sheet, identical original male delivery driver on all panels, pure white seamless studio background: left panel full-body standing facing the camera; middle panel back three-quarter view, face turned away; right panel tight close-up of his two hands holding a plain unprinted brown corrugated cardboard box. A man in his early thirties of South Asian heritage with medium-brown skin, short black hair under a plain dark grey cotton cap with no logo, short trimmed beard, mature adult facial structure, calm neutral expression, visible fine skin texture, hands with visible knuckle creases, a faint scar on the back of the right hand, a plain steel ring on the left hand, lean build, plain navy work jacket with a zip and two chest pockets over a plain charcoal t-shirt, dark grey cargo trousers, black work sneakers, no bag, unretouched commercial photography style, the character is original and does not resemble any real celebrity, no text, no watermark, no logos, no company names, no badges, no reflective strips, no frame borders, no extra fingers, no warped hands. resolution: 2k",
+  "prompt_group": "driver-sheet",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "USED: driver reference element"
+ },
+ {
+  "job_id": "1ecfbea3-1c31-4f86-aabd-a64f41b4e249",
+  "kind": "character-sheet",
+  "model": "nano_banana_pro",
+  "file": "people/sheets/driver-b.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_144720_1ecfbea3-1c31-4f86-aabd-a64f41b4e249.png",
+  "prompt": "Three-panel character sheet, identical original male delivery driver on all panels, pure white seamless studio background: left panel full-body standing facing the camera; middle panel back three-quarter view, face turned away; right panel tight close-up of his two hands holding a plain unprinted brown corrugated cardboard box. A man in his early thirties of South Asian heritage with medium-brown skin, short black hair under a plain dark grey cotton cap with no logo, short trimmed beard, mature adult facial structure, calm neutral expression, visible fine skin texture, hands with visible knuckle creases, a faint scar on the back of the right hand, a plain steel ring on the left hand, lean build, plain navy work jacket with a zip and two chest pockets over a plain charcoal t-shirt, dark grey cargo trousers, black work sneakers, no bag, unretouched commercial photography style, the character is original and does not resemble any real celebrity, no text, no watermark, no logos, no company names, no badges, no reflective strips, no frame borders, no extra fingers, no warped hands. resolution: 2k",
+  "prompt_group": "driver-sheet",
+  "model_requested": "nano_banana_pro 16:9 2k"
+ },
+ {
+  "job_id": "02cd24c9-8f36-47e8-a4c8-91b402ccfd8f",
+  "kind": "product-photo",
+  "model": "nano_banana_pro",
+  "file": "products/raw/MEAT-203.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145050_02cd24c9-8f36-47e8-a4c8-91b402ccfd8f.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. The backdrop must match the reference exactly: the same warm off-white handmade paper with visible fine fibres, the same soft curve into a warm beige background at top right, the same light. [SUBJECT]\nCatalog photograph of a short stack of thick raw round beef burger patties separated by small squares of wax paper, one patty in front.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno yellow or cream-coloured backdrop, no smooth plain paper, no text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "status": "USED: loaded into the local demo stack"
+ },
+ {
+  "job_id": "103f5917-86cc-4f2b-a764-640053624406",
+  "kind": "start-frame",
+  "model": "nano_banana_pro",
+  "file": "people/frames/marco-169.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145146_103f5917-86cc-4f2b-a764-640053624406.png",
+  "prompt": "Cinematic film still, 35mm anamorphic look, shot at night in a small restaurant kitchen after service. <<<2f647b1b-7746-4ecd-9510-49fb41c197e7>>> stands at a stainless steel prep counter, leaning on one hand, holding a phone low in his other hand, thumb hovering over the screen; the screen faces him and away from the camera, only its cool blue-white glow lights his tired face from below. The kitchen is dark: a single warm practical lamp far behind, steel shelves and hanging pans soft in shallow depth of field, a cutting board with a knife and half-chopped onion near him. Medium close-up from his left side, eye-level, 50mm, f/1.8, natural film grain, honest unretouched skin, tired eyes, slight frown. Colour: deep teal shadows, warm amber practical, cool phone glow. No visible text, no letters, no screen content visible, no logos, no brand marks, no signage, no watermark, no other people, natural hands with five fingers.",
+  "prompt_group": "marco-frame-169",
+  "model_requested": "nano_banana_pro 16:9 2k"
+ },
+ {
+  "job_id": "65246070-cfb0-4cf1-ab4d-ca5fd8fefb35",
+  "kind": "start-frame",
+  "model": "nano_banana_pro",
+  "file": "people/frames/marco-916.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145146_65246070-cfb0-4cf1-ab4d-ca5fd8fefb35.png",
+  "prompt": "Cinematic vertical film still, 35mm look, shot at night in a small restaurant kitchen after service. <<<2f647b1b-…>>> stands at a stainless steel prep counter holding a phone in front of his chest, thumb hovering over the screen; the screen faces him and away from the camera, only its cool blue-white glow lights his tired face from below. Dark kitchen, a single warm practical lamp far behind, hanging pans soft in shallow depth of field. Vertical medium close-up from slightly below, 50mm, f/1.8, natural film grain, honest unretouched skin, tired eyes, slight frown, head and shoulders in the upper half, phone and hand in the lower third. No visible text, no screen content visible, no logos, no signage, no watermark, no other people, natural hands.",
+  "prompt_group": "marco-frame-916",
+  "model_requested": "nano_banana_pro 9:16 2k"
+ },
+ {
+  "job_id": "6eeb60b3-0c1a-4e6f-b30c-285238b1c4e9",
+  "kind": "start-frame",
+  "model": "nano_banana_pro",
+  "file": "people/frames/salma-169.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145147_6eeb60b3-0c1a-4e6f-b30c-285238b1c4e9.png",
+  "prompt": "Cinematic film still, 35mm anamorphic look, early morning in a clean food-distribution warehouse. <<<ce092dc3-…>>> stands at a packing station reading a computer monitor that faces away from the camera and towards her, a calm focused expression, a slight beginning of a nod; cool daylight from high windows mixed with warm overhead work lights, tall pallet racks with plain unprinted cardboard boxes softly out of focus behind her, a roll of packing tape and a clipboard on the steel table. Medium shot over the monitor's edge, 40mm, f/2, natural film grain. No visible text, no screen content visible, no labels on boxes, no logos, no signage, no safety posters, no watermark, no other people.",
+  "prompt_group": "salma-frame-169",
+  "model_requested": "nano_banana_pro 16:9 2k"
+ },
+ {
+  "job_id": "7aefdb9d-5a0e-4525-af12-efdd3c635622",
+  "kind": "start-frame",
+  "model": "nano_banana_pro",
+  "file": "people/frames/salma-916.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145146_7aefdb9d-5a0e-4525-af12-efdd3c635622.png",
+  "prompt": "Cinematic vertical film still, 35mm look, early morning in a clean food-distribution warehouse. <<<ce092dc3-…>>> stands at a packing station reading a computer monitor that faces away from the camera, calm focused expression, a slight beginning of a nod; cool daylight from high windows, warm overhead work lights, pallet racks with plain unprinted boxes out of focus. Vertical medium close-up, head and shoulders in the upper half, the back edge of the monitor in the lower left corner, 50mm, f/2, film grain. No visible text, no screen content, no labels on boxes, no logos, no signage, no watermark, no other people.",
+  "prompt_group": "salma-frame-916",
+  "model_requested": "nano_banana_pro 9:16 2k"
+ },
+ {
+  "job_id": "ac76b06c-2724-4e66-8043-4306e68d8042",
+  "kind": "start-frame",
+  "model": "nano_banana_pro",
+  "file": "people/frames/driver-916.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145146_ac76b06c-2724-4e66-8043-4306e68d8042.png",
+  "prompt": "16:9: dawn at the open rear doors of a plain white delivery van; the hands and forearms of <<<93840d9d-…>>> set a plain brown box on two others; face out of frame; low golden light; no text, no labels, no van branding, no licence plate, no logos. 9:16: <<<93840d9d-…>>> from behind as a silhouette against the sunrise, reaching up to pull one rear van door closed; face not visible; no text, no plate, no logos.",
+  "prompt_group": "driver-frames-v1 (rejected: sign text / licence plate)",
+  "model_requested": "nano_banana_pro 16:9 / 9:16 2k"
+ },
+ {
+  "job_id": "9d79fd92-fe6d-4481-98d1-c22ee2dad963",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/marco-169-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145501_9d79fd92-fe6d-4481-98d1-c22ee2dad963.mp4",
+  "prompt": "16:9: <<<2f647b1b-…>>> leans on the steel counter at night, his thumb hovers over the phone, then scrolls slowly; he exhales and his shoulders drop a little, eyes tired; the phone glow flickers softly on his face; slow steady dolly in toward his face; realistic cinematic motion, natural blinking, subtle breathing, 24 fps film look; no text, no screen content, no logos. 9:16: he stands in the dark kitchen holding his phone, thumb hovering, reads, rubs his eyes briefly with his free hand, then looks back at the phone with a tired sigh; slow steady push in; same exclusions.",
+  "prompt_group": "marco-shots",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image = the frame above)",
+  "status": "PICK: Marco 16:9 test shot"
+ },
+ {
+  "job_id": "7ed04469-42da-4b89-80b0-3f58c9329300",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/marco-169-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145517_7ed04469-42da-4b89-80b0-3f58c9329300.mp4",
+  "prompt": "16:9: <<<2f647b1b-…>>> leans on the steel counter at night, his thumb hovers over the phone, then scrolls slowly; he exhales and his shoulders drop a little, eyes tired; the phone glow flickers softly on his face; slow steady dolly in toward his face; realistic cinematic motion, natural blinking, subtle breathing, 24 fps film look; no text, no screen content, no logos. 9:16: he stands in the dark kitchen holding his phone, thumb hovering, reads, rubs his eyes briefly with his free hand, then looks back at the phone with a tired sigh; slow steady push in; same exclusions.",
+  "prompt_group": "marco-shots",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image = the frame above)"
+ },
+ {
+  "job_id": "f82fa47f-cb22-497d-97e5-a70bf03aab65",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/marco-916-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145518_f82fa47f-cb22-497d-97e5-a70bf03aab65.mp4",
+  "prompt": "16:9: <<<2f647b1b-…>>> leans on the steel counter at night, his thumb hovers over the phone, then scrolls slowly; he exhales and his shoulders drop a little, eyes tired; the phone glow flickers softly on his face; slow steady dolly in toward his face; realistic cinematic motion, natural blinking, subtle breathing, 24 fps film look; no text, no screen content, no logos. 9:16: he stands in the dark kitchen holding his phone, thumb hovering, reads, rubs his eyes briefly with his free hand, then looks back at the phone with a tired sigh; slow steady push in; same exclusions.",
+  "prompt_group": "marco-shots",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image = the frame above)"
+ },
+ {
+  "job_id": "30b610c5-fab3-49ab-b3e7-429fffc15cf3",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/marco-916-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145519_30b610c5-fab3-49ab-b3e7-429fffc15cf3.mp4",
+  "prompt": "16:9: <<<2f647b1b-…>>> leans on the steel counter at night, his thumb hovers over the phone, then scrolls slowly; he exhales and his shoulders drop a little, eyes tired; the phone glow flickers softly on his face; slow steady dolly in toward his face; realistic cinematic motion, natural blinking, subtle breathing, 24 fps film look; no text, no screen content, no logos. 9:16: he stands in the dark kitchen holding his phone, thumb hovering, reads, rubs his eyes briefly with his free hand, then looks back at the phone with a tired sigh; slow steady push in; same exclusions.",
+  "prompt_group": "marco-shots",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image = the frame above)",
+  "status": "PICK: Marco 9:16 test shot"
+ },
+ {
+  "job_id": "6f9fa756-8570-4138-b428-477784f2d54b",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/driver-916-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145517_6f9fa756-8570-4138-b428-477784f2d54b.mp4",
+  "prompt": "Driver sets the box down / closes the rear van door in silhouette (see driver-frames-v1).",
+  "prompt_group": "driver-shots-v1 (rejected: text)",
+  "model_requested": "kling3_0 pro 5 s sound off",
+  "status": "rejected: licence plate text"
+ },
+ {
+  "job_id": "5d60951b-952b-405f-a0e2-50b8866bb9d4",
+  "kind": "start-frame",
+  "model": "nano_banana_pro",
+  "file": "people/frames/driver-169.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145147_5d60951b-952b-405f-a0e2-50b8866bb9d4.png",
+  "prompt": "16:9: dawn at the open rear doors of a plain white delivery van; the hands and forearms of <<<93840d9d-…>>> set a plain brown box on two others; face out of frame; low golden light; no text, no labels, no van branding, no licence plate, no logos. 9:16: <<<93840d9d-…>>> from behind as a silhouette against the sunrise, reaching up to pull one rear van door closed; face not visible; no text, no plate, no logos.",
+  "prompt_group": "driver-frames-v1 (rejected: sign text / licence plate)",
+  "model_requested": "nano_banana_pro 16:9 / 9:16 2k"
+ },
+ {
+  "job_id": "d6eb3737-0583-4e43-885d-61c95b02c80c",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/salma-916-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145501_d6eb3737-0583-4e43-885d-61c95b02c80c.mp4",
+  "prompt": "16:9: the woman at the packing station reads the monitor, calm and focused, her eyes move along a line, then she gives one small confident nod and reaches for the clipboard; the camera trucks slowly to the right with gentle parallax on the shelving; morning light; no text, no screen content, no logos. 9:16: she reads the monitor, then one small confident nod and the corner of her mouth lifts slightly; very slow push in; same exclusions.",
+  "prompt_group": "salma-shots",
+  "model_requested": "kling3_0 pro 5 s sound off"
+ },
+ {
+  "job_id": "5de90aee-67d9-4cd9-9b5f-66d27936e736",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/salma-169-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150127_5de90aee-67d9-4cd9-9b5f-66d27936e736.mp4",
+  "prompt": "16:9: the woman at the packing station reads the monitor, calm and focused, her eyes move along a line, then she gives one small confident nod and reaches for the clipboard; the camera trucks slowly to the right with gentle parallax on the shelving; morning light; no text, no screen content, no logos. 9:16: she reads the monitor, then one small confident nod and the corner of her mouth lifts slightly; very slow push in; same exclusions.",
+  "prompt_group": "salma-shots",
+  "model_requested": "kling3_0 pro 5 s sound off",
+  "status": "PICK: Salma 16:9 test shot"
+ },
+ {
+  "job_id": "98426453-4643-49db-b11c-b4675c5b4b21",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/salma-169-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150127_98426453-4643-49db-b11c-b4675c5b4b21.mp4",
+  "prompt": "16:9: the woman at the packing station reads the monitor, calm and focused, her eyes move along a line, then she gives one small confident nod and reaches for the clipboard; the camera trucks slowly to the right with gentle parallax on the shelving; morning light; no text, no screen content, no logos. 9:16: she reads the monitor, then one small confident nod and the corner of her mouth lifts slightly; very slow push in; same exclusions.",
+  "prompt_group": "salma-shots",
+  "model_requested": "kling3_0 pro 5 s sound off"
+ },
+ {
+  "job_id": "ca5b3e8c-573b-48b4-a0d3-a9db73df606b",
+  "kind": "hook-frame",
+  "model": "nano_banana_pro",
+  "file": "hooks/frames/ha-thumb.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150155_ca5b3e8c-573b-48b4-a0d3-a9db73df606b.png",
+  "prompt": "A: macro film still, dark kitchen at night, extreme close-up of the right hand of <<<2f647b1b-…>>> holding a phone low over a steel counter, thumb hovering a few millimetres above the glowing screen, hesitating; the screen faces away so only its light spills on his thumb and the steel; his tired face a soft out-of-focus shape at the top edge lit from below; 85mm macro f/2; no screen content, no text, no logos. D: close top-down three-quarter shot of two hands of <<<2f647b1b-…>>>, left in a claw grip on a yellow onion, right holding a chef's knife mid-chop on a worn end-grain board, diced onion beside it, white sleeve rolled, steel watch; warm light; 50mm f/2.2; no text, no logos, no brand marks on the knife.",
+  "prompt_group": "hook-frames",
+  "model_requested": "nano_banana_pro 16:9 2k"
+ },
+ {
+  "job_id": "75574050-8b71-4488-972f-933ae66cfe9c",
+  "kind": "hook-frame",
+  "model": "nano_banana_pro",
+  "file": "hooks/frames/hd-chop.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150156_75574050-8b71-4488-972f-933ae66cfe9c.png",
+  "prompt": "A: macro film still, dark kitchen at night, extreme close-up of the right hand of <<<2f647b1b-…>>> holding a phone low over a steel counter, thumb hovering a few millimetres above the glowing screen, hesitating; the screen faces away so only its light spills on his thumb and the steel; his tired face a soft out-of-focus shape at the top edge lit from below; 85mm macro f/2; no screen content, no text, no logos. D: close top-down three-quarter shot of two hands of <<<2f647b1b-…>>>, left in a claw grip on a yellow onion, right holding a chef's knife mid-chop on a worn end-grain board, diced onion beside it, white sleeve rolled, steel watch; warm light; 50mm f/2.2; no text, no logos, no brand marks on the knife.",
+  "prompt_group": "hook-frames",
+  "model_requested": "nano_banana_pro 16:9 2k"
+ },
+ {
+  "job_id": "dae01c5e-780f-4fb0-b555-8ef93a1e583b",
+  "kind": "music-source",
+  "model": "seedance_2_0",
+  "file": "music/raw/A-soul-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150516_dae01c5e-780f-4fb0-b555-8ef93a1e583b.mp4",
+  "prompt": "A (soul): close-up performance in a warm, dim studio: Rhodes electric piano with soft warm chords, an upright bass walking a simple groove, brushed snare and a tight kick; instrumental only, no singing, no voices, no speech; warm modern soul groove at exactly 108 BPM, steady four-on-the-floor pulse, relaxed and hopeful, clean studio recording. B (folk): nylon-string guitar fingerpicked in a bright repeating ostinato, hand claps and a shaker, a frame drum on the downbeat; instrumental only; bright Mediterranean folk-pop groove at exactly 108 BPM, optimistic, warm and organic. C (marimba): wooden marimba in a playful syncopated pattern, muted electric bass, minimal drum-machine kick and rim click; instrumental only; minimal modern tech-commercial groove at exactly 108 BPM, crisp steady pulse, confident and light. (Take 2 of each: a shorter wording of the same brief.)",
+  "prompt_group": "music",
+  "model_requested": "seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used)",
+  "status": "USED: music bed A"
+ },
+ {
+  "job_id": "9022d321-e8e0-471d-83ee-2308a3d49520",
+  "kind": "music-source",
+  "model": "seedance_2_0",
+  "file": "music/raw/B-folk-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150516_9022d321-e8e0-471d-83ee-2308a3d49520.mp4",
+  "prompt": "A (soul): close-up performance in a warm, dim studio: Rhodes electric piano with soft warm chords, an upright bass walking a simple groove, brushed snare and a tight kick; instrumental only, no singing, no voices, no speech; warm modern soul groove at exactly 108 BPM, steady four-on-the-floor pulse, relaxed and hopeful, clean studio recording. B (folk): nylon-string guitar fingerpicked in a bright repeating ostinato, hand claps and a shaker, a frame drum on the downbeat; instrumental only; bright Mediterranean folk-pop groove at exactly 108 BPM, optimistic, warm and organic. C (marimba): wooden marimba in a playful syncopated pattern, muted electric bass, minimal drum-machine kick and rim click; instrumental only; minimal modern tech-commercial groove at exactly 108 BPM, crisp steady pulse, confident and light. (Take 2 of each: a shorter wording of the same brief.)",
+  "prompt_group": "music",
+  "model_requested": "seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used)"
+ },
+ {
+  "job_id": "5fb2824b-01c2-4d9b-9783-71635a2a7fac",
+  "kind": "music-source",
+  "model": "seedance_2_0",
+  "file": "music/raw/C-marimba-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150516_5fb2824b-01c2-4d9b-9783-71635a2a7fac.mp4",
+  "prompt": "A (soul): close-up performance in a warm, dim studio: Rhodes electric piano with soft warm chords, an upright bass walking a simple groove, brushed snare and a tight kick; instrumental only, no singing, no voices, no speech; warm modern soul groove at exactly 108 BPM, steady four-on-the-floor pulse, relaxed and hopeful, clean studio recording. B (folk): nylon-string guitar fingerpicked in a bright repeating ostinato, hand claps and a shaker, a frame drum on the downbeat; instrumental only; bright Mediterranean folk-pop groove at exactly 108 BPM, optimistic, warm and organic. C (marimba): wooden marimba in a playful syncopated pattern, muted electric bass, minimal drum-machine kick and rim click; instrumental only; minimal modern tech-commercial groove at exactly 108 BPM, crisp steady pulse, confident and light. (Take 2 of each: a shorter wording of the same brief.)",
+  "prompt_group": "music",
+  "model_requested": "seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used)"
+ },
+ {
+  "job_id": "c78aa4e1-9771-4de2-80bd-80a578ff8a3d",
+  "kind": "music-source",
+  "model": "seedance_2_0",
+  "file": "music/raw/A-soul-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150516_c78aa4e1-9771-4de2-80bd-80a578ff8a3d.mp4",
+  "prompt": "A (soul): close-up performance in a warm, dim studio: Rhodes electric piano with soft warm chords, an upright bass walking a simple groove, brushed snare and a tight kick; instrumental only, no singing, no voices, no speech; warm modern soul groove at exactly 108 BPM, steady four-on-the-floor pulse, relaxed and hopeful, clean studio recording. B (folk): nylon-string guitar fingerpicked in a bright repeating ostinato, hand claps and a shaker, a frame drum on the downbeat; instrumental only; bright Mediterranean folk-pop groove at exactly 108 BPM, optimistic, warm and organic. C (marimba): wooden marimba in a playful syncopated pattern, muted electric bass, minimal drum-machine kick and rim click; instrumental only; minimal modern tech-commercial groove at exactly 108 BPM, crisp steady pulse, confident and light. (Take 2 of each: a shorter wording of the same brief.)",
+  "prompt_group": "music",
+  "model_requested": "seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used)"
+ },
+ {
+  "job_id": "7540a7c1-d5ba-4926-aed1-51cf2b7ed97f",
+  "kind": "music-source",
+  "model": "seedance_2_0",
+  "file": "music/raw/B-folk-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150518_7540a7c1-d5ba-4926-aed1-51cf2b7ed97f.mp4",
+  "prompt": "A (soul): close-up performance in a warm, dim studio: Rhodes electric piano with soft warm chords, an upright bass walking a simple groove, brushed snare and a tight kick; instrumental only, no singing, no voices, no speech; warm modern soul groove at exactly 108 BPM, steady four-on-the-floor pulse, relaxed and hopeful, clean studio recording. B (folk): nylon-string guitar fingerpicked in a bright repeating ostinato, hand claps and a shaker, a frame drum on the downbeat; instrumental only; bright Mediterranean folk-pop groove at exactly 108 BPM, optimistic, warm and organic. C (marimba): wooden marimba in a playful syncopated pattern, muted electric bass, minimal drum-machine kick and rim click; instrumental only; minimal modern tech-commercial groove at exactly 108 BPM, crisp steady pulse, confident and light. (Take 2 of each: a shorter wording of the same brief.)",
+  "prompt_group": "music",
+  "model_requested": "seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used)",
+  "status": "USED: music bed B"
+ },
+ {
+  "job_id": "c63265eb-f5de-4817-81e5-72ef915e53b2",
+  "kind": "music-source",
+  "model": "seedance_2_0",
+  "file": "music/raw/C-marimba-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150516_c63265eb-f5de-4817-81e5-72ef915e53b2.mp4",
+  "prompt": "A (soul): close-up performance in a warm, dim studio: Rhodes electric piano with soft warm chords, an upright bass walking a simple groove, brushed snare and a tight kick; instrumental only, no singing, no voices, no speech; warm modern soul groove at exactly 108 BPM, steady four-on-the-floor pulse, relaxed and hopeful, clean studio recording. B (folk): nylon-string guitar fingerpicked in a bright repeating ostinato, hand claps and a shaker, a frame drum on the downbeat; instrumental only; bright Mediterranean folk-pop groove at exactly 108 BPM, optimistic, warm and organic. C (marimba): wooden marimba in a playful syncopated pattern, muted electric bass, minimal drum-machine kick and rim click; instrumental only; minimal modern tech-commercial groove at exactly 108 BPM, crisp steady pulse, confident and light. (Take 2 of each: a shorter wording of the same brief.)",
+  "prompt_group": "music",
+  "model_requested": "seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used)",
+  "status": "USED: music bed C"
+ },
+ {
+  "job_id": "b0e3300b-e226-40af-9921-248ebd719073",
+  "kind": "hook-clip",
+  "model": "kling3_0",
+  "file": "hooks/clips/ha-thumb.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150414_b0e3300b-e226-40af-9921-248ebd719073.mp4",
+  "prompt": "A: extreme close-up at night: the chef's thumb hovers above the glowing phone, trembles slightly, hesitates, then lowers and taps once; the screen light flickers on his knuckles; locked-off macro camera with a barely perceptible creep in; no screen content, no text. D (two takes): the chef dices the onion with fast, even, rhythmic chops, about two per second, the claw hand stepping back after each chop; locked-off camera; no text, natural hands, safe technique.",
+  "prompt_group": "hook-clips",
+  "model_requested": "kling3_0 pro 5 s sound off",
+  "status": "USED: hook A"
+ },
+ {
+  "job_id": "f76b2f42-cc61-4026-8830-fd69dfc819a5",
+  "kind": "hook-clip",
+  "model": "kling3_0",
+  "file": "hooks/clips/hd-chop-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150415_f76b2f42-cc61-4026-8830-fd69dfc819a5.mp4",
+  "prompt": "A: extreme close-up at night: the chef's thumb hovers above the glowing phone, trembles slightly, hesitates, then lowers and taps once; the screen light flickers on his knuckles; locked-off macro camera with a barely perceptible creep in; no screen content, no text. D (two takes): the chef dices the onion with fast, even, rhythmic chops, about two per second, the claw hand stepping back after each chop; locked-off camera; no text, natural hands, safe technique.",
+  "prompt_group": "hook-clips",
+  "model_requested": "kling3_0 pro 5 s sound off",
+  "status": "USED: hook D (hand artifacts noted)"
+ },
+ {
+  "job_id": "b9a6e0e5-2870-4af9-9881-ec108bc34978",
+  "kind": "hook-clip",
+  "model": "kling3_0",
+  "file": "hooks/clips/hd-chop-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150415_b9a6e0e5-2870-4af9-9881-ec108bc34978.mp4",
+  "prompt": "A: extreme close-up at night: the chef's thumb hovers above the glowing phone, trembles slightly, hesitates, then lowers and taps once; the screen light flickers on his knuckles; locked-off macro camera with a barely perceptible creep in; no screen content, no text. D (two takes): the chef dices the onion with fast, even, rhythmic chops, about two per second, the claw hand stepping back after each chop; locked-off camera; no text, natural hands, safe technique.",
+  "prompt_group": "hook-clips",
+  "model_requested": "kling3_0 pro 5 s sound off",
+  "status": "rejected: doubled knife"
+ },
+ {
+  "job_id": "807cfae8-0152-4c07-a614-834166df8f67",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/salma-916-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150127_807cfae8-0152-4c07-a614-834166df8f67.mp4",
+  "prompt": "16:9: the woman at the packing station reads the monitor, calm and focused, her eyes move along a line, then she gives one small confident nod and reaches for the clipboard; the camera trucks slowly to the right with gentle parallax on the shelving; morning light; no text, no screen content, no logos. 9:16: she reads the monitor, then one small confident nod and the corner of her mouth lifts slightly; very slow push in; same exclusions.",
+  "prompt_group": "salma-shots",
+  "model_requested": "kling3_0 pro 5 s sound off",
+  "status": "PICK: Salma 9:16 test shot"
+ },
+ {
+  "job_id": "e6652627-c3df-4f68-9ce1-ad747af6affc",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/driver-916-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_145501_e6652627-c3df-4f68-9ce1-ad747af6affc.mp4",
+  "prompt": "Driver sets the box down / closes the rear van door in silhouette (see driver-frames-v1).",
+  "prompt_group": "driver-shots-v1 (rejected: text)",
+  "model_requested": "kling3_0 pro 5 s sound off",
+  "status": "rejected: licence plate text"
+ },
+ {
+  "job_id": "b1c9b9fd-bfc0-45bb-8b63-6da8b62d22b0",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/driver-169-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150139_b1c9b9fd-bfc0-45bb-8b63-6da8b62d22b0.mp4",
+  "prompt": "Driver sets the box down / closes the rear van door in silhouette (see driver-frames-v1).",
+  "prompt_group": "driver-shots-v1 (rejected: text)",
+  "model_requested": "kling3_0 pro 5 s sound off",
+  "status": "rejected: shop sign text"
+ },
+ {
+  "job_id": "944b2d0b-c105-4726-939b-faa08880e73b",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/driver-169-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_150141_944b2d0b-c105-4726-939b-faa08880e73b.mp4",
+  "prompt": "Driver sets the box down / closes the rear van door in silhouette (see driver-frames-v1).",
+  "prompt_group": "driver-shots-v1 (rejected: text)",
+  "model_requested": "kling3_0 pro 5 s sound off",
+  "status": "rejected: shop sign text"
+ },
+ {
+  "job_id": "8b908ce5-c517-47f8-a576-b77ed808304a",
+  "kind": "product-photo",
+  "model": "nano_banana_pro",
+  "file": "products/raw/PRD-007.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_151445_8b908ce5-c517-47f8-a576-b77ed808304a.png",
+  "prompt": "Use the reference photo ONLY for its backdrop, camera angle, lens, lighting, shadow direction and colour grade; do not include its subject. [SUBJECT]\nCatalog photograph of four glossy whole red bell peppers with green stems, one pepper halved showing its pale seeds.\n\n[COMPOSITION]\nCamera at a 3/4 high angle, about 35 degrees above the surface, the product centred and filling about 60 percent of the frame with an even margin on all sides, 4:3 frame. The product sits on a seamless sweep of warm off-white handmade paper with a very subtle fibre texture that curves softly up into the background; no visible horizon line, no studio equipment visible.\n\n[LIGHTING]\nOne large soft overhead light slightly behind and to the left of the product, about 4500K, a white fill card front right; a soft natural contact shadow under the product falling forward right; gentle falloff toward the back of the sweep.\n\n[LENS & CAMERA]\nShot on a 100mm lens, aperture f/8, the whole product sharp, the sweep softly even behind it.\n\n[MATERIALS & TEXTURE]\nHonest real food-service ingredients and supplies with true textures: moisture, skins, fibres, grain and crumb visible, nothing glossy-fake.\n\n[COLOR PALETTE]\nNatural product colours against warm paper white, oat and soft cream tones; low-contrast warm grade, no colour cast.\n\n[STYLE]\nQuiet modern commercial still-life catalog photography, crisp natural light, honest materials, calm negative space. Every photo in this catalog set uses this exact same backdrop, angle, lens, light and grade.\n\n[AVOID]\nno text, no words, no letters, no numbers, no labels with writing, no brand marks, no logos, no stickers, no barcodes, all packaging plain and unprinted; no hands, no people; no extra props beyond those described; no AI artifacts, no plastic look, no waxy surface, no cartoonish rendering, no melted geometry, no doubled subjects, no oversaturated HDR, no halos, no oversharpening, no harsh flash, no studio equipment, no softbox, no reflector card, no watermark.\n\nresolution: 2k",
+  "sku": "PRD-007",
+  "product": "Red Bell Peppers (left in the local DB by the V1 add-product capture)",
+  "reference": "cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 (style anchor)",
+  "model_requested": "nano_banana_pro",
+  "model_reported": "nano_banana_2",
+  "params": {
+   "aspect_ratio": "4:3",
+   "resolution": "2k"
+  },
+  "status": "USED: PRD-007"
+ },
+ {
+  "job_id": "db322211-a0a3-45c4-ac4a-b0b076d5ed6f",
+  "kind": "start-frame",
+  "model": "nano_banana_pro",
+  "file": "people/frames/driver-d169b-a.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_153252_db322211-a0a3-45c4-ac4a-b0b076d5ed6f.png",
+  "prompt": "16:9: dawn, the open side sliding door of a plain white unbranded delivery van seen from the side at waist height; the hands and forearms of <<<93840d9d-…>>> set a plain unprinted brown box on two others inside the van; face out of frame; soft out-of-focus trees and pale sky; low golden backlight. 9:16: <<<93840d9d-…>>> from behind as a silhouette, hand on the side sliding door handle, about to slide it shut; only the side of the van visible, never its rear; golden backlight, flare, trees. Both: absolutely no text anywhere — no signs, no shop fronts, no lettering, no labels, no van branding, no licence plates, no logos, no other people, natural hands.",
+  "prompt_group": "driver-frames-v2",
+  "model_requested": "nano_banana_pro 16:9 ×2, 9:16 ×2, 2k"
+ },
+ {
+  "job_id": "85b577b3-0e94-4d11-ba2e-c9e898b0c618",
+  "kind": "start-frame",
+  "model": "nano_banana_pro",
+  "file": "people/frames/driver-d169b-b.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_153252_85b577b3-0e94-4d11-ba2e-c9e898b0c618.png",
+  "prompt": "16:9: dawn, the open side sliding door of a plain white unbranded delivery van seen from the side at waist height; the hands and forearms of <<<93840d9d-…>>> set a plain unprinted brown box on two others inside the van; face out of frame; soft out-of-focus trees and pale sky; low golden backlight. 9:16: <<<93840d9d-…>>> from behind as a silhouette, hand on the side sliding door handle, about to slide it shut; only the side of the van visible, never its rear; golden backlight, flare, trees. Both: absolutely no text anywhere — no signs, no shop fronts, no lettering, no labels, no van branding, no licence plates, no logos, no other people, natural hands.",
+  "prompt_group": "driver-frames-v2",
+  "model_requested": "nano_banana_pro 16:9 ×2, 9:16 ×2, 2k",
+  "status": "USED: driver 16:9 start frame"
+ },
+ {
+  "job_id": "8bd67915-152d-41c9-9b89-f6f1a42bca1f",
+  "kind": "start-frame",
+  "model": "nano_banana_pro",
+  "file": "people/frames/driver-d916b-a.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_153252_8bd67915-152d-41c9-9b89-f6f1a42bca1f.png",
+  "prompt": "16:9: dawn, the open side sliding door of a plain white unbranded delivery van seen from the side at waist height; the hands and forearms of <<<93840d9d-…>>> set a plain unprinted brown box on two others inside the van; face out of frame; soft out-of-focus trees and pale sky; low golden backlight. 9:16: <<<93840d9d-…>>> from behind as a silhouette, hand on the side sliding door handle, about to slide it shut; only the side of the van visible, never its rear; golden backlight, flare, trees. Both: absolutely no text anywhere — no signs, no shop fronts, no lettering, no labels, no van branding, no licence plates, no logos, no other people, natural hands.",
+  "prompt_group": "driver-frames-v2",
+  "model_requested": "nano_banana_pro 16:9 ×2, 9:16 ×2, 2k",
+  "status": "USED: driver 9:16 start frame"
+ },
+ {
+  "job_id": "582a4015-dfec-475d-97fa-e50768deea2a",
+  "kind": "start-frame",
+  "model": "nano_banana_pro",
+  "file": "people/frames/driver-d916b-b.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_153252_582a4015-dfec-475d-97fa-e50768deea2a.png",
+  "prompt": "16:9: dawn, the open side sliding door of a plain white unbranded delivery van seen from the side at waist height; the hands and forearms of <<<93840d9d-…>>> set a plain unprinted brown box on two others inside the van; face out of frame; soft out-of-focus trees and pale sky; low golden backlight. 9:16: <<<93840d9d-…>>> from behind as a silhouette, hand on the side sliding door handle, about to slide it shut; only the side of the van visible, never its rear; golden backlight, flare, trees. Both: absolutely no text anywhere — no signs, no shop fronts, no lettering, no labels, no van branding, no licence plates, no logos, no other people, natural hands.",
+  "prompt_group": "driver-frames-v2",
+  "model_requested": "nano_banana_pro 16:9 ×2, 9:16 ×2, 2k"
+ },
+ {
+  "job_id": "107948fa-5459-4c3e-9fe1-5c5694766629",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/driver2-169-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_153607_107948fa-5459-4c3e-9fe1-5c5694766629.mp4",
+  "prompt": "see prompts_people_music_hooks.json"
+ },
+ {
+  "job_id": "327926cb-6c84-4c1e-b63b-2917b7d8defd",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/driver2-169-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_153607_327926cb-6c84-4c1e-b63b-2917b7d8defd.mp4",
+  "prompt": "see prompts_people_music_hooks.json",
+  "status": "PICK: driver 16:9 test shot"
+ },
+ {
+  "job_id": "485b4af7-f5ca-4f5d-9bdf-04d58f71afa4",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/driver2-916-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_153607_485b4af7-f5ca-4f5d-9bdf-04d58f71afa4.mp4",
+  "prompt": "see prompts_people_music_hooks.json"
+ },
+ {
+  "job_id": "83fe45d8-1ed3-4257-abab-c85f4a23b315",
+  "kind": "test-shot",
+  "model": "kling3_0",
+  "file": "people/shots/driver2-916-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_153607_83fe45d8-1ed3-4257-abab-c85f4a23b315.mp4",
+  "prompt": "see prompts_people_music_hooks.json",
+  "status": "PICK: driver 9:16 test shot"
+ },
+ {
+  "job_id": "b5e4a112-2378-44fe-9b07-50611930f572",
+  "kind": "style-plate",
+  "model_requested": "nano_banana_pro 4:3 2k",
+  "file": "videos/higgsfield/products/_plate/plate-a.png",
+  "date": "2026-10-11",
+  "status": "rejected: studio gear visible; not used",
+  "prompt": "Empty product photography set: seamless sweep of warm off-white handmade paper, 3/4 high angle, soft overhead light, 100mm f/8, no objects, no text."
+ },
+ {
+  "job_id": "d22e53cc-970a-4468-8ba4-e4f02501e8b1",
+  "kind": "style-plate",
+  "model_requested": "nano_banana_pro 4:3 2k",
+  "file": "videos/higgsfield/products/_plate/plate-b.png",
+  "date": "2026-10-11",
+  "status": "rejected: studio gear visible; not used",
+  "prompt": "Empty product photography set: seamless sweep of warm off-white handmade paper, 3/4 high angle, soft overhead light, 100mm f/8, no objects, no text."
+ }
+]

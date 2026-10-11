@@ -20,6 +20,31 @@ KENNEY_PAGES = {
 }
 
 
+def higgsfield_section():
+    """V3 (Gate E): every Higgsfield generation, from videos/higgsfield/ledger.json (exact prompts there and in
+    higgsfield/prompts_people_music_hooks.json)."""
+    led = json.load(open(os.path.join(os.path.dirname(LIB), "higgsfield", "ledger.json"), encoding="utf8"))
+    out = [
+        "",
+        "## Higgsfield generations (V3, generated 2026-10-11 on the owner's account; recorded before use)",
+        "Terms: Higgsfield Terms of Use §4.4 — Higgsfield claims no ownership of outputs and does not restrict their commercial",
+        "use; outputs may not be used to train AI models (§5.1(iii), §5.2(iv)); no likeness/IP infringement (§5.1(ii)(b), §5.3).",
+        "Evidence: licenses/higgsfield-terms-2026-10-11.txt. All people are original characters generated from text (no real",
+        "person's photo was uploaded); all products are generic, unbranded; prompts forbid text, logos and plates.",
+        "Model column: the model requested (the API reports nano_banana_pro jobs as `nano_banana_2`). Full prompts: higgsfield/ledger.json.",
+        "",
+        "| Generation id | Kind | Model | Date | File (local, not in git) | Product / note |",
+        "|---|---|---|---|---|---|",
+    ]
+    for e in sorted(led, key=lambda e: (e.get("kind", ""), e.get("file", ""))):
+        note = e.get("product") or e.get("status") or ""
+        model = e.get("model_requested") or e.get("model")
+        out.append(f"| {e['job_id']} | {e.get('kind', '')} | {model} | {e.get('date', '')} | {e.get('file', '').replace('videos/', '')} | {note} |")
+    out.append("")
+    out.append(f"{len(led)} Higgsfield generations recorded. Elements: olleik-demo-catalog-style 310febdd-c4a9-499d-be0b-cc30b46b9e5f, olleik-marco 2f647b1b-7746-4ecd-9510-49fb41c197e7, olleik-salma ce092dc3-a897-47f2-a82c-5e5b7f773e9a, olleik-driver 93840d9d-15f2-4d88-92b9-3e71f5a93a9d.")
+    return out
+
+
 def main():
     idx = json.load(open(os.path.join(LIB, "raw", "mixkit-index.json")))
     lic = os.path.join(LIB, "licenses")
@@ -125,6 +150,7 @@ def main():
         if not any(r.startswith(f"| mixkit-{extra}.wav") for r in rows_m):
             it = idx.get(str(extra), {})
             L.insert(L.index("## Sound effects: Mixkit") + 4, f"| mixkit-{extra}.wav | key_clack_src | Mixkit #{extra} “{it.get('title', '')}” | {it.get('page', '')} (file: https://assets.mixkit.co/active_storage/sfx/{extra}/{extra}.wav) | Mixkit Sound Effects Free License | licenses/mixkit-sfx-free-license-2026-10-05.txt / .jpg |")
+    L += higgsfield_section()
     open(os.path.join(LIB, "LICENSES.md"), "w", encoding="utf8").write("\n".join(L) + "\n")
     print(os.path.join(LIB, "LICENSES.md"), len(rows_k), "Kenney,", len(rows_m), "Mixkit,", len(rows_o), "OpenGameArt rows")
 

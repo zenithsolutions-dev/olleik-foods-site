@@ -7,6 +7,7 @@ import { FPS, H, VH, VW, W } from "./theme";
 import type { VideoId } from "./data/types";
 import { PromoRoot } from "./promo/PromoRoot";
 import { V2Root } from "./v2/V2Root";
+import { V3Root } from "./v3/V3Root";
 
 const manual = (id: string, video: VideoId, w: number, h: number) => (
   <Composition
@@ -47,6 +48,7 @@ export function Root() {
       />
       <PromoRoot />
       <V2Root />
+      <V3Root />
     </>
   );
 }

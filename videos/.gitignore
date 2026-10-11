@@ -14,3 +14,10 @@ audio-library/raw/
 audio-library/_src/
 audio-library/_tools/
 __pycache__/
+public/v3/
+higgsfield/**/*.png
+higgsfield/**/*.mp4
+higgsfield/**/*.wav
+higgsfield/products/web/
+higgsfield/**/*.jpg
+higgsfield/_*

@@ -1,0 +1,16 @@
+Higgsfield terms of use — evidence recorded 2026-10-11 for the Olleik video project (generations made on the owner's
+Higgsfield account, plan "ultra", through the Higgsfield MCP connector).
+
+Source: Higgsfield help centre, "Who owns my generations and can I use them commercially?"
+https://higgsfield.ai/creator-hub/help-center/account-and-privacy/who-owns-my-generations-and-can-i-use-them-commercially
+(fetched 2026-10-11; it cites the Terms of Use)
+
+Summary of what that page states (paraphrased; check the live Terms before publishing):
+- Terms §4.4: Higgsfield does not claim ownership of inputs or outputs and does not restrict commercial use of outputs.
+- Terms §5.1(iii) / §5.2(iv): outputs may not be used to train, fine-tune or improve any AI or machine-learning model.
+- Terms §5.1(ii)(b) / §5.3: the user must not infringe copyright, trademark or likeness rights, and must not use another
+  person's image without permission. (All characters here are original, generated from text only; no real person's image
+  was uploaded.)
+- Paid plans download without watermark; indemnification against third-party IP claims is Enterprise-only.
+- Higgsfield blog "Updates to Higgsfield's Terms of Use and Privacy Policy" (https://higgsfield.ai/blog/terms-of-use-privacy-policy-update):
+  updated terms effective 2026-08-27; Higgsfield may use content on the platform to improve its models.

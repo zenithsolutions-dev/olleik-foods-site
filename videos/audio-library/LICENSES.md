@@ -200,3 +200,93 @@ items inside a larger end product.
 
 Rejected while sourcing: Mixkit #1144 and #2354 (download refused, HTTP 403, not used); OpenGameArt “Keyboard Soundpack #1”
 (CC0 but a membrane keyboard, not blue-switch; not used); Pixabay (blocked, HTTP 403); Freesound (login required).
+
+## Higgsfield generations (V3, generated 2026-10-11 on the owner's account; recorded before use)
+Terms: Higgsfield Terms of Use §4.4 — Higgsfield claims no ownership of outputs and does not restrict their commercial
+use; outputs may not be used to train AI models (§5.1(iii), §5.2(iv)); no likeness/IP infringement (§5.1(ii)(b), §5.3).
+Evidence: licenses/higgsfield-terms-2026-10-11.txt. All people are original characters generated from text (no real
+person's photo was uploaded); all products are generic, unbranded; prompts forbid text, logos and plates.
+Model column: the model requested (the API reports nano_banana_pro jobs as `nano_banana_2`). Full prompts: higgsfield/ledger.json.
+
+| Generation id | Kind | Model | Date | File (local, not in git) | Product / note |
+|---|---|---|---|---|---|
+| 2e542e3d-5315-44e0-a342-fb13d70fdd9a | character-sheet | nano_banana_pro 16:9 2k | 2026-10-11 | people/sheets/driver-a.png | USED: driver reference element |
+| 1ecfbea3-1c31-4f86-aabd-a64f41b4e249 | character-sheet | nano_banana_pro 16:9 2k | 2026-10-11 | people/sheets/driver-b.png |  |
+| f159d35e-6870-4609-89a2-256200ac432c | character-sheet | nano_banana_pro 16:9 2k | 2026-10-11 | people/sheets/marco-a.png |  |
+| 1ce43595-bc08-4351-b06c-7c0b2c8ba86f | character-sheet | nano_banana_pro 16:9 2k | 2026-10-11 | people/sheets/marco-b.png | USED: Marco reference element |
+| cd3f6329-c7a2-412d-8a8a-b6e4f0927ae7 | character-sheet | nano_banana_pro 16:9 2k | 2026-10-11 | people/sheets/salma-a.png | USED: Salma reference element |
+| 4f791402-db3d-400f-957a-5c093f7e1a49 | character-sheet | nano_banana_pro 16:9 2k | 2026-10-11 | people/sheets/salma-b.png |  |
+| b0e3300b-e226-40af-9921-248ebd719073 | hook-clip | kling3_0 pro 5 s sound off | 2026-10-11 | hooks/clips/ha-thumb.mp4 | USED: hook A |
+| f76b2f42-cc61-4026-8830-fd69dfc819a5 | hook-clip | kling3_0 pro 5 s sound off | 2026-10-11 | hooks/clips/hd-chop-t1.mp4 | USED: hook D (hand artifacts noted) |
+| b9a6e0e5-2870-4af9-9881-ec108bc34978 | hook-clip | kling3_0 pro 5 s sound off | 2026-10-11 | hooks/clips/hd-chop-t2.mp4 | rejected: doubled knife |
+| ca5b3e8c-573b-48b4-a0d3-a9db73df606b | hook-frame | nano_banana_pro 16:9 2k | 2026-10-11 | hooks/frames/ha-thumb.png |  |
+| 75574050-8b71-4488-972f-933ae66cfe9c | hook-frame | nano_banana_pro 16:9 2k | 2026-10-11 | hooks/frames/hd-chop.png |  |
+| dae01c5e-780f-4fb0-b555-8ef93a1e583b | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/A-soul-t1.mp4 | USED: music bed A |
+| c78aa4e1-9771-4de2-80bd-80a578ff8a3d | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/A-soul-t2.mp4 |  |
+| 9022d321-e8e0-471d-83ee-2308a3d49520 | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/B-folk-t1.mp4 |  |
+| 7540a7c1-d5ba-4926-aed1-51cf2b7ed97f | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/B-folk-t2.mp4 | USED: music bed B |
+| 5fb2824b-01c2-4d9b-9783-71635a2a7fac | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/C-marimba-t1.mp4 |  |
+| c63265eb-f5de-4817-81e5-72ef915e53b2 | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/C-marimba-t2.mp4 | USED: music bed C |
+| f546c66e-0649-4dd6-bc04-7ac063047d67 | product-anchor | nano_banana_pro | 2026-10-11 | higgsfield/products/anchor-a.png | unused take (fill card visible) |
+| 02cd24c9-8f36-47e8-a4c8-91b402ccfd8f | product-photo | nano_banana_pro | 2026-10-11 | products/raw/MEAT-203.png | USED: loaded into the local demo stack |
+| 8b908ce5-c517-47f8-a576-b77ed808304a | product-photo | nano_banana_pro | 2026-10-11 | products/raw/PRD-007.png | Red Bell Peppers (left in the local DB by the V1 add-product capture) |
+| 29038c64-e758-4041-9f55-a51b033ee7f3 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/BEV-501.png | Whole Bean Coffee, Medium Roast |
+| 82ef74c6-c93d-4b10-ba50-652b5b3b0608 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/BEV-502.png | Oat Barista Milk |
+| aaad3c4f-477a-4087-94d3-e3338a077932 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/DRY-101.png | Aged Cheddar Block |
+| 13e7e550-93f9-4214-a3db-923f45e6f976 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/DRY-102.png | Whole Milk Mozzarella, Shredded |
+| daff3e69-d7ea-4a1c-ae55-e7307b7dcd3c | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/DRY-103.png | Large Eggs, Grade A |
+| c0e29049-bda8-4ad1-86bd-41908c8268db | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/DRY-104.png | Unsalted Butter |
+| a0023e9d-4a33-4da2-abd9-998e39718a2d | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/DRY-105.png | Heavy Cream 36% |
+| b2d1b669-8194-4267-a5e8-00cbebb4978a | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/DRY-401.png | Extra Virgin Olive Oil |
+| 21ae7fad-5d42-4101-9dab-a9093e18d5f6 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/DRY-402.png | All-Purpose Flour |
+| c42db4a5-b06c-47fe-8a9b-f5a8d8da306d | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/DRY-403.png | Crushed San Marzano Tomatoes |
+| 3d4a77b9-2538-43de-ba87-98704f7d44de | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/DRY-404.png | Long Grain Rice |
+| c82ce947-11e7-49b7-a208-4c85a4243dac | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/DRY-405.png | Canola Fry Oil |
+| 52c39f79-b2fc-48f2-98ff-038a6ea11d72 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/FRZ-601.png | Shoestring French Fries |
+| 322fd450-c4b5-4503-95ce-c91bedf9a62c | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/FRZ-602.png | Brioche Burger Buns |
+| 13c42e20-f14c-4d45-b7ac-a372070ca066 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/MEAT-201.png | Boneless Chicken Breast |
+| b1f24849-212d-42f5-9507-2cedf2786698 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/MEAT-202.png | Ground Beef 80/20 |
+| d88f3604-7c15-4a77-a712-49fda0bab3bf | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/MEAT-203-take1.png | Beef Burger Patties 6 oz |
+| 096fa0d5-77a3-4324-a558-e04046a435f4 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/MEAT-204.png | Chicken Wings, Split |
+| 709aa7fb-fb58-4e59-800f-585e75d246c6 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/PKG-701.png | Pizza Boxes 12" |
+| da0d7a23-4252-4f75-80b5-09510b0e1395 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/PKG-702.png | Burger Clamshell, Compostable |
+| 946a5396-eef4-422f-ac78-b65229e05c1f | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/PKG-703.png | Hot Cups 12 oz |
+| 1de30c08-585b-41f6-a7b8-fb715bec7b50 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/PKG-704.png | Kraft Takeout Bags |
+| cc1b8fd0-cc9b-4137-b674-d1e69aee1c20 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/PRD-001.png | Vine-Ripe Tomatoes |
+| 0647880c-25c2-4119-8ca4-37a25ba47020 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/PRD-002.png | Yellow Onions |
+| e1ae1b55-29e5-42ae-b7dc-8ac3c2b3ef40 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/PRD-003.png | Romaine Hearts |
+| 92042a2e-2ed4-4078-bd30-70bf955360b1 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/PRD-004.png | Lemons |
+| b0f8aa32-f573-4dcc-8cb2-6328fa0daba6 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/PRD-005.png | Fresh Basil |
+| f513e99b-bbc9-4413-9247-e7fe90696899 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/PRD-006.png | Russet Potatoes |
+| 63dafb74-f5dd-465c-b26c-77d3bf62045f | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/SEA-301.png | Frozen Shrimp 21-25 ct |
+| 09cfb757-d999-4693-a0e8-6d34a2547555 | product-photo | nano_banana_pro | 2026-10-11 | higgsfield/products/raw/SEA-302.png | Atlantic Salmon Fillet |
+| 5d60951b-952b-405f-a0e2-50b8866bb9d4 | start-frame | nano_banana_pro 16:9 / 9:16 2k | 2026-10-11 | people/frames/driver-169.png |  |
+| ac76b06c-2724-4e66-8043-4306e68d8042 | start-frame | nano_banana_pro 16:9 / 9:16 2k | 2026-10-11 | people/frames/driver-916.png |  |
+| db322211-a0a3-45c4-ac4a-b0b076d5ed6f | start-frame | nano_banana_pro 16:9 ×2, 9:16 ×2, 2k | 2026-10-11 | people/frames/driver-d169b-a.png |  |
+| 85b577b3-0e94-4d11-ba2e-c9e898b0c618 | start-frame | nano_banana_pro 16:9 ×2, 9:16 ×2, 2k | 2026-10-11 | people/frames/driver-d169b-b.png | USED: driver 16:9 start frame |
+| 8bd67915-152d-41c9-9b89-f6f1a42bca1f | start-frame | nano_banana_pro 16:9 ×2, 9:16 ×2, 2k | 2026-10-11 | people/frames/driver-d916b-a.png | USED: driver 9:16 start frame |
+| 582a4015-dfec-475d-97fa-e50768deea2a | start-frame | nano_banana_pro 16:9 ×2, 9:16 ×2, 2k | 2026-10-11 | people/frames/driver-d916b-b.png |  |
+| 103f5917-86cc-4f2b-a764-640053624406 | start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | people/frames/marco-169.png |  |
+| 65246070-cfb0-4cf1-ab4d-ca5fd8fefb35 | start-frame | nano_banana_pro 9:16 2k | 2026-10-11 | people/frames/marco-916.png |  |
+| 6eeb60b3-0c1a-4e6f-b30c-285238b1c4e9 | start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | people/frames/salma-169.png |  |
+| 7aefdb9d-5a0e-4525-af12-efdd3c635622 | start-frame | nano_banana_pro 9:16 2k | 2026-10-11 | people/frames/salma-916.png |  |
+| b5e4a112-2378-44fe-9b07-50611930f572 | style-plate | nano_banana_pro 4:3 2k | 2026-10-11 | higgsfield/products/_plate/plate-a.png | rejected: studio gear visible; not used |
+| d22e53cc-970a-4468-8ba4-e4f02501e8b1 | style-plate | nano_banana_pro 4:3 2k | 2026-10-11 | higgsfield/products/_plate/plate-b.png | rejected: studio gear visible; not used |
+| b1c9b9fd-bfc0-45bb-8b63-6da8b62d22b0 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/driver-169-t1.mp4 | rejected: shop sign text |
+| 944b2d0b-c105-4726-939b-faa08880e73b | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/driver-169-t2.mp4 | rejected: shop sign text |
+| e6652627-c3df-4f68-9ce1-ad747af6affc | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/driver-916-t1.mp4 | rejected: licence plate text |
+| 6f9fa756-8570-4138-b428-477784f2d54b | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/driver-916-t2.mp4 | rejected: licence plate text |
+| 107948fa-5459-4c3e-9fe1-5c5694766629 | test-shot | kling3_0 | 2026-10-11 | people/shots/driver2-169-t1.mp4 |  |
+| 327926cb-6c84-4c1e-b63b-2917b7d8defd | test-shot | kling3_0 | 2026-10-11 | people/shots/driver2-169-t2.mp4 | PICK: driver 16:9 test shot |
+| 485b4af7-f5ca-4f5d-9bdf-04d58f71afa4 | test-shot | kling3_0 | 2026-10-11 | people/shots/driver2-916-t1.mp4 |  |
+| 83fe45d8-1ed3-4257-abab-c85f4a23b315 | test-shot | kling3_0 | 2026-10-11 | people/shots/driver2-916-t2.mp4 | PICK: driver 9:16 test shot |
+| 9d79fd92-fe6d-4481-98d1-c22ee2dad963 | test-shot | kling3_0 pro 5 s sound off (start_image = the frame above) | 2026-10-11 | people/shots/marco-169-t1.mp4 | PICK: Marco 16:9 test shot |
+| 7ed04469-42da-4b89-80b0-3f58c9329300 | test-shot | kling3_0 pro 5 s sound off (start_image = the frame above) | 2026-10-11 | people/shots/marco-169-t2.mp4 |  |
+| f82fa47f-cb22-497d-97e5-a70bf03aab65 | test-shot | kling3_0 pro 5 s sound off (start_image = the frame above) | 2026-10-11 | people/shots/marco-916-t1.mp4 |  |
+| 30b610c5-fab3-49ab-b3e7-429fffc15cf3 | test-shot | kling3_0 pro 5 s sound off (start_image = the frame above) | 2026-10-11 | people/shots/marco-916-t2.mp4 | PICK: Marco 9:16 test shot |
+| 5de90aee-67d9-4cd9-9b5f-66d27936e736 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-169-t1.mp4 | PICK: Salma 16:9 test shot |
+| 98426453-4643-49db-b11c-b4675c5b4b21 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-169-t2.mp4 |  |
+| 807cfae8-0152-4c07-a614-834166df8f67 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-916-t1.mp4 | PICK: Salma 9:16 test shot |
+| d6eb3737-0583-4e43-885d-61c95b02c80c | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-916-t2.mp4 |  |
+
+78 Higgsfield generations recorded. Elements: olleik-demo-catalog-style 310febdd-c4a9-499d-be0b-cc30b46b9e5f, olleik-marco 2f647b1b-7746-4ecd-9510-49fb41c197e7, olleik-salma ce092dc3-a897-47f2-a82c-5e5b7f773e9a, olleik-driver 93840d9d-15f2-4d88-92b9-3e71f5a93a9d.
