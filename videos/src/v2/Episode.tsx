@@ -7,6 +7,7 @@ import { Marco, Salma, type Arm } from "./characters";
 import { beatTiming, episodeOf } from "./episodes.mjs";
 import { BACK, ez, INOUT, K, wob } from "./look";
 import { FilmFX, Phone, RoughArrow, RoughCircle } from "./props";
+import { assertLine } from "../v3/lines";
 
 type Rect = { x: number; y: number; w: number; h: number };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,20 +48,18 @@ function Pointer({ x, y, tap, f, phone, scale }: { x: number; y: number; tap: nu
     const press = t >= 0 && t < 6 ? 1 - 0.25 * Math.sin((t / 6) * Math.PI) : 1;
     return (
       <div style={{ position: "absolute", left: x, top: y, transform: `scale(${scale})`, zIndex: 30 }}>
-        {t >= 0 && t < 16 && <div style={{ position: "absolute", left: -46 * (0.4 + t / 16), top: -46 * (0.4 + t / 16), width: 92 * (0.4 + t / 16), height: 92 * (0.4 + t / 16), borderRadius: "50%", border: `3px solid ${K.amber}`, opacity: 1 - t / 16 }} />}
-        <div style={{ position: "absolute", left: -22, top: -22, width: 44, height: 44, borderRadius: 22, background: "rgba(14,44,32,0.3)", border: "2px solid rgba(255,255,255,0.9)", transform: `scale(${press})`, opacity: vis }} />
+        <div style={{ position: "absolute", left: -20, top: -20, width: 40, height: 40, borderRadius: 20, background: "rgba(14,44,32,0.32)", boxShadow: "0 2px 8px rgba(0,0,0,0.25)", transform: `scale(${press})`, opacity: vis }} />
       </div>
     );
   }
-  const travel = ez(f, tap - 22, tap - 2, 0, 1, INOUT);
+  const travel = ez(f, tap - 14, tap - 1, 0, 1, INOUT);
   const px = x + 260 * (1 - travel);
   const py = y + 180 * (1 - travel);
   const press = t >= 0 && t < 6 ? 1 - 0.15 * Math.sin((t / 6) * Math.PI) : 1;
-  const o = ez(f, tap - 24, tap - 16) * (1 - ez(f, tap + 24, tap + 32));
+  const o = ez(f, tap - 16, tap - 10) * (1 - ez(f, tap + 16, tap + 22));
   if (o <= 0) return null;
   return (
     <div style={{ position: "absolute", left: px, top: py, transform: `scale(${scale * press})`, transformOrigin: "0 0", zIndex: 30, opacity: o }}>
-      {t >= 0 && t < 18 && <div style={{ position: "absolute", left: -40 * (0.3 + t / 18), top: -40 * (0.3 + t / 18), width: 80 * (0.3 + t / 18), height: 80 * (0.3 + t / 18), borderRadius: "50%", border: `3px solid ${K.amber}`, opacity: 1 - t / 18 }} />}
       <svg width="30" height="38" viewBox="0 0 30 38" style={{ filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.35))" }}>
         <path d="M2 2 L2 30 L9 23 L14 35 L19 33 L14 21 L24 21 Z" fill="#fff" stroke="#0e2c20" strokeWidth="2" strokeLinejoin="round" />
       </svg>
@@ -84,8 +83,9 @@ function StepTicket({ n, f }: { n: number; f: number }) {
 
 /** The burned-in caption (English, sentence case). */
 function Caption({ text, f, len }: { text: string; f: number; len: number }) {
-  const p = ez(f, 6, 14);
-  const o = 1 - ez(f, len - 6, len);
+  assertLine(text);
+  const p = ez(f, 3, 9);
+  const o = 1 - ez(f, len - 4, len);
   return (
     <div style={{ position: "absolute", left: 380, right: 120, bottom: 54, display: "flex", justifyContent: "center", zIndex: 45, opacity: p * o, transform: `translateY(${(1 - p) * 16}px)` }}>
       <div style={{ background: "rgba(14,44,32,0.92)", color: "#fff", fontFamily: F.sans, fontWeight: 600, fontSize: 44, lineHeight: 1.2, padding: "16px 34px", borderRadius: 18, textAlign: "center", boxShadow: "0 16px 40px rgba(0,0,0,0.25)" }}>{text}</div>
@@ -102,15 +102,17 @@ function DesktopShot({ b, f, len }: { b: Beat; f: number; len: number }) {
   const k = W / 1440;
   // b.zoom forces a tighter crop (e.g. to keep the site's placeholder stats out of frame)
   const zT = b.zoom ?? Math.min(2.2, Math.max(1.15, Math.min((1440 * 0.62) / Math.max(r.w, 1), (900 * 0.55) / Math.max(r.h, 1))));
-  const z = 1 + (zT - 1) * ez(f, 4, 34, 0, 1, INOUT) + 0.04 * (f / len);
+  const z = 1 + (zT - 1) * ez(f, 2, 18, 0, 1, INOUT) + 0.1 * (f / len);
   const s = k * z;
   const hx = W / 2 / s;
   const hy = H / 2 / s;
-  const cx = Math.min(1440 - hx, Math.max(hx, r.x + r.w / 2));
+  let cx = Math.min(1440 - hx, Math.max(hx, r.x + r.w / 2));
+  // admin pages: the 256 px sidebar is either fully in view or fully out (a cut sliver of it reads as a stray chip)
+  if (b.shot.startsWith("admin/") && cx - hx > 0 && cx - hx < 256) cx = 256 + 2 * hx <= 1440 ? 256 + hx : hx;
   const cy = Math.min(900 - hy, Math.max(hy, r.y + r.h / 2));
   const T = beatTiming(b);
-  const swap = T.swap != null ? ez(f, T.swap, T.swap + 8) : 0;
-  const rise = spring({ frame: f, fps: 30, config: { damping: 18, stiffness: 120 } });
+  const swap = T.swap != null ? ez(f, T.swap, T.swap + 2) : 0;
+  const rise = spring({ frame: f, fps: 30, config: { damping: 16, stiffness: 220 } });
   return (
     <div style={{ position: "absolute", left: 500, top: 56, width: W, transform: `translateY(${(1 - rise) * 80}px) rotate(${wob(4, f, 0.25, 0.04)}deg)`, opacity: rise }}>
       <div style={{ borderRadius: 18, overflow: "hidden", boxShadow: "0 30px 80px rgba(20,32,26,0.28)", background: "#fff" }}>
@@ -123,9 +125,7 @@ function DesktopShot({ b, f, len }: { b: Beat; f: number; len: number }) {
             <Img src={staticFile(`footage/${b.shot}.png`)} style={{ position: "absolute", width: 1440, height: 900 }} />
             {b.then && <Img src={staticFile(`footage/${b.then}.png`)} style={{ position: "absolute", width: 1440, height: 900, opacity: swap }} />}
             <svg width={1440} height={900} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
-              <g opacity={1 - swap}>
-                <RoughCircle r={r} p={ez(f, T.circle[0], T.circle[1])} width={5 / z} seed={b.box.length} />
-              </g>
+              {T.tap == null && !b.noCallout && <RoughCircle r={r} p={ez(f, T.circle[0], T.circle[1])} width={5 / z} seed={b.box.length} />}
             </svg>
             {T.tap != null && <Pointer x={r.x + r.w / 2} y={r.y + r.h / 2} tap={T.tap} f={f} phone={false} scale={1.3 / z} />}
           </div>
@@ -140,22 +140,20 @@ function PhoneShot({ b, f, len }: { b: Beat; f: number; len: number }) {
   const r: Rect = SHOTS[b.shot].boxes[b.box];
   const z = 1.15 + 0.05 * (f / len);
   const T = beatTiming(b);
-  const swap = T.swap != null ? ez(f, T.swap, T.swap + 8) : 0;
-  const rise = spring({ frame: f, fps: 30, config: { damping: 18, stiffness: 110 } });
+  const swap = T.swap != null ? ez(f, T.swap, T.swap + 2) : 0;
+  const rise = spring({ frame: f, fps: 30, config: { damping: 16, stiffness: 220 } });
   return (
     <>
       <div style={{ position: "absolute", left: 1000, top: 540, transform: `translate(-50%, -50%) translateY(${(1 - rise) * 200}px) rotate(${-3 + wob(5, f, 0.8, 0.05)}deg)` }}>
         <Phone w={430} src={b.then ?? b.shot} prev={b.then ? b.shot : undefined} mix={b.then ? swap : 1} cam={{ rect: { x: 0, y: Math.max(0, r.y - 330), w: 390, h: 660 }, z }}>
           <svg width={390} height={844} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
-            <g opacity={1 - swap}>
-              <RoughCircle r={r} p={ez(f, T.circle[0], T.circle[1])} width={4} seed={b.box.length} />
-            </g>
+            {T.tap == null && <RoughCircle r={r} p={ez(f, T.circle[0], T.circle[1])} width={4} seed={b.box.length} />}
           </svg>
           {T.tap != null && <Pointer x={r.x + r.w / 2} y={r.y + r.h / 2} tap={T.tap} f={f} phone scale={1} />}
         </Phone>
       </div>
       <svg width={1920} height={1080} style={{ position: "absolute", inset: 0, overflow: "visible", zIndex: 30 }}>
-        <RoughArrow from={{ x: 560, y: 300 }} to={{ x: 760, y: 460 }} p={ez(f, T.arrow[0], T.arrow[1])} />
+        {T.tap == null && <RoughArrow from={{ x: 560, y: 300 }} to={{ x: 760, y: 460 }} p={ez(f, T.arrow[0], T.arrow[1])} />}
       </svg>
     </>
   );
@@ -179,12 +177,12 @@ function ScreenBeat({ b, f, len, guide }: { b: Beat; f: number; len: number; gui
 
 function ProblemBeat({ b, f, guide }: { b: Beat; f: number; guide: "marco" | "salma" }) {
   const P = guide === "marco" ? Marco : Salma;
-  const words = String(b.line).split(" ");
+  const words = assertLine(String(b.line)).split(" ");
   return (
     <AbsoluteFill style={{ background: `radial-gradient(100% 90% at 30% 20%, ${K.night2} 0%, ${K.deep} 70%)` }}>
       <div style={{ position: "absolute", left: 140, top: 300, width: 1100, display: "flex", flexWrap: "wrap", columnGap: 28, rowGap: 8 }}>
         {words.map((w, i) => {
-          const p = ez(f, 4 + i * 3, 14 + i * 3);
+          const p = ez(f, 2 + i * 2, 9 + i * 2);
           return <span key={i} style={{ fontFamily: i === words.length - 1 ? F.serif : F.sans, fontStyle: i === words.length - 1 ? "italic" : "normal", fontWeight: i === words.length - 1 ? 600 : 900, fontSize: 104, color: i === words.length - 1 ? K.amber : "#fff", letterSpacing: "-0.04em", transform: `translateY(${(1 - p) * 40}px) rotate(${(1 - p) * -4}deg)`, opacity: p, display: "inline-block" }}>{w}</span>;
         })}
       </div>
@@ -201,7 +199,7 @@ function NextBeat({ b, f, guide }: { b: Beat; f: number; guide: "marco" | "salma
   return (
     <AbsoluteFill style={{ background: K.paper }}>
       <div style={{ position: "absolute", left: 160, top: 380, fontFamily: F.sans, fontWeight: 800, fontSize: 40, letterSpacing: "0.2em", color: K.amber, opacity: ez(f, 0, 8) }}>COMING UP</div>
-      <div style={{ position: "absolute", left: 160, top: 440, fontFamily: F.serif, fontWeight: 600, fontSize: 110, color: K.deep, transform: `translateX(${(1 - ez(f, 4, 16)) * -120}px)`, opacity: ez(f, 4, 14) }}>{b.line}</div>
+      <div style={{ position: "absolute", left: 160, top: 440, fontFamily: F.serif, fontWeight: 600, fontSize: 110, color: K.deep, transform: `translateX(${(1 - ez(f, 4, 16)) * -120}px)`, opacity: ez(f, 4, 14) }}>{assertLine(b.line)}</div>
       <div style={{ position: "absolute", left: 1350, top: 330, width: 460, height: 690 }}>
         <P expr="smile" turn={0.3} armR={{ sh: 150, el: 20 + 25 * Math.sin(f / 4) }} blink={f % 50 > 46 ? 1 : 0} />
       </div>
@@ -212,7 +210,7 @@ function NextBeat({ b, f, guide }: { b: Beat; f: number; guide: "marco" | "salma
 
 function TitleBeat({ b, f, guide }: { b: Beat; f: number; guide: "marco" | "salma" }) {
   const P = guide === "marco" ? Marco : Salma;
-  const printed = ez(f, 6, 40, 0, 1, INOUT);
+  const printed = ez(f, 3, 24, 0, 1, INOUT);
   return (
     <AbsoluteFill style={{ background: `radial-gradient(100% 90% at 50% 0%, #fffdf6 0%, ${K.paper} 60%)` }}>
       <div style={{ position: "absolute", left: 240, top: 120, width: 640, height: 34, borderRadius: 10, background: "#101714" }} />
@@ -221,7 +219,7 @@ function TitleBeat({ b, f, guide }: { b: Beat; f: number; guide: "marco" | "salm
           <div style={{ fontFamily: "'Courier New', monospace", fontSize: 26, letterSpacing: "0.2em", color: K.ink }}>OLLEIK FOODS · HOW-TO</div>
           <div style={{ borderTop: `3px dashed ${K.steelDark}`, margin: "24px 0" }} />
           <div style={{ fontFamily: F.serif, fontWeight: 600, fontSize: 84, lineHeight: 1.02, color: K.deep }}>{b.title}</div>
-          <div style={{ fontFamily: F.sans, fontSize: 36, color: "#586056", marginTop: 24 }}>{b.line}</div>
+          <div style={{ fontFamily: F.sans, fontSize: 36, color: "#586056", marginTop: 24 }}>{assertLine(b.line)}</div>
         </div>
       </div>
       <div style={{ position: "absolute", left: 1150, top: 300, width: 480, height: 720 }}>
@@ -252,14 +250,23 @@ function OutroBeat({ b, f, guide }: { b: Beat; f: number; guide: "marco" | "salm
   );
 }
 
-function BeatBody({ b, guide }: { b: Beat; guide: "marco" | "salma" }) {
-  const f = useCurrentFrame();
-  const len = b.to - b.from;
+function BeatInner({ b, f, len, guide }: { b: Beat; f: number; len: number; guide: "marco" | "salma" }) {
   if (b.kind === "screen") return <ScreenBeat b={b} f={f} len={len} guide={guide} />;
   if (b.kind === "problem") return <ProblemBeat b={b} f={f} guide={guide} />;
   if (b.kind === "next") return <NextBeat b={b} f={f} guide={guide} />;
   if (b.kind === "title") return <TitleBeat b={b} f={f} guide={guide} />;
   return <OutroBeat b={b} f={f} guide={guide} />;
+}
+/** Gate F V3.1 §5: every beat keeps moving (a slow push and drift under everything), never a frozen hold. */
+function BeatBody({ b, guide }: { b: Beat; guide: "marco" | "salma" }) {
+  const f = useCurrentFrame();
+  const len = b.to - b.from;
+  const t = f / len;
+  return (
+    <AbsoluteFill style={{ transform: `scale(${1 + 0.06 * t}) translate(${-14 * t}px, ${-6 * t}px)`, transformOrigin: "55% 45%" }}>
+      <BeatInner b={b} f={f} len={len} guide={guide} />
+    </AbsoluteFill>
+  );
 }
 
 /** One manual episode (V2): the visitor manual or an admin episode, from episodes.mjs. */

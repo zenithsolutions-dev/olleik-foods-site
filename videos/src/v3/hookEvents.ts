@@ -20,7 +20,7 @@ const sort = (ev: Ev[]) => ev.sort((a, b) => a.f - b.f);
 
 export const hookA = () => sort([
   { f: 1, sfx: "buzz", vel: 0.8, dur: 20, note: "phone buzz on the counter" },
-  ...Array.from({ length: 8 }, (_, i) => ({ f: 4 + i * 5, sfx: "notif", vel: 0.18 + 0.03 * i, pan: 0.35, pitch: i % 3, note: `message ${i + 1}` })),
+  ...Array.from({ length: 8 }, (_, i) => ({ f: 3 + i * 4, sfx: "notif", vel: 0.18 + 0.03 * i, pan: 0.35, pitch: i % 3, note: `message ${i + 1}` })),
   { f: 24, sfx: "buzz", vel: 0.55, dur: 14, note: "buzz again" },
   { f: SNAP, sfx: "tap", vel: 0.9, note: "the thumb taps: snap" },
   { f: SNAP + 4, sfx: "whoosh", vel: 0.3, dur: 8, sweep: [0.3, -0.3], note: "screen light floods" },

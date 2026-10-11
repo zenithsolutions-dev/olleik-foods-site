@@ -97,7 +97,7 @@ try {
     const ck = { headline: "main h1", delivery: "label:has-text('Delivery')", pickup: "label:has-text('Pickup')", notes: "textarea", submit: "button:has-text('Submit order')" };
     await shot(p, "visitor/p-checkout", "Checkout (phone): pickup or delivery, notes", { boxes: ck });
     await p.click("label:has-text('Delivery')");
-    await typeInto(p, "textarea", "Back door, before 9 please.", 10);
+    await typeInto(p, "textarea", "Back door, before 9 please", 10);
     await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     await shot(p, "visitor/p-checkout-filled", "Checkout (phone): delivery chosen, note typed", { boxes: ck });
     await p.click("button:has-text('Submit order')");

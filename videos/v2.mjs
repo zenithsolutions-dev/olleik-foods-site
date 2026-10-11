@@ -23,6 +23,14 @@ const dirOf = (id, variant) => `${OUT}/audio/${id}-${variant}`;
 
 function audio(kind, id, variant = "nomusic") {
   const data = kind === "film" ? filmEvents(id, variant === "music") : episodeEvents(id);
+  // Gate F V3.1: the V2 line uses the approved recorded bed C (Higgsfield, conformed to 108 BPM) instead of the
+  // synthesized Gate D candidates; it enters on the snap and follows the film's envelope
+  if (kind === "film" && variant === "music") {
+    Object.assign(data, { music: false, bed_file: "out/v3/music/bed-C-60s.wav", bed_from: data.music_env[1][0], music_under_lu: 6, wav_tp: -3.2 });
+    data.music_env = [...data.music_env, [data.frames - 30, 0], [data.frames - 2, -60]];
+  }
+  if (kind === "film" && variant !== "music") data.wav_tp = -3.2;
+  if (kind !== "film") data.wav_tp = -3;
   const d = dirOf(id, kind === "film" ? variant : "sfx");
   mkdirSync(d, { recursive: true });
   writeFileSync(`${d}/events.json`, JSON.stringify(data, null, 1));
@@ -58,16 +66,16 @@ function mux(id, variant) {
   const out = `${OUT}/mp4/${id}-${variant}.mp4`;
   let gain = 0;
   let m;
-  for (let i = 0; i < 8; i++) {
-    execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-i", pic, "-i", `${d}/mix.wav`, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-af", `volume=${gain.toFixed(2)}dB,alimiter=limit=${(10 ** (-1.6 / 20)).toFixed(4)}:attack=1:release=60:level=disabled`, "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-shortest", "-movflags", "+faststart", out]);
+  for (let i = 0; i < 14; i++) {
+    execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-i", pic, "-i", `${d}/mix.wav`, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-af", `volume=${gain.toFixed(2)}dB,${process.env.COMP ? "acompressor=threshold=-20dB:ratio=3:attack=4:release=90:knee=4," : ""}alimiter=limit=${(10 ** (Number(process.env.LIMIT ?? -1.6) / 20)).toFixed(4)}:attack=1:release=60:level=disabled`, "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-shortest", "-movflags", "+faststart", out]);
     m = ffLoud(out);
     console.log(`${id}-${variant}: gain ${gain.toFixed(2)} dB → I ${m.I} LUFS, TP ${m.TP} dBTP`);
-    if (m.TP <= -1.0 && Math.abs(m.I - target) <= 0.5) break;
-    const step = Math.min(target - m.I, -1.1 - m.TP);
-    gain += Math.max(-1, Math.min(1, Math.abs(step) < 0.05 ? -0.1 : step));
+    if (m.TP <= -1.2 && Math.abs(m.I - target) <= 0.3) break; // 0.2 dB margin under the -1 dBTP ceiling
+    const step = Math.min(target - m.I, -1.3 - m.TP);
+    gain += Math.max(-4, Math.min(4, Math.abs(step) < 0.05 ? -0.1 : step));
   }
   const silent = `${OUT}/mp4/${id}-silent.mp4`;
-  if (!existsSync(silent)) copyFileSync(pic, silent);
+  copyFileSync(pic, silent);
   const p = `${OUT}/loudness.json`;
   const all = existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : {};
   all[`${id}-${variant}`] = { file: out, target, ...m, gain_dB: +gain.toFixed(2), MB: +(statSync(out).size / 1e6).toFixed(1), seconds: data.frames / 30 };

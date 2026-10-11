@@ -3,6 +3,7 @@ import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame } f
 import { C, F } from "../theme";
 import { Box } from "./camera";
 import { Tiles } from "./World";
+import { assertLine } from "./lines";
 
 /**
  * Five 3-second hook motion tests (CREATIVE_BRIEF_V3 §3). Rules: the first 1.5 s (45 frames) has no logo and no UI,
@@ -35,19 +36,22 @@ function Seq({ dir, n, at }: { dir: string; n: number; at: number }) {
 
 // ——— H-A "The 11:04 PM text" ———
 const TEXTS = ["price list v3 (final) (2)", "Can you do 4 cases by Fri??", "Missed call (3)", "send me the new list pls", "price changed again?", "voice note 0:47", "??", "you up?"];
-export function HookA() {
+/** `punchAt`: a punch-in cut (V3.1 rhythm: no hold longer than one beat without something moving). */
+export function HookA({ punchAt }: { punchAt?: number } = {}) {
   const f = useCurrentFrame();
-  const unread = Math.min(37, Math.floor(interpolate(f, [0, 42], [9, 37], clamp)));
+  const unread = Math.min(37, Math.floor(interpolate(f, [0, 36], [9, 37], clamp)));
   const snap = f >= SNAP;
+  const punched = punchAt !== undefined && f >= punchAt;
+  const line = assertLine("One more text");
   return (
-    <AbsoluteFill style={{ background: "#05070a" }}>
-      <AbsoluteFill style={{ transform: `scale(${1.04 + f * 0.0012})` }}>
+    <AbsoluteFill style={{ background: "#05070a", overflow: "hidden" }}>
+      <AbsoluteFill style={{ transform: `scale(${(punched ? 1.32 : 1.04) + f * 0.0016})`, transformOrigin: "38% 62%" }}>
         <Seq dir="ha-thumb" n={121} at={interpolate(f, [0, 90], [0, 62])} />
       </AbsoluteFill>
       {/* messages stack above the phone: functional type, phone-notification shapes (no app chrome, no logos) */}
       <AbsoluteFill style={{ opacity: snap ? interpolate(f, [SNAP, SNAP + 10], [1, 0], clamp) : 1 }}>
         {TEXTS.map((t, i) => {
-          const at = 4 + i * 5;
+          const at = 3 + i * 4;
           const k = spring({ frame: f - at, fps: 30, config: { damping: 14, stiffness: 160 } });
           if (f < at) return null;
           return (
@@ -65,7 +69,7 @@ export function HookA() {
       {snap && <AbsoluteFill style={{ background: "#fbf8f2", opacity: interpolate(f, [SNAP, SNAP + 3, SNAP + 14], [0, 0.85, 0], clamp) }} />}
       {snap && (
         <div style={{ position: "absolute", left: 140, top: 430, fontFamily: F.serif, fontWeight: 700, fontSize: 112, letterSpacing: "-0.03em", color: "#fbf8f2", opacity: interpolate(f, [SNAP + 4, SNAP + 12], [0, 1], clamp), transform: `translateY(${(1 - ease((f - SNAP - 4) / 12)) * 30}px)`, textShadow: "0 4px 30px rgba(0,0,0,.6)" }}>
-          One more text.
+          {line}
           <div style={{ fontFamily: F.sans, fontWeight: 500, fontSize: 40, letterSpacing: 0, opacity: 0.85, marginTop: 8 }}>11:04 PM</div>
         </div>
       )}
@@ -98,7 +102,7 @@ export function HookB() {
             );
           })}
         </div>
-        <div style={{ position: "absolute", left: 1300, top: 610, width: 500, textAlign: "center", fontFamily: F.serif, fontWeight: 700, fontSize: 56, color: C.tealDark, opacity: interpolate(f, [SNAP, SNAP + 8], [0, 1], clamp) }}>your price.</div>
+        <div style={{ position: "absolute", left: 1300, top: 610, width: 500, textAlign: "center", fontFamily: F.serif, fontWeight: 700, fontSize: 56, color: C.tealDark, opacity: interpolate(f, [SNAP, SNAP + 8], [0, 1], clamp) }}>your price</div>
       </AbsoluteFill>
       {/* the lock turns into the real catalog card with that price */}
       {f >= SNAP && (

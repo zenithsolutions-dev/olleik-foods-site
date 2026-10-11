@@ -233,6 +233,27 @@ Model column: the model requested (the API reports nano_banana_pro jobs as `nano
 | 5a582591-1382-4126-bb64-e635f346e5fb | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/ots-b.png | USED: start frame |
 | 7419206b-5a1b-41fe-b3d5-684d2a0c2734 | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/salma-mon-a.png | USED: start frame |
 | 89597723-b68d-48fb-ba03-42251b80fd14 | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/salma-mon-b.png | unused frame |
+| f0fa1583-f638-4c96-9ebf-bf724dc67351 | gate-f2 promo-clip | kling3_0 pro 5 s (start_image: monitor-a) | 2026-10-11 | higgsfield/gatef2/clips/monitor-a-t1.mp4 | USED: promo warehouse monitor (real admin order composited, capture/composite2.py) |
+| c05ac7c3-1f15-4a59-8c6f-e3a810a79b0c | gate-f2 promo-clip | kling3_0 pro 5 s (start_image: phone-d) | 2026-10-11 | higgsfield/gatef2/clips/phone-d-t1.mp4 | REJECTED: the tap lands mid-screen, on the photo instead of the button |
+| f4dcc836-f7ab-4075-8820-8b4f7193184e | gate-f2 promo-clip | kling3_0 pro 5 s (start_image: phone-d) | 2026-10-11 | higgsfield/gatef2/clips/phone-d-t2.mp4 | USED: promo phone shot (real portal composited, thumb taps Add to cart) |
+| da1609df-57e6-4ce6-a4a1-0547686b4237 | gate-f2 promo-clip | kling3_0 pro 5 s (start_image: stamp-a) | 2026-10-11 | higgsfield/gatef2/clips/stamp-a-t1.mp4 | REJECTED: the stamp vanishes abruptly and leaves a grey cut-out, no ink |
+| ddfe440d-8c38-406c-9c8e-724d656689b2 | gate-f2 promo-clip | kling3_0 pro 5 s (start_image: stamp-b) | 2026-10-12 | higgsfield/gatef2/clips/stamp-b-t1.mp4 | USED: promo stamp insert; CONFIRMED letters printed inside the generated ink border |
+| ae4a6b0b-9a59-441f-84a7-b5981a643569 | gate-f2 promo-clip | kling3_0 pro 5 s (start_image: stamp-b) | 2026-10-12 | higgsfield/gatef2/clips/stamp-b-t2.mp4 | NOT USED |
+| 5d8f2922-89de-44c6-a556-2ad5244881df | gate-f2 promo-clip | kling3_0 pro 5 s (start_image: tape-b) | 2026-10-11 | higgsfield/gatef2/clips/tape-b-t1.mp4 | USED: promo tape insert (clip frames 4-34, muted) |
+| e223e7cb-5bf6-4e4f-af04-64013cd99cad | gate-f2 promo-clip | kling3_0 pro 5 s (start_image: van-b) | 2026-10-11 | higgsfield/gatef2/clips/van-b-t1.mp4 | USED: promo van-door insert (clip frames 8-37 only; the take re-opens the door later) |
+| 1e55a809-c787-4ba3-b668-4494f566700e | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/monitor-a.png | USED: start frame of the monitor clip |
+| ca7b245a-b02e-496f-868d-af0e4984eea2 | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/monitor-b.png | REJECTED: 4:3 screen, not frontal enough |
+| 010bc4a5-6cb0-45fe-a04a-e09e434a7591 | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/phone-a.png | REJECTED: phone too small in frame for a readable UI |
+| 1729b8ab-37d5-436d-853c-72332323b4df | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/phone-b.png | REJECTED: phone too small in frame |
+| 81feb7b0-e371-483d-8fd7-91dc45b45f0e | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/phone-c.png | REJECTED: phone tilted |
+| be846efa-7708-475d-87e1-b5657803af16 | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/phone-d.png | USED: start frame of the phone clips |
+| eb482476-8058-4b94-ad8f-3ee8876f0f4b | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/phone-e.png | REJECTED: finger over the screen |
+| e1f468f9-41ca-4cd4-af1d-553d2cfd10ef | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/stamp-a.png | USED as start frame of stamp-a-t1 (that clip rejected) |
+| bf0d7cfc-fa54-4b16-9fd6-3072b662b5e2 | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/stamp-b.png | USED: start frame of the stamp clips |
+| 9cc22cd3-a7b3-4fa4-b82f-2f2b794d2c91 | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/tape-a.png | NOT USED |
+| a909e6f4-132f-4e9a-953d-6e1853ff5dc4 | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/tape-b.png | USED: start frame of the tape clip |
+| 85adadd2-ff87-49ac-a37f-cb05f91aa2c2 | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/van-a.png | NOT USED |
+| ab7b0fd4-684e-4010-a0d3-50075ff5a95a | gate-f2 start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | higgsfield/gatef2/frames/van-b.png | USED: start frame of the van clip |
 | b0e3300b-e226-40af-9921-248ebd719073 | hook-clip | kling3_0 pro 5 s sound off | 2026-10-11 | hooks/clips/ha-thumb.mp4 | USED: hook A |
 | f76b2f42-cc61-4026-8830-fd69dfc819a5 | hook-clip | kling3_0 pro 5 s sound off | 2026-10-11 | hooks/clips/hd-chop-t1.mp4 | USED: hook D (hand artifacts noted) |
 | b9a6e0e5-2870-4af9-9881-ec108bc34978 | hook-clip | kling3_0 pro 5 s sound off | 2026-10-11 | hooks/clips/hd-chop-t2.mp4 | rejected: doubled knife |
@@ -306,4 +327,4 @@ Model column: the model requested (the API reports nano_banana_pro jobs as `nano
 | 807cfae8-0152-4c07-a614-834166df8f67 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-916-t1.mp4 | PICK: Salma 9:16 test shot |
 | d6eb3737-0583-4e43-885d-61c95b02c80c | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-916-t2.mp4 |  |
 
-95 Higgsfield generations recorded. Elements: olleik-demo-catalog-style 310febdd-c4a9-499d-be0b-cc30b46b9e5f, olleik-marco 2f647b1b-7746-4ecd-9510-49fb41c197e7, olleik-salma ce092dc3-a897-47f2-a82c-5e5b7f773e9a, olleik-driver 93840d9d-15f2-4d88-92b9-3e71f5a93a9d.
+116 Higgsfield generations recorded. Elements: olleik-demo-catalog-style 310febdd-c4a9-499d-be0b-cc30b46b9e5f, olleik-marco 2f647b1b-7746-4ecd-9510-49fb41c197e7, olleik-salma ce092dc3-a897-47f2-a82c-5e5b7f773e9a, olleik-driver 93840d9d-15f2-4d88-92b9-3e71f5a93a9d.

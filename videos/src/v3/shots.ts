@@ -59,25 +59,11 @@ const cursor = [
 
 export const CAMERA_TEST: WorldShot = {
   world: CATALOG,
-  plate: "v3/catalog-bg",
+  // one real capture on screen at a time: each tap switches to the real after-tap capture on the tap frame
+  plate: [[0, "v3/catalog-0"], [TAPS[0], "v3/catalog-1"], [TAPS[1], "v3/catalog-2"], [TAPS[2], "v3/catalog-3"]],
   keys,
-  radius: 16,
-  cards: [
-    { box: "card0", states: [[0, "v3/catalog-0"], [TAPS[0], "v3/catalog-1"]] },
-    { box: "card1", states: [[0, "v3/catalog-0"], [TAPS[1], "v3/catalog-2"]] },
-    { box: "card2", states: [[0, "v3/catalog-0"], [TAPS[2], "v3/catalog-3"]] },
-    ...[3, 4, 5, 6, 7, 8].map((i) => ({ box: `card${i}`, states: [[0, "v3/catalog-0"]] as [number, string][] })),
-  ],
-  patches: [
-    { box: "btn0", f: TAPS[0], from: "v3/catalog-0", to: "v3/catalog-1", kind: "press", radius: 22 },
-    { box: "btn1", f: TAPS[1], from: "v3/catalog-1", to: "v3/catalog-2", kind: "press", radius: 22 },
-    { box: "btn2", f: TAPS[2], from: "v3/catalog-2", to: "v3/catalog-3", kind: "press", radius: 22 },
-    { box: "cartWide", f: TAPS[0] + 6, from: "v3/catalog-0", to: "v3/catalog-1", kind: "bump" },
-    { box: "cartWide", f: TAPS[1] + 6, from: "v3/catalog-1", to: "v3/catalog-2", kind: "bump" },
-    { box: "cartWide", f: BADGE_LAND, from: "v3/catalog-2", to: "v3/catalog-3", kind: "bump" },
-  ],
   cursor,
-  type: [{ text: "Your catalog. Your prices.", box: "tagline", dx: 0, dy: 0, from: 10, to: 60, size: 26 }],
+  type: [{ text: "Your catalog, your prices", box: "tagline", dx: 0, dy: 0, from: 10, to: 60, size: 26 }],
 };
 
 /** Sound events for the camera test (audio/mix_v2.py format). Every reaction sits on the 108 BPM grid. */

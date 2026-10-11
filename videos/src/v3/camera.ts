@@ -12,9 +12,9 @@
  *   3. the view never leaves the page (no empty margins)
  *   4. at least one structural anchor (nav / title / search / cart …) is ≥ 60% inside the frame on EVERY frame
  *
- * Parallax (2.5D): every layer has a depth p and a home point. It is displaced by (camera − home) × p in page space,
- * so at its home the layer lands exactly on the plate (a still frame equals the real screenshot) and during travel
- * nearer layers slide over farther ones. Layer depths: plate 0, cards 0.035, chips/badges 0.07, cursor 0.12.
+ * Parallax (2.5D): a layer of depth p with a home point is displaced by (camera − home) × p in page space. Since the
+ * owner notes V3.1, the UI itself has NO parallax (cards lifted off the page read as pasted-on): only kinetic type
+ * floats (0.07). The page and the pointer are depth 0, so every pixel of the UI is the real capture, in place.
  */
 import { Easing } from "remotion";
 
@@ -34,7 +34,7 @@ export type World = {
   boxes: Record<string, Box>;
   anchors: string[]; // box names that count as structural anchors
 };
-export type Ease = "arrive" | "inout" | "linear" | "glide";
+export type Ease = "arrive" | "inout" | "linear" | "glide" | "snap" | "expo";
 export type Key = { f: number; cx: number; cy: number; z: number; ease?: Ease; eye?: string };
 export type Cam = { cx: number; cy: number; z: number; s: number; vw: number; vh: number };
 
@@ -43,6 +43,8 @@ const EASES: Record<Ease, (t: number) => number> = {
   inout: Easing.bezier(0.65, 0, 0.35, 1), // symmetric travel between regions
   glide: Easing.bezier(0.45, 0, 0.2, 1), // gentle start, soft landing
   linear: (t) => t,
+  snap: Easing.bezier(0.7, 0, 0.1, 1), // speed ramp: holds back, whips across, lands hard (V3.1 rhythm)
+  expo: Easing.bezier(0.9, 0, 0.1, 1), // the fastest ramp: near-cut speed in the middle, soft both ends
 };
 
 /** Output pixels per page CSS pixel at zoom z. */

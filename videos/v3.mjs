@@ -7,6 +7,7 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { bundle } from "@remotion/bundler";
 import { renderMedia, renderStill, selectComposition } from "@remotion/renderer";
 
@@ -42,7 +43,7 @@ async function audio(name, fnName, target = -14, modPath = "src/v3/shots.ts", fr
   const { build } = await import("esbuild");
   const tmp = resolve(`${OUT}/tmp-events.mjs`);
   mkdirSync(OUT, { recursive: true });
-  await build({ entryPoints: [resolve(modPath)], bundle: true, format: "esm", platform: "node", outfile: tmp, external: ["remotion"], loader: { ".json": "json" }, logLevel: "error" });
+  await build({ entryPoints: [resolve(modPath)], bundle: true, format: "esm", platform: "node", outfile: tmp, external: ["remotion"], loader: { ".json": "json" }, logLevel: "error", jsx: "automatic", banner: { js: "import { createRequire } from \"module\"; const require = createRequire(import.meta.url);" } });
   const mod = await import("file://" + tmp.replace(/\\/g, "/"));
   const events = mod[fnName]();
   const frames = mod[framesExport];
@@ -71,11 +72,11 @@ function mux(name, variant) {
   let gain = 0;
   let m;
   for (let i = 0; i < 14; i++) {
-    execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-i", pic, "-i", `${d}/mix.wav`, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-af", `volume=${gain.toFixed(2)}dB,${process.env.COMP ? "acompressor=threshold=-20dB:ratio=3:attack=4:release=90:knee=4," : ""}alimiter=limit=${(10 ** (-1.6 / 20)).toFixed(4)}:attack=1:release=60:level=disabled`, "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-shortest", "-movflags", "+faststart", out]);
+    execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-i", pic, "-i", `${d}/mix.wav`, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-af", `volume=${gain.toFixed(2)}dB,${process.env.COMP ? "acompressor=threshold=-20dB:ratio=3:attack=4:release=90:knee=4," : ""}alimiter=limit=${(10 ** (Number(process.env.LIMIT ?? -1.6) / 20)).toFixed(4)}:attack=1:release=60:level=disabled`, "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-shortest", "-movflags", "+faststart", out]);
     m = ffLoud(out);
     console.log(`${name}-${variant}: gain ${gain.toFixed(2)} dB → I ${m.I} LUFS, TP ${m.TP} dBTP`);
-    if (m.TP <= -1.0 && Math.abs(m.I - target) <= 0.5) break;
-    const step = Math.min(target - m.I, -1.1 - m.TP);
+    if (m.TP <= -1.2 && Math.abs(m.I - target) <= 0.3) break; // 0.2 dB margin under the -1 dBTP ceiling
+    const step = Math.min(target - m.I, -1.3 - m.TP);
     gain += Math.max(-4, Math.min(4, Math.abs(step) < 0.05 ? -0.1 : step));
   }
   const silent = `${OUT}/mp4/${name}-silent.mp4`;
@@ -96,6 +97,20 @@ function qa(name, variant, frames) {
   console.log(`${d}: ${frames.length} frames`);
 }
 
+/** SRT files for the V3 manuals (the same lines as on screen). */
+async function srt(outDir = `${OUT}/mp4`) {
+  const { build } = await import("esbuild");
+  const tmp = resolve(`${OUT}/tmp-srt.mjs`);
+  await build({ entryPoints: [resolve("src/v3/manuals.ts")], bundle: true, format: "esm", platform: "node", outfile: tmp, external: ["remotion"], loader: { ".json": "json" }, logLevel: "error", banner: { js: "import { createRequire } from \"module\"; const require = createRequire(import.meta.url);" } });
+  const mod = await import(pathToFileURL(tmp).href);
+  mkdirSync(outDir, { recursive: true });
+  for (const [file, m] of [["visitor-ch4", mod.VISITOR_CH4], ["ep1", mod.ADMIN_EP1]]) {
+    writeFileSync(`${outDir}/${file}.en.srt`, mod.srtOf(m));
+    console.log(`${outDir}/${file}.en.srt`);
+  }
+  rmSync(tmp, { force: true });
+}
+
 const [cmd, a, b, c, e] = process.argv.slice(2);
 const list = (x) => String(x).split(",").map(Number);
 if (cmd === "stills") await stills(a, list(b));
@@ -103,4 +118,5 @@ else if (cmd === "render") await render(a, b);
 else if (cmd === "audio") await audio(a, b, c ?? -14, e ?? "src/v3/shots.ts", process.argv[7] ?? "CAMERA_TEST_FRAMES", process.env.EXTRA ? JSON.parse(process.env.EXTRA) : {});
 else if (cmd === "mux") mux(a, b);
 else if (cmd === "qa") qa(a, b, list(c));
+else if (cmd === "srt") await srt(a);
 else console.log("usage: ./run.sh v3.mjs stills|render|audio|mux|qa …");

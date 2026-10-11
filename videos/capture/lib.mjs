@@ -192,7 +192,7 @@ export async function shot(page, key, desc, opts = {}) {
 export function stepper(only = "") {
   const failures = [];
   const step = async (name, fn) => {
-    if (only && !name.startsWith(only)) return;
+    if (only && !only.split(",").some((o) => name.startsWith(o))) return; // "a,b" runs several steps
     try {
       await fn();
     } catch (e) {

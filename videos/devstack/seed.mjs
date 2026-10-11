@@ -86,12 +86,12 @@ accounts.admin = admin;
 
 // ——— customers (fictional) ———
 const CUSTOMERS = [
-  { key: "copperleaf", business: "Copperleaf Kitchen", contact: "Nadia Haddad", phone: "(613) 555-0141", address: "41 Demo Lane, Ottawa, ON", terms: "net-30", login: true, days: 210, notes: "Bistro, dinner service Tue–Sun. Prefers early delivery." },
-  { key: "bluestone", business: "Bluestone Bakehouse", contact: "Owen Tremblay", phone: "(613) 555-0172", address: "12 Sample Street, Ottawa, ON", terms: "net-15", login: true, days: 160, notes: "Bakery and café. Flour, butter and eggs weekly." },
-  { key: "juniper", business: "Juniper & Rye Café", contact: "Priya Raman", phone: "(613) 555-0118", address: "7 Example Avenue, Ottawa, ON", terms: "card-on-file", login: true, days: 120, notes: "Coffee bar with brunch menu." },
-  { key: "harbourline", business: "Harbourline Catering", contact: "Marc-André Gagnon", phone: "(613) 555-0193", address: "220 Placeholder Road, Ottawa, ON", terms: "net-30", login: true, days: 95, notes: "Events and corporate lunches." },
-  { key: "ember", business: "Ember Lane Pizza", contact: "Leah Kim", phone: "(613) 555-0157", address: "5 Testing Crescent, Ottawa, ON", terms: "cod", login: true, days: 60, notes: "Two-oven pizzeria, Fri–Sun peaks." },
-  { key: "saffron", business: "Saffron Courtyard", contact: "Yusuf Demir", phone: "(613) 555-0126", address: "88 Mockup Boulevard, Ottawa, ON", terms: "card-on-file", login: false, days: 3, notes: "New account, documents under review.", status: "pending" },
+  { key: "copperleaf", business: "Copperleaf Kitchen", contact: "Nadia Haddad", phone: "(613) 555-0141", address: "41 Copper Lane, Ottawa, ON", terms: "net-30", login: true, days: 210, notes: "Bistro, dinner service Tue–Sun. Prefers early delivery" },
+  { key: "bluestone", business: "Bluestone Bakehouse", contact: "Owen Tremblay", phone: "(613) 555-0172", address: "12 Stonebridge Street, Ottawa, ON", terms: "net-15", login: true, days: 160, notes: "Bakery and café. Flour, butter and eggs weekly" },
+  { key: "juniper", business: "Juniper & Rye Café", contact: "Priya Raman", phone: "(613) 555-0118", address: "7 Rye Avenue, Ottawa, ON", terms: "card-on-file", login: true, days: 120, notes: "Coffee bar with brunch menu" },
+  { key: "harbourline", business: "Harbourline Catering", contact: "Marc-André Gagnon", phone: "(613) 555-0193", address: "220 Harbour Road, Ottawa, ON", terms: "net-30", login: true, days: 95, notes: "Events and corporate lunches" },
+  { key: "ember", business: "Ember Lane Pizza", contact: "Leah Kim", phone: "(613) 555-0157", address: "5 Ember Crescent, Ottawa, ON", terms: "cod", login: true, days: 60, notes: "Two-oven pizzeria, Fri–Sun peaks" },
+  { key: "saffron", business: "Saffron Courtyard", contact: "Yusuf Demir", phone: "(613) 555-0126", address: "88 Courtyard Boulevard, Ottawa, ON", terms: "card-on-file", login: false, days: 3, notes: "New account, documents under review", status: "pending" },
 ];
 const C = {};
 for (const c of CUSTOMERS) {
@@ -134,9 +134,9 @@ await q("insert into customer_offers (customer_id, title, description, product_i
 
 // ——— leads (website applications) ———
 const LEADS = [
-  ["Riverside Noodle Bar", "Daniel Chen", "riverside@olleik-demo.test", "(613) 555-0164", "Restaurant", "$2,000–$5,000", "Looking for produce and dry goods twice a week.", "new", 0.2],
-  ["Maplewood Deli", "Sofia Rossi", "maplewood@olleik-demo.test", "(613) 555-0185", "Deli / Grocery", "$1,000–$2,000", "Need cheese, cured meats and packaging.", "new", 1.1],
-  ["Lantern Street Tacos", "Mateo Alvarez", "lantern@olleik-demo.test", "(613) 555-0139", "Food truck", "Under $1,000", "Tortillas, produce and takeout packaging.", "contacted", 3.4],
+  ["Riverside Noodle Bar", "Daniel Chen", "riverside@olleik-demo.test", "(613) 555-0164", "Restaurant", "$2,000–$5,000", "Looking for produce and dry goods twice a week", "new", 0.2],
+  ["Maplewood Deli", "Sofia Rossi", "maplewood@olleik-demo.test", "(613) 555-0185", "Deli / Grocery", "$1,000–$2,000", "Need cheese, cured meats and packaging", "new", 1.1],
+  ["Lantern Street Tacos", "Mateo Alvarez", "lantern@olleik-demo.test", "(613) 555-0139", "Food truck", "Under $1,000", "Tortillas, produce and takeout packaging", "contacted", 3.4],
   ["Greenway School Café", "Hannah Leblanc", "greenway@olleik-demo.test", "(613) 555-0176", "School / Institution", "$5,000+", null, "contacted", 6.5],
 ];
 for (const [b, n, e, ph, type, vol, msg, st, d] of LEADS) await q("insert into leads (business_name, contact_name, email, phone, business_type, monthly_volume, message, status, submitted_at, address) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,'Ottawa, ON')", [b, n, e, ph, type, vol, msg, st, new Date(NOW - d * DAY).toISOString()]);
@@ -176,7 +176,7 @@ for (let d = 77; d >= 1; d--) {
   }
 }
 // Today: three new orders waiting for the admin (one with a delivery note), one confirmed.
-await insertOrder("harbourline", lineFor("harbourline", 4), { status: "new", created: at(0, 8), notes: "Corporate lunch Friday, please deliver before 10am." });
+await insertOrder("harbourline", lineFor("harbourline", 4), { status: "new", created: at(0, 8), notes: "Corporate lunch Friday, please deliver before 10am" });
 await insertOrder("bluestone", lineFor("bluestone", 3), { status: "new", created: at(0, 10) });
 await insertOrder("juniper", lineFor("juniper", 3), { status: "new", created: at(0, 11), fulfillment: "pickup" });
 await insertOrder("ember", lineFor("ember", 4), { status: "confirmed", created: at(0, 7) });

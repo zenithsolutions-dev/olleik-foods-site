@@ -51,7 +51,7 @@ try {
     await go(p, "/portal/checkout");
     const ck = { nav: "header", headline: "main h1", delivery: "label:has-text('Delivery')", pickup: "label:has-text('Pickup')", notes: "textarea", submit: "button:has-text('Submit order')" };
     await p.click("label:has-text('Delivery')");
-    await typeInto(p, "textarea", "Back door, before 9 please.", 5);
+    await typeInto(p, "textarea", "Back door, before 9 please", 5);
     await full(p, "v3/checkout", "Checkout (desktop, full page): delivery, note typed", ck);
     await p.click("button:has-text('Submit order')");
     await p.waitForURL(/\/portal\/orders\/.+/, { timeout: 60000 });
@@ -114,7 +114,7 @@ try {
     await full(p, "v3/checkout-0", "Checkout (desktop): fresh", ck);
     await p.click("label:has-text('Delivery')");
     await full(p, "v3/checkout-1", "Checkout (desktop): Delivery chosen", ck);
-    await typeInto(p, "textarea", "Back door, before 9 please.", 5);
+    await typeInto(p, "textarea", "Back door, before 9 please", 5);
     await full(p, "v3/checkout-2", "Checkout (desktop): note typed", ck);
     await p.click("button:has-text('Submit order')");
     await p.waitForURL(/\/portal\/orders\/.+/, { timeout: 60000 });

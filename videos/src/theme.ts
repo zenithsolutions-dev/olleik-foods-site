@@ -38,7 +38,7 @@ export const BRAND = {
   name: "Olleik Foods",
   first: "Olleik",
   second: "Foods",
-  tagline: "The supplier behind great kitchens.",
+  tagline: "The supplier behind great kitchens", // no trailing period on screen (owner notes V3.1 §3)
   url: "olleik-foods-site.vercel.app",
 };
 

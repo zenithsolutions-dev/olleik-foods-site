@@ -7,11 +7,11 @@ const s = (sec) => Math.round(sec * FPS);
 /** The chaos bubbles (illustrative texts, not quotes): z = frame each one pops in. */
 export const CHAOS = [
   { kind: "file", text: "price list v3 (final) (2)", sub: "PDF · 4 pages", x: 1130, y: 190, z: 0 },
-  { kind: "in", text: "Can you do 4 cases by Fri??", x: 1180, y: 360, z: 6 },
-  { kind: "missed", text: "Missed call (3)", x: 980, y: 520, z: 12 },
-  { kind: "voice", text: "0:47", x: 1240, y: 650, z: 18 },
-  { kind: "in", text: "price changed again?", sub: "$?? → $??", x: 960, y: 760, z: 24 },
-  { kind: "out", text: "send me the new list pls", x: 1300, y: 260, z: 30 },
+  { kind: "in", text: "Can you do 4 cases by Fri??", x: 1180, y: 360, z: 4 },
+  { kind: "missed", text: "Missed call (3)", x: 980, y: 520, z: 8 },
+  { kind: "voice", text: "0:47", x: 1240, y: 650, z: 12 },
+  { kind: "in", text: "price changed again?", sub: "$?? → $??", x: 960, y: 760, z: 16 },
+  { kind: "out", text: "send me the new list pls", x: 1300, y: 260, z: 20 },
 ];
 /** The tap: finger lands at `tap`; tile i starts snapping at snap + i·stagger and lands `land` frames later. */
 export const TAP = { tap: 12, snap: 30, stagger: 3, dur: 16, land: 6 };
@@ -27,20 +27,20 @@ const TAPS_AT = [{ x: 195, y: 526 }, { x: 263, y: 792 }, { x: 258, y: 792 }];
 export const HERO = {
   frames: s(60),
   scenes: [
-    { id: "H01", kind: "chaos", from: 0, to: s(5.5), hook: { text: "One more text.", at: 48 }, beat: "Hook: 11:04 PM, one more text", sound: "phone buzz ×2, a notification pop per bubble, voice-note blip, a knife on the board once, room tone; NO music" },
+    { id: "H01", kind: "chaos", from: 0, to: s(5.5), hook: { text: "One more text", at: 48 }, beat: "Hook: 11:04 PM, one more text", sound: "phone buzz ×2, a notification pop per bubble, voice-note blip, a knife on the board once, room tone; NO music" },
     { id: "H02", kind: "tap", from: s(5.5), to: s(8), beat: "One tap. Everything stops, then snaps into a grid", sound: "speed-ramp stop, near silence, a single tap, then a soft snap per tile (6, rising pitch)" },
     {
       id: "H03", kind: "phone", from: s(8), to: s(12), beat: "The grid becomes his real catalog",
       shots: [{ at: 0, src: "visitor/p-catalog", cam: null }, { at: s(1.6), src: "visitor/p-catalog-card", cam: { rect: CARD, z: 1.4 } }],
       taps: [], tapAt: { x: 195, y: 520 },
-      words: [{ t: "Your catalog.", at: s(0.6), x: 130, y: 300, size: 130, dir: -1 }],
+      words: [{ t: "Your catalog", at: s(0.6), x: 130, y: 300, size: 130, dir: -1 }],
       sound: "phone glides in, whip on the shot change",
     },
     {
       id: "H04", kind: "phone", from: s(12), to: s(15), beat: "His own price, on every item",
       shots: [{ at: 0, src: "visitor/p-catalog-card", cam: { rect: BADGE, z: 3.2 } }],
       taps: [], tapAt: { x: 156, y: 485 }, priceTick: s(0.5),
-      words: [{ t: "Your catalog.", at: 0, x: 130, y: 300, size: 130, dir: -1 }, { t: "Your prices.", at: s(0.5), x: 130, y: 450, size: 140, italic: true, dir: -1 }],
+      words: [{ t: "Your catalog", at: 0, x: 130, y: 300, size: 130, dir: -1 }, { t: "Your prices", at: s(0.5), x: 130, y: 450, size: 140, italic: true, dir: -1 }],
       sound: "phone glide, a crisp tick as the price badge sharpens",
     },
     {
@@ -53,7 +53,7 @@ export const HERO = {
         { at: s(4.0), src: "visitor/p-placed", cam: { rect: PLACED, z: 1.3 } },
       ],
       taps: [s(0.8), s(2.5), s(3.9)], tapAt: { x: 195, y: 528 }, tapsAt: TAPS_AT, counter: true,
-      words: [{ t: "Three taps.", at: s(0.3), x: 130, y: 300, size: 130, dir: -1, out: s(4.6) }],
+      words: [{ t: "Three taps", at: s(0.3), x: 130, y: 300, size: 130, dir: -1, out: s(4.6) }],
       sound: "tap 1 / 2 / 3, a whip on every screen change, counter clicks, a soft chime on Received",
     },
     { id: "H06", kind: "print", from: s(20), to: s(23), beat: "The order slip prints; Marco exhales", sound: "printer (real paper feed + faint stepper chirp), paper tear, whip" },
@@ -64,34 +64,36 @@ export const HERO = {
   ],
 };
 
-/** Gate D animatic: 15 s, hook A, chaos → catalog morph → three taps → slip → stamp → SENT → end card. */
+/** V2 animatic, Gate F V3.1 (owner notes §2, §5, §7): 15 s, about double the cut rate of Gate D, no morning/mug beat.
+ * chaos → tap → catalog morph → three taps → slip → stamp → the driver's hands → SENT → end card. */
 export const ANIM15 = {
   frames: s(15),
   scenes: [
-    { id: "A01", kind: "chaos", from: 0, to: 84, hook: { text: "One more text.", at: 46 }, t: { close: 60, chop: 32 } },
-    { id: "A02", kind: "tap", from: 84, to: 132, t: { tap: 10, snap: 20, stagger: 2, dur: 12, land: 5 } },
+    { id: "A01", kind: "chaos", from: 0, to: 66, hook: { text: "One more text", at: 38 }, t: { close: 34, chop: 26, cut: 8 } },
+    { id: "A02", kind: "tap", from: 66, to: 96, t: { tap: 6, snap: 12, stagger: 2, dur: 10, land: 4 } },
     {
-      id: "A03", kind: "phone", from: 132, to: 246,
+      id: "A03", kind: "phone", from: 96, to: 210,
       shots: [
         { at: 0, src: "visitor/p-catalog", cam: null },
-        { at: 14, src: "visitor/p-catalog-card", cam: { rect: BADGE, z: 2.6 } },
-        { at: 40, src: "visitor/p-catalog-card", cam: { rect: ADD, z: 1.6 } },
-        { at: 54, src: "visitor/p-catalog-added", cam: { rect: ADD, z: 1.6 } },
-        { at: 66, src: "visitor/p-cart", cam: { rect: CART, z: 1.3 } },
-        { at: 84, src: "visitor/p-checkout-filled", cam: { rect: CART, z: 1.3 } },
-        { at: 104, src: "visitor/p-placed", cam: { rect: PLACED, z: 1.3 } },
+        { at: 10, src: "visitor/p-catalog-card", cam: { rect: BADGE, z: 2.6 } },
+        { at: 28, src: "visitor/p-catalog-card", cam: { rect: ADD, z: 1.6 } },
+        { at: 40, src: "visitor/p-catalog-added", cam: { rect: ADD, z: 1.6 } },
+        { at: 52, src: "visitor/p-cart", cam: { rect: CART, z: 1.3 } },
+        { at: 68, src: "visitor/p-checkout-filled", cam: { rect: CART, z: 1.3 } },
+        { at: 86, src: "visitor/p-placed", cam: { rect: PLACED, z: 1.3 } },
       ],
-      taps: [52, 80, 100], tapAt: { x: 195, y: 528 }, tapsAt: TAPS_AT, counter: true, priceTick: 20,
+      taps: [39, 66, 84], tapAt: { x: 195, y: 528 }, tapsAt: TAPS_AT, counter: true, priceTick: 14,
       words: [
-        { t: "Your catalog.", at: 2, x: 130, y: 260, size: 120, dir: -1, out: 38 },
-        { t: "Your prices.", at: 16, x: 130, y: 400, size: 130, italic: true, dir: -1, out: 38 },
-        { t: "Three taps.", at: 44, x: 130, y: 300, size: 130, dir: -1, out: 110 },
+        { t: "Your catalog", at: 0, x: 130, y: 260, size: 120, dir: -1, out: 26 },
+        { t: "Your prices", at: 10, x: 130, y: 400, size: 130, italic: true, dir: -1, out: 26 },
+        { t: "Three taps", at: 30, x: 130, y: 300, size: 130, dir: -1, out: 104 },
       ],
     },
-    { id: "A04", kind: "print", from: 246, to: 288, t: { print: [2, 24], fly: 26, word: 10 } },
-    { id: "A05", kind: "warehouse", from: 288, to: 348, t: { confirm: 8, stamp: 24, boxes: 30, ready: 46 } },
-    { id: "A06", kind: "morning", from: 348, to: 402, t: { door: -20, boxes: 0, line: 999, stampSent: 30 } },
-    { id: "A07", kind: "end", from: 402, to: 450 },
+    { id: "A04", kind: "print", from: 210, to: 240, t: { print: [1, 15], fly: 17, word: 4 } },
+    { id: "A05", kind: "warehouse", from: 240, to: 300, t: { confirm: 6, stamp: 18, boxes: 24, ready: 40 } },
+    { id: "A06", kind: "handoff", from: 300, to: 324 },
+    { id: "A07", kind: "sent", from: 324, to: 378, t: { land: 2, stamp: 20 } },
+    { id: "A08", kind: "end", from: 378, to: 450 },
   ],
 };
 
@@ -144,8 +146,8 @@ export function filmEvents(cut, music = false) {
       }
       case "warehouse":
         add(0, "slide", { note: "slip slides onto the bench" });
-        add(t.confirm - 2, "click", { note: "click Confirm" });
-        add(t.confirm, "flip", { pitch: 2, note: "chip → Confirmed" });
+        add(t.confirm - 2, "click", { vel: 0.45, note: "click Confirm (soft: its transient overshoots in AAC)" });
+        add(t.confirm, "flip", { pitch: 2, vel: 0.5, note: "chip → Confirmed" });
         add(t.stamp, "stamp", { note: "STAMP: CONFIRMED" });
         [0, 1, 2].forEach((i) => add(t.boxes + i * 6 + 8, "box", { pan: (i - 1) * 0.4, vel: 0.75, note: `box ${i + 1} lands` }));
         add(t.boxes + 26, "tapeRip", { vel: 0.6, note: "tape" });
@@ -154,6 +156,11 @@ export function filmEvents(cut, music = false) {
       case "handoff":
         add(0, "whoosh", { sweep: [-0.9, 0.9], dur: len, vel: 0.8, note: "the box crosses" });
         [8, 22, 36].forEach((f, i) => add(f, "step", { pan: -0.5 + 0.5 * i, note: "footstep" }));
+        break;
+      case "sent":
+        add(t.land + 8, "box", { vel: 0.9, note: "the box lands" });
+        add(t.stamp, "stamp_big", { note: "SENT" });
+        sentAt = sc.from + t.stamp;
         break;
       case "morning":
         add(t.door - 10, "doorbell", { note: "door bell" });
@@ -174,7 +181,7 @@ export function filmEvents(cut, music = false) {
   }
   const out = { cut, engine: "v2", frames: F.frames, target_lufs: -14, room: true, music, events: ev.sort((a, b) => a.f - b.f) };
   if (music) {
-    const part = { chaos: "Hook", tap: "Answer", phone: "How it works", print: "Answer", warehouse: "How it works", handoff: "How it works", morning: "Call to action", end: "End" };
+    const part = { chaos: "Hook", tap: "Answer", phone: "How it works", print: "Answer", warehouse: "How it works", handoff: "How it works", sent: "Call to action", morning: "Call to action", end: "End" };
     out.music_map = F.scenes.map((sc) => ({ scene: sc.id, from: sc.from, to: sc.to, part: part[sc.kind], kind: sc.kind === "end" ? "end" : sc.kind }));
     // silent under the chaos; the bed enters on the snap; a dip to silence for the half second before SENT
     const env = [[0, -90], [musicIn, -90], [musicIn + 20, 0]];

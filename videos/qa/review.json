@@ -1,0 +1,77 @@
+{
+ "_note": "Frame-by-frame review verdicts (every 0.5 s QA frame of the encoded MP4, contact sheets in out/qa-f2/<name>/sheet-p*.jpg), Gate F V3.1, 2026-10-12. Measured items come from qa.json.",
+ "files": [
+  {"name": "promo-music", "file": "promo-music.mp4", "title": "20 s promo, with music (bed C)", "target_lufs": -14},
+  {"name": "promo-nomusic", "file": "promo-nomusic.mp4", "title": "20 s promo, no music", "target_lufs": -14},
+  {"name": "visitor-ch4", "file": "visitor-ch4.mp4", "title": "V3 visitor manual, Chapter 4 \"Ordering\"", "target_lufs": -16},
+  {"name": "ep1", "file": "ep1.mp4", "title": "V3 admin Episode 1 \"Orders\"", "target_lufs": -16},
+  {"name": "v2-anim15-music", "file": "v2-animatic-music.mp4", "title": "V2 line: 15 s animatic, with music (bed C)", "target_lufs": -14},
+  {"name": "v2-anim15-nomusic", "file": "v2-animatic-nomusic.mp4", "title": "V2 line: 15 s animatic, no music", "target_lufs": -14},
+  {"name": "v2-VISITOR-CH4", "file": "v2-visitor-ch4.mp4", "title": "V2 line: visitor manual, Chapter 4 \"Ordering\"", "target_lufs": -16},
+  {"name": "v2-EP1", "file": "v2-ep1.mp4", "title": "V2 line: admin Episode 1 \"Orders\"", "target_lufs": -16}
+ ],
+ "verdicts": {
+  "promo-music": {
+   "overlays": {"ok": true, "note": "Taps switch the whole page to the real after-tap capture on the beat; no halo, no patch, no pill, no lifted card. Pointer only. CONFIRMED is printed inside the generated ink border in its perspective; SENT sits on the box as before."},
+   "screens": {"ok": true, "note": "Phone: true perspective fit (edge-fitted corners, no overscan), composited at 2x, portal header fully visible in the wide and the punch-in. Monitor: frontal 16:10 screen, the real admin captured at monitor size (1152 × 720), readable."},
+   "clipped": {"ok": true, "note": "No text cut by an overlay. Edges cut page content only during camera travel and whips."},
+   "placeholders": {"ok": true, "note": "None. Demo data has no placeholder-like names left."},
+   "periods": {"ok": true, "note": "Our lines: One more text, 11:04 PM, Three taps, The supplier behind great kitchens, Become a customer →."},
+   "fixed": ["the phone punch-in no longer crops the portal header", "the end-card address arrived at 19.6 s, now 19.1 s", "the end card held still for 31 frames, now it moves on every beat", "\"Three taps\" moved off the nav bar onto the page's empty background", "the CONFIRMED ink letters did not render, now printed inside the ink border"]
+  },
+  "promo-nomusic": {
+   "overlays": {"ok": true, "note": "Same picture as the music version."},
+   "screens": {"ok": true, "note": "Same picture as the music version."},
+   "clipped": {"ok": true, "note": "Same picture as the music version."},
+   "placeholders": {"ok": true, "note": "None."},
+   "periods": {"ok": true, "note": "Same lines as the music version."}
+  },
+  "visitor-ch4": {
+   "overlays": {"ok": true, "note": "Every tap is a real plate switch; typing shows the real typed capture and covers only the not-yet-typed text with the field's own white."},
+   "screens": {"ok": true, "note": "Live hook only (no composited screen)."},
+   "clipped": {"ok": true, "note": "Captions live in their own lower band, never on UI text; every tapped control is framed above it."},
+   "placeholders": {"ok": true, "note": "None (the field's grey placeholder text is the app's own, shown before typing as in a browser)."},
+   "periods": {"ok": true, "note": "Our lines: Running low again?, 6 captions, Next / Your statement."},
+   "fixed": ["the placeholder stayed visible beside the typed note", "captions sat over UI text (moved to a lower band)", "the chapter tag overlapped the first page for a few frames", "the pointer covered the typed note", "\"your statement\" capitalised"]
+  },
+  "ep1": {
+   "overlays": {"ok": true, "note": "Plate switches only; the New tab and Complete are hard switches (the earlier cross-dissolve showed two lists at once)."},
+   "screens": {"ok": true, "note": "Live hook and outro only."},
+   "clipped": {"ok": true, "note": "Held framings sit exactly between the sidebar and the status badge (no sliver of either at an edge); captions in the lower band."},
+   "placeholders": {"ok": true, "note": "None. The invoice page stays off screen (the app's invoice header shows unset business details)."},
+   "periods": {"ok": true, "note": "Our lines: the hook line, 6 captions, Next: a new customer."},
+   "fixed": ["a cross-dissolve showed two order lists at once", "a sliver of the sidebar's green \"3 new\" item at the frame edge", "the status badge half cut at the right edge", "a 32-frame hold between Mark prepared and Complete (the camera's drift was clamped at the page top)"]
+  },
+  "v2-anim15-music": {
+   "overlays": {"ok": true, "note": "Tap ripples and rings removed; the phone shows the real captures switching on the tap (2-frame dissolve of identical captures)."},
+   "screens": {"ok": true, "note": "Vector phone and monitor show the real captures; the phone, the slip and the monitor show the same order #5928f131."},
+   "clipped": {"ok": true, "note": "None found."},
+   "placeholders": {"ok": true, "note": "None."},
+   "periods": {"ok": true, "note": "Our lines: 11:04 PM, One more text, Your catalog, Your prices, Three taps, Done, CONFIRMED, READY, SENT, the end card."},
+   "fixed": ["the morning scene with Marco's mug is gone: the box lands and SENT slams", "the slip and the monitor showed two different orders", "a mouse-click transient overshot to -0.2 dBTP after AAC (softened)"]
+  },
+  "v2-anim15-nomusic": {
+   "overlays": {"ok": true, "note": "Same picture as the music version."},
+   "screens": {"ok": true, "note": "Same picture as the music version."},
+   "clipped": {"ok": true, "note": "Same picture as the music version."},
+   "placeholders": {"ok": true, "note": "None."},
+   "periods": {"ok": true, "note": "Same lines as the music version."}
+  },
+  "v2-VISITOR-CH4": {
+   "overlays": {"ok": true, "note": "No tap rings; hand-drawn callouts only on beats without a tap (V2 style line)."},
+   "screens": {"ok": true, "note": "Real phone captures, re-captured with product photos."},
+   "clipped": {"ok": true, "note": "None found."},
+   "placeholders": {"ok": true, "note": "None."},
+   "periods": {"ok": true, "note": "All captions and the title/next lines without trailing periods; \"Submit. Payment…\" rewritten as \"Submit: payment…\"."},
+   "fixed": ["holds of up to 41 frames (title, late screen beats): every beat now drifts"]
+  },
+  "v2-EP1": {
+   "overlays": {"ok": true, "note": "No tap rings; no callout on the small Invoice button (it ran over the text around it)."},
+   "screens": {"ok": true, "note": "The admin order is Marco's order #5928f131 through every status; the sidebar counts read 3 new → 2 new as in the app."},
+   "clipped": {"ok": true, "note": "Admin views show the whole sidebar or none of it (no sliver)."},
+   "placeholders": {"ok": true, "note": "None. The invoice page is no longer shown (it showed unset business details); the beat ends on the order's Invoice button."},
+   "periods": {"ok": true, "note": "All captions, the problem line and the next line without trailing periods."},
+   "fixed": ["holds of up to 35 frames: every beat now drifts", "the invoice page was replaced by the order's Invoice button", "a sidebar sliver at the frame edge"]
+  }
+ }
+}
