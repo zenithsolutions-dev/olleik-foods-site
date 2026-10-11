@@ -51,7 +51,7 @@ export const hookC = () => sort([
   ...pulse(SNAP + Math.round(BEAT)),
 ]);
 
-const BEATS_D = [11, 27, 51, 66, 90, 106].map((_, k) => 6 + k * BEAT);
+const BEATS_D = [11, 38, 61, 80, 99, 118].map((_, k) => 6 + k * BEAT);
 export const hookD = () => sort([
   ...BEATS_D.filter((b) => b < 88).map((b, k) => ({ f: Math.round(b), sfx: "chop", vel: 0.85, pan: -0.25, note: `chop ${k + 1} (picture re-timed onto the beat)` })),
   ...BEATS_D.filter((b) => b > SNAP && b < 88).flatMap((b, i) => [

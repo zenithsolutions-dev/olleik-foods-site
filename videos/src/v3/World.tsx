@@ -14,12 +14,15 @@ import tiles from "../../public/footage/v3/tiles.json";
  * Every layer's home is the world's rest framing (first camera key): there, all layers land exactly on the plate.
  */
 export type CardLayer = { box: string; states: [number, string][] }; // [fromFrame, capture file] — the state shown from that frame on
-export type Patch = { box: string; f: number; from: string; to: string; kind: "press" | "bump"; depth?: number; radius?: number; tapAt?: { x: number; y: number } };
+/** A changed region. press: tap on a button (squash, swap, spring, ring). bump: a badge/chip that pops. swap: a soft
+ * crossfade (lists, tables). wipe: left-to-right reveal (typed text). `until`: drop the patch once the plate has
+ * switched to the new state (plate states), so the patch only lives for the reaction itself. */
+export type Patch = { box: string; f: number; from: string; to: string; kind: "press" | "bump" | "swap" | "wipe"; depth?: number; radius?: number; dur?: number; until?: number; noRing?: boolean };
 export type CursorKey = { f: number; x: number; y: number; press?: boolean };
 export type BoundType = { text: string; box: string; dx: number; dy: number; from: number; to: number; size?: number; weight?: number; color?: string; align?: "left" | "center" };
 export type WorldShot = {
   world: World;
-  plate: string; // capture file for L0 (e.g. "v3/catalog-bg")
+  plate: string | [number, string][]; // capture file for L0, or states [fromFrame, file] that switch in shot
   keys: Key[];
   cards: CardLayer[];
   patches: Patch[];
@@ -105,7 +108,7 @@ function Scene({ shot, t, frame }: { shot: WorldShot; t: number; frame: number }
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
       {/* L0 plate */}
-      <Tiles file={shot.plate} y0={cam.cy - cam.vh / 2 - 40} y1={cam.cy + cam.vh / 2 + 40} s={cam.s} ox={plateTL.x} oy={plateTL.y} />
+      <Tiles file={typeof shot.plate === "string" ? shot.plate : stateAt(shot.plate, frame)} y0={cam.cy - cam.vh / 2 - 40} y1={cam.cy + cam.vh / 2 + 40} s={cam.s} ox={plateTL.x} oy={plateTL.y} />
       {/* L1 cards */}
       {shot.cards.map((c) => (
         <Crop key={c.box} file={stateAt(c.states, frame)} b={world.boxes[c.box]} cam={cam} world={world} p={DEPTH.card} home={home} radius={r} shadow={off(DEPTH.card)} />
@@ -114,8 +117,20 @@ function Scene({ shot, t, frame }: { shot: WorldShot; t: number; frame: number }
       {shot.patches.map((pt, i) => {
         const b = world.boxes[pt.box];
         const d = frame - pt.f;
-        if (d < -4) return null;
-        const p = pt.depth ?? (pt.kind === "bump" ? DEPTH.chip : DEPTH.card);
+        // with plate states the plate itself carries the new state, so a patch only lives through its reaction
+        const until = pt.until ?? (typeof shot.plate === "string" ? undefined : pt.f + 24);
+        if (d < -4 || (until !== undefined && frame >= until)) return null;
+        const p = pt.depth ?? (pt.kind === "bump" ? DEPTH.chip : pt.kind === "press" ? DEPTH.card : 0);
+        if (pt.kind === "swap" || pt.kind === "wipe") {
+          if (d < 0) return null;
+          const k = Math.min(1, d / (pt.dur ?? 8));
+          const tlw = project(cam, b.x, b.y, p, home.x, home.y);
+          return (
+            <div key={i} style={{ position: "absolute", left: tlw.x, top: tlw.y, width: (pt.kind === "wipe" ? k : 1) * b.w * cam.s, height: b.h * cam.s, overflow: "hidden", opacity: pt.kind === "swap" ? k : 1 }}>
+              <Tiles file={pt.to} y0={b.y} y1={b.y + b.h} s={cam.s} ox={-b.x * cam.s} oy={-b.y * cam.s} />
+            </div>
+          );
+        }
         const after = d >= 0;
         let scale = 1;
         if (!after) scale = 1 - 0.04 * interpolate(d, [-4, -1], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
@@ -126,7 +141,7 @@ function Scene({ shot, t, frame }: { shot: WorldShot; t: number; frame: number }
         return (
           <React.Fragment key={i}>
             <Crop file={after ? pt.to : pt.from} b={b} cam={cam} world={world} p={p} home={home} scale={scale} radius={pt.radius ?? 0} shadow={after && d < 12 ? 6 * (1 - d / 12) : 0} />
-            {ring >= 0 && pt.kind === "press" && (
+            {ring >= 0 && pt.kind === "press" && !pt.noRing && (
               <div style={{ position: "absolute", left: tl.x + (b.w * cam.s) / 2, top: tl.y + (b.h * cam.s) / 2, width: 0, height: 0 }}>
                 <div style={{ position: "absolute", left: -(30 + ring * 60), top: -(30 + ring * 60), width: 2 * (30 + ring * 60), height: 2 * (30 + ring * 60), borderRadius: "50%", border: `${3 * (1 - ring) + 0.5}px solid ${C.orange}`, opacity: 0.85 * (1 - ring) }} />
               </div>

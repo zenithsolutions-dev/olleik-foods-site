@@ -99,12 +99,23 @@ def build(d):
         lf = lufs(fx_bus)
         mus *= from_db((lf - data.get("music_under_lu", 7.0)) - lm)  # a quiet bed under the effects
         bus = bus + mus
+    if data.get("bed_file"):  # V3: a recorded music bed (conformed to the grid) placed from a frame, under the effects
+        import soundfile as sf
+        x, sr = sf.read(data["bed_file"])
+        assert sr == SR
+        at = int(data.get("bed_from", 0) * SPF)
+        mus = np.zeros((n, 2))
+        m = min(len(x), n - at)
+        mus[at : at + m] = x[:m]
+        mus = mus * gain_env(data.get("music_env"), n)[:, None] * duck_env(ev, n, data.get("duck_db", -5))[:, None]
+        mus *= from_db((lufs(fx_bus) - data.get("music_under_lu", 7.0)) - lufs(mus))
+        bus = bus + mus
     mix = np.stack([hp(bus[:, c], 30) for c in range(2)], 1)
     fade = np.ones(n)
     fade[-secs(0.4) :] = np.linspace(1, 0, secs(0.4)) ** 2
     mix *= fade[:, None]
     for _ in range(3):
-        mix = limiter(mix * from_db(target - lufs(mix)), -2.1)
+        mix = limiter(mix * from_db(target - lufs(mix)), data.get("wav_tp", -2.1))
     write_wav(os.path.join(d, "sfx.wav"), limiter(fx_bus * from_db(min(0, target - lufs(fx_bus))), -1.8))
     if mus is not None:
         write_wav(os.path.join(d, "music.wav"), mus)

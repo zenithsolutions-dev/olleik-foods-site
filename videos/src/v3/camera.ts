@@ -101,7 +101,7 @@ export function validateCamera(world: World, keys: Key[], frames: number) {
   for (let f = 0; f < frames; f++) {
     const c = cameraAt(world, keys, f);
     const best = Math.max(0, ...world.anchors.filter((a) => world.boxes[a]).map((a) => insideFraction(c, world.boxes[a])));
-    if (best < 0.6) { errors.push(`frame ${f}: no structural anchor in frame (best ${(best * 100).toFixed(0)}%)`); break; }
+    if (best < 0.6) { errors.push(`${world.id} frame ${f}: no structural anchor in frame (best ${(best * 100).toFixed(0)}%)`); break; }
   }
   if (errors.length) throw new Error("camera rules violated:\n" + errors.join("\n"));
   return true;

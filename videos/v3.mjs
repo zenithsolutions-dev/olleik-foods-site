@@ -62,7 +62,7 @@ const ffLoud = (path) => {
 };
 
 function mux(name, variant) {
-  const d = `${OUT}/audio/${name}`;
+  const d = existsSync(`${OUT}/audio/${name}-${variant}`) ? `${OUT}/audio/${name}-${variant}` : `${OUT}/audio/${name}`;
   const data = JSON.parse(readFileSync(`${d}/events.json`, "utf8"));
   const target = data.target_lufs;
   const pic = `${OUT}/video/${name}-picture.mp4`;
@@ -100,7 +100,7 @@ const [cmd, a, b, c, e] = process.argv.slice(2);
 const list = (x) => String(x).split(",").map(Number);
 if (cmd === "stills") await stills(a, list(b));
 else if (cmd === "render") await render(a, b);
-else if (cmd === "audio") await audio(a, b, c ?? -14, e ?? "src/v3/shots.ts", process.argv[7] ?? "CAMERA_TEST_FRAMES");
+else if (cmd === "audio") await audio(a, b, c ?? -14, e ?? "src/v3/shots.ts", process.argv[7] ?? "CAMERA_TEST_FRAMES", process.env.EXTRA ? JSON.parse(process.env.EXTRA) : {});
 else if (cmd === "mux") mux(a, b);
 else if (cmd === "qa") qa(a, b, list(c));
 else console.log("usage: ./run.sh v3.mjs stills|render|audio|mux|qa …");

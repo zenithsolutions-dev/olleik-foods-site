@@ -693,7 +693,7 @@
   "prompt": "16:9: <<<2f647b1b-…>>> leans on the steel counter at night, his thumb hovers over the phone, then scrolls slowly; he exhales and his shoulders drop a little, eyes tired; the phone glow flickers softly on his face; slow steady dolly in toward his face; realistic cinematic motion, natural blinking, subtle breathing, 24 fps film look; no text, no screen content, no logos. 9:16: he stands in the dark kitchen holding his phone, thumb hovering, reads, rubs his eyes briefly with his free hand, then looks back at the phone with a tired sigh; slow steady push in; same exclusions.",
   "prompt_group": "marco-shots",
   "model_requested": "kling3_0 pro 5 s sound off (start_image = the frame above)",
-  "status": "PICK: Marco 16:9 test shot"
+  "status": "PICK (Gate E) + USED: visitor chapter hook"
  },
  {
   "job_id": "7ed04469-42da-4b89-80b0-3f58c9329300",
@@ -773,7 +773,7 @@
   "prompt": "16:9: the woman at the packing station reads the monitor, calm and focused, her eyes move along a line, then she gives one small confident nod and reaches for the clipboard; the camera trucks slowly to the right with gentle parallax on the shelving; morning light; no text, no screen content, no logos. 9:16: she reads the monitor, then one small confident nod and the corner of her mouth lifts slightly; very slow push in; same exclusions.",
   "prompt_group": "salma-shots",
   "model_requested": "kling3_0 pro 5 s sound off",
-  "status": "PICK: Salma 16:9 test shot"
+  "status": "PICK (Gate E) + USED: admin EP1 hook/end"
  },
  {
   "job_id": "98426453-4643-49db-b11c-b4675c5b4b21",
@@ -1081,5 +1081,209 @@
   "date": "2026-10-11",
   "status": "rejected: studio gear visible; not used",
   "prompt": "Empty product photography set: seamless sweep of warm off-white handmade paper, 3/4 high angle, soft overhead light, 100mm f/8, no objects, no text."
+ },
+ {
+  "job_id": "ad247153-296b-487e-9a09-027307e76724",
+  "kind": "gate-f start-frame",
+  "model": "nano_banana_pro",
+  "file": "gatef/frames/chop-a.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_173252_ad247153-296b-487e-9a09-027307e76724.png",
+  "prompt": "a: low side angle at board height: the right hand of <<<2f647b1b-…>>> holds a single plain chef's knife raised just above a halved yellow onion on a worn end-grain board; his left hand rests flat and still on the far edge of the board, well away from the blade; diced onion in the foreground; only one knife in the scene; warm practical light; 50mm f/2.2; no text, no logos, no brand marks on the knife, natural hands. b: tight close-up at board height of one hand holding a single chef's knife mid-stroke over a halved onion, the other hand out of frame, exactly one knife; 85mm f/2; no text, no logos.",
+  "prompt_group": "gate-f/chop-frames",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "USED: start frame"
+ },
+ {
+  "job_id": "8a40c2e5-d7de-4cf6-86cb-d85cb9411282",
+  "kind": "gate-f start-frame",
+  "model": "nano_banana_pro",
+  "file": "gatef/frames/chop-b.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_173252_8a40c2e5-d7de-4cf6-86cb-d85cb9411282.png",
+  "prompt": "a: low side angle at board height: the right hand of <<<2f647b1b-…>>> holds a single plain chef's knife raised just above a halved yellow onion on a worn end-grain board; his left hand rests flat and still on the far edge of the board, well away from the blade; diced onion in the foreground; only one knife in the scene; warm practical light; 50mm f/2.2; no text, no logos, no brand marks on the knife, natural hands. b: tight close-up at board height of one hand holding a single chef's knife mid-stroke over a halved onion, the other hand out of frame, exactly one knife; 85mm f/2; no text, no logos.",
+  "prompt_group": "gate-f/chop-frames",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "start frame (take rejected)"
+ },
+ {
+  "job_id": "570dab38-fb54-44a2-831c-052a8f7fdad3",
+  "kind": "gate-f start-frame",
+  "model": "nano_banana_pro",
+  "file": "gatef/frames/ots-a.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_173252_570dab38-fb54-44a2-831c-052a8f7fdad3.png",
+  "prompt": "Dark restaurant kitchen at night, over-the-shoulder of <<<2f647b1b-…>>>: he holds a phone upright, the screen faces the camera and is a uniform flat pure chroma-key green (#00FF00) with no content and a thin black bezel, his thumb at the lower edge of the screen; warm lamp behind; film grain; no text, no letters, no logos, nothing on the screen except flat green, natural hands.",
+  "prompt_group": "gate-f/ots-frames",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "unused frame"
+ },
+ {
+  "job_id": "5a582591-1382-4126-bb64-e635f346e5fb",
+  "kind": "gate-f start-frame",
+  "model": "nano_banana_pro",
+  "file": "gatef/frames/ots-b.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_173252_5a582591-1382-4126-bb64-e635f346e5fb.png",
+  "prompt": "Dark restaurant kitchen at night, over-the-shoulder of <<<2f647b1b-…>>>: he holds a phone upright, the screen faces the camera and is a uniform flat pure chroma-key green (#00FF00) with no content and a thin black bezel, his thumb at the lower edge of the screen; warm lamp behind; film grain; no text, no letters, no logos, nothing on the screen except flat green, natural hands.",
+  "prompt_group": "gate-f/ots-frames",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "USED: start frame"
+ },
+ {
+  "job_id": "7419206b-5a1b-41fe-b3d5-684d2a0c2734",
+  "kind": "gate-f start-frame",
+  "model": "nano_banana_pro",
+  "file": "gatef/frames/salma-mon-a.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_173252_7419206b-5a1b-41fe-b3d5-684d2a0c2734.png",
+  "prompt": "Early morning, food-distribution warehouse: <<<ce092dc3-…>>> at a steel packing table looks at a monitor in the left half of the frame, angled three-quarter toward the camera, its screen a uniform flat pure chroma-key green with no content and a thin black bezel; a plain paper slip and a wooden rubber stamp on the table; racks of plain unprinted boxes blurred behind; no text, no labels, no logos, no signage, screen green only.",
+  "prompt_group": "gate-f/salma-monitor-frames",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "USED: start frame"
+ },
+ {
+  "job_id": "89597723-b68d-48fb-ba03-42251b80fd14",
+  "kind": "gate-f start-frame",
+  "model": "nano_banana_pro",
+  "file": "gatef/frames/salma-mon-b.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_173252_89597723-b68d-48fb-ba03-42251b80fd14.png",
+  "prompt": "Early morning, food-distribution warehouse: <<<ce092dc3-…>>> at a steel packing table looks at a monitor in the left half of the frame, angled three-quarter toward the camera, its screen a uniform flat pure chroma-key green with no content and a thin black bezel; a plain paper slip and a wooden rubber stamp on the table; racks of plain unprinted boxes blurred behind; no text, no labels, no logos, no signage, screen green only.",
+  "prompt_group": "gate-f/salma-monitor-frames",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "unused frame"
+ },
+ {
+  "job_id": "edab647a-fe82-4957-a8b4-fe58ea7b225e",
+  "kind": "gate-f start-frame",
+  "model": "nano_banana_pro",
+  "file": "gatef/frames/morning-a.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_173252_edab647a-fe82-4957-a8b4-fe58ea7b225e.png",
+  "prompt": "The same small restaurant kitchen the next morning, warm low sunlight through a window, steam from a white mug; <<<2f647b1b-…>>> leans on the counter, rested, mug in hand, his phone face down on the counter beside him; a relieved, small private smile; 50mm f/2; no text, no logos, no screen visible.",
+  "prompt_group": "gate-f/morning-frames",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "USED: start frame"
+ },
+ {
+  "job_id": "a5e47a55-1099-4bdc-8a15-573f5bcecf5f",
+  "kind": "gate-f start-frame",
+  "model": "nano_banana_pro",
+  "file": "gatef/frames/morning-b.png",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_173252_a5e47a55-1099-4bdc-8a15-573f5bcecf5f.png",
+  "prompt": "The same small restaurant kitchen the next morning, warm low sunlight through a window, steam from a white mug; <<<2f647b1b-…>>> leans on the counter, rested, mug in hand, his phone face down on the counter beside him; a relieved, small private smile; 50mm f/2; no text, no logos, no screen visible.",
+  "prompt_group": "gate-f/morning-frames",
+  "model_requested": "nano_banana_pro 16:9 2k",
+  "status": "unused frame"
+ },
+ {
+  "job_id": "d5aa16c0-9b6d-4468-bf5b-49fe5604325c",
+  "kind": "gate-f promo-clip",
+  "model": "kling3_0",
+  "file": "gatef/clips/chop-a-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_174036_d5aa16c0-9b6d-4468-bf5b-49fe5604325c.mp4",
+  "prompt": "The chef chops the onion with steady, evenly spaced downward strokes of a single knife, a firm regular rhythm; his left hand stays still and flat on the far edge of the board the whole time, far from the blade; locked-off camera; exactly one knife throughout; no text, no logos, natural hands. (b: one knife slices the red onion with quick even strokes, guiding hand never near the blade.)",
+  "prompt_group": "gate-f/chop-clips",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image: chop-a / chop-b)",
+  "status": "USED: hook D + promo (clean single-knife take, re-timed to 108 BPM)"
+ },
+ {
+  "job_id": "6b479ebf-1f7a-42e7-ba11-3c0cd45c6ad9",
+  "kind": "gate-f promo-clip",
+  "model": "kling3_0",
+  "file": "gatef/clips/chop-a-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_174036_6b479ebf-1f7a-42e7-ba11-3c0cd45c6ad9.mp4",
+  "prompt": "The chef chops the onion with steady, evenly spaced downward strokes of a single knife, a firm regular rhythm; his left hand stays still and flat on the far edge of the board the whole time, far from the blade; locked-off camera; exactly one knife throughout; no text, no logos, natural hands. (b: one knife slices the red onion with quick even strokes, guiding hand never near the blade.)",
+  "prompt_group": "gate-f/chop-clips",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image: chop-a / chop-b)",
+  "status": "rejected: odd arm swings"
+ },
+ {
+  "job_id": "ac6d936b-f871-43f8-9b46-c4b32f315fb4",
+  "kind": "gate-f promo-clip",
+  "model": "kling3_0",
+  "file": "gatef/clips/chop-b-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_174036_ac6d936b-f871-43f8-9b46-c4b32f315fb4.mp4",
+  "prompt": "The chef chops the onion with steady, evenly spaced downward strokes of a single knife, a firm regular rhythm; his left hand stays still and flat on the far edge of the board the whole time, far from the blade; locked-off camera; exactly one knife throughout; no text, no logos, natural hands. (b: one knife slices the red onion with quick even strokes, guiding hand never near the blade.)",
+  "prompt_group": "gate-f/chop-clips",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image: chop-a / chop-b)",
+  "status": "rejected: guide hand near the blade"
+ },
+ {
+  "job_id": "0517eefd-c8d8-4ed8-a966-bf4bee08f2d1",
+  "kind": "gate-f promo-clip",
+  "model": "kling3_0",
+  "file": "gatef/clips/ots-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_174036_0517eefd-c8d8-4ed8-a966-bf4bee08f2d1.mp4",
+  "prompt": "Over the shoulder at night: he holds the phone fairly steady and taps the screen with his thumb three times at a calm, regular rhythm; the phone screen stays a flat uniform pure green the entire time with no content appearing; the camera pushes in very slowly toward the phone; no text, no logos, natural hands.",
+  "prompt_group": "gate-f/ots-clips",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image: ots-b)",
+  "status": "USED: promo phone shot (real portal composited)"
+ },
+ {
+  "job_id": "72634e4d-4181-4e83-88d0-7b0ab3d5837e",
+  "kind": "gate-f promo-clip",
+  "model": "kling3_0",
+  "file": "gatef/clips/ots-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_174036_72634e4d-4181-4e83-88d0-7b0ab3d5837e.mp4",
+  "prompt": "Over the shoulder at night: he holds the phone fairly steady and taps the screen with his thumb three times at a calm, regular rhythm; the phone screen stays a flat uniform pure green the entire time with no content appearing; the camera pushes in very slowly toward the phone; no text, no logos, natural hands.",
+  "prompt_group": "gate-f/ots-clips",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image: ots-b)",
+  "status": "unused take"
+ },
+ {
+  "job_id": "f77f048f-d40b-4ce0-bf18-ab895429c565",
+  "kind": "gate-f promo-clip",
+  "model": "kling3_0",
+  "file": "gatef/clips/salma-mon-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_174036_f77f048f-d40b-4ce0-bf18-ab895429c565.mp4",
+  "prompt": "She reads the monitor, gives one small confident nod, then picks up the wooden rubber stamp and stamps the paper slip once, firmly (t2: then looks back at the screen with a small satisfied smile). The monitor screen stays a flat uniform pure green the entire time with no content. Very slow push in. No text, no labels, no logos.",
+  "prompt_group": "gate-f/salma-monitor-clips",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image: salma-monitor-a)",
+  "status": "unused take"
+ },
+ {
+  "job_id": "fce2e166-248e-476b-96b0-36bd15976093",
+  "kind": "gate-f promo-clip",
+  "model": "kling3_0",
+  "file": "gatef/clips/salma-mon-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_174036_fce2e166-248e-476b-96b0-36bd15976093.mp4",
+  "prompt": "She reads the monitor, gives one small confident nod, then picks up the wooden rubber stamp and stamps the paper slip once, firmly (t2: then looks back at the screen with a small satisfied smile). The monitor screen stays a flat uniform pure green the entire time with no content. Very slow push in. No text, no labels, no logos.",
+  "prompt_group": "gate-f/salma-monitor-clips",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image: salma-monitor-a)",
+  "status": "USED: promo warehouse shot (real admin composited)"
+ },
+ {
+  "job_id": "638c7b06-b93f-438e-a86a-758a1c009168",
+  "kind": "gate-f promo-clip",
+  "model": "kling3_0",
+  "file": "gatef/clips/morning-t1.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_174036_638c7b06-b93f-438e-a86a-758a1c009168.mp4",
+  "prompt": "Morning in the kitchen: he takes a slow sip of coffee, glances at the phone lying face down on the counter, breathes out with relief, a small private smile (t2: lifts the mug in a small toast toward the phone, smiles, sips). Gentle push in. No text, no logos, no screen visible.",
+  "prompt_group": "gate-f/morning-clips",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image: morning-a)",
+  "status": "unused take"
+ },
+ {
+  "job_id": "1c44c888-6606-4a7e-b67b-74ed722c3754",
+  "kind": "gate-f promo-clip",
+  "model": "kling3_0",
+  "file": "gatef/clips/morning-t2.mp4",
+  "date": "2026-10-11",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261011_174036_1c44c888-6606-4a7e-b67b-74ed722c3754.mp4",
+  "prompt": "Morning in the kitchen: he takes a slow sip of coffee, glances at the phone lying face down on the counter, breathes out with relief, a small private smile (t2: lifts the mug in a small toast toward the phone, smiles, sips). Gentle push in. No text, no logos, no screen visible.",
+  "prompt_group": "gate-f/morning-clips",
+  "model_requested": "kling3_0 pro 5 s sound off (start_image: morning-a)",
+  "status": "USED: promo morning + visitor chapter end"
  }
 ]

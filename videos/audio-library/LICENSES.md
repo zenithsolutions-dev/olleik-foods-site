@@ -216,6 +216,23 @@ Model column: the model requested (the API reports nano_banana_pro jobs as `nano
 | 1ce43595-bc08-4351-b06c-7c0b2c8ba86f | character-sheet | nano_banana_pro 16:9 2k | 2026-10-11 | people/sheets/marco-b.png | USED: Marco reference element |
 | cd3f6329-c7a2-412d-8a8a-b6e4f0927ae7 | character-sheet | nano_banana_pro 16:9 2k | 2026-10-11 | people/sheets/salma-a.png | USED: Salma reference element |
 | 4f791402-db3d-400f-957a-5c093f7e1a49 | character-sheet | nano_banana_pro 16:9 2k | 2026-10-11 | people/sheets/salma-b.png |  |
+| d5aa16c0-9b6d-4468-bf5b-49fe5604325c | gate-f promo-clip | kling3_0 pro 5 s sound off (start_image: chop-a / chop-b) | 2026-10-11 | gatef/clips/chop-a-t1.mp4 | USED: hook D + promo (clean single-knife take, re-timed to 108 BPM) |
+| 6b479ebf-1f7a-42e7-ba11-3c0cd45c6ad9 | gate-f promo-clip | kling3_0 pro 5 s sound off (start_image: chop-a / chop-b) | 2026-10-11 | gatef/clips/chop-a-t2.mp4 | rejected: odd arm swings |
+| ac6d936b-f871-43f8-9b46-c4b32f315fb4 | gate-f promo-clip | kling3_0 pro 5 s sound off (start_image: chop-a / chop-b) | 2026-10-11 | gatef/clips/chop-b-t1.mp4 | rejected: guide hand near the blade |
+| 638c7b06-b93f-438e-a86a-758a1c009168 | gate-f promo-clip | kling3_0 pro 5 s sound off (start_image: morning-a) | 2026-10-11 | gatef/clips/morning-t1.mp4 | unused take |
+| 1c44c888-6606-4a7e-b67b-74ed722c3754 | gate-f promo-clip | kling3_0 pro 5 s sound off (start_image: morning-a) | 2026-10-11 | gatef/clips/morning-t2.mp4 | USED: promo morning + visitor chapter end |
+| 0517eefd-c8d8-4ed8-a966-bf4bee08f2d1 | gate-f promo-clip | kling3_0 pro 5 s sound off (start_image: ots-b) | 2026-10-11 | gatef/clips/ots-t1.mp4 | USED: promo phone shot (real portal composited) |
+| 72634e4d-4181-4e83-88d0-7b0ab3d5837e | gate-f promo-clip | kling3_0 pro 5 s sound off (start_image: ots-b) | 2026-10-11 | gatef/clips/ots-t2.mp4 | unused take |
+| f77f048f-d40b-4ce0-bf18-ab895429c565 | gate-f promo-clip | kling3_0 pro 5 s sound off (start_image: salma-monitor-a) | 2026-10-11 | gatef/clips/salma-mon-t1.mp4 | unused take |
+| fce2e166-248e-476b-96b0-36bd15976093 | gate-f promo-clip | kling3_0 pro 5 s sound off (start_image: salma-monitor-a) | 2026-10-11 | gatef/clips/salma-mon-t2.mp4 | USED: promo warehouse shot (real admin composited) |
+| ad247153-296b-487e-9a09-027307e76724 | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/chop-a.png | USED: start frame |
+| 8a40c2e5-d7de-4cf6-86cb-d85cb9411282 | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/chop-b.png | start frame (take rejected) |
+| edab647a-fe82-4957-a8b4-fe58ea7b225e | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/morning-a.png | USED: start frame |
+| a5e47a55-1099-4bdc-8a15-573f5bcecf5f | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/morning-b.png | unused frame |
+| 570dab38-fb54-44a2-831c-052a8f7fdad3 | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/ots-a.png | unused frame |
+| 5a582591-1382-4126-bb64-e635f346e5fb | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/ots-b.png | USED: start frame |
+| 7419206b-5a1b-41fe-b3d5-684d2a0c2734 | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/salma-mon-a.png | USED: start frame |
+| 89597723-b68d-48fb-ba03-42251b80fd14 | gate-f start-frame | nano_banana_pro 16:9 2k | 2026-10-11 | gatef/frames/salma-mon-b.png | unused frame |
 | b0e3300b-e226-40af-9921-248ebd719073 | hook-clip | kling3_0 pro 5 s sound off | 2026-10-11 | hooks/clips/ha-thumb.mp4 | USED: hook A |
 | f76b2f42-cc61-4026-8830-fd69dfc819a5 | hook-clip | kling3_0 pro 5 s sound off | 2026-10-11 | hooks/clips/hd-chop-t1.mp4 | USED: hook D (hand artifacts noted) |
 | b9a6e0e5-2870-4af9-9881-ec108bc34978 | hook-clip | kling3_0 pro 5 s sound off | 2026-10-11 | hooks/clips/hd-chop-t2.mp4 | rejected: doubled knife |
@@ -280,13 +297,13 @@ Model column: the model requested (the API reports nano_banana_pro jobs as `nano
 | 327926cb-6c84-4c1e-b63b-2917b7d8defd | test-shot | kling3_0 | 2026-10-11 | people/shots/driver2-169-t2.mp4 | PICK: driver 16:9 test shot |
 | 485b4af7-f5ca-4f5d-9bdf-04d58f71afa4 | test-shot | kling3_0 | 2026-10-11 | people/shots/driver2-916-t1.mp4 |  |
 | 83fe45d8-1ed3-4257-abab-c85f4a23b315 | test-shot | kling3_0 | 2026-10-11 | people/shots/driver2-916-t2.mp4 | PICK: driver 9:16 test shot |
-| 9d79fd92-fe6d-4481-98d1-c22ee2dad963 | test-shot | kling3_0 pro 5 s sound off (start_image = the frame above) | 2026-10-11 | people/shots/marco-169-t1.mp4 | PICK: Marco 16:9 test shot |
+| 9d79fd92-fe6d-4481-98d1-c22ee2dad963 | test-shot | kling3_0 pro 5 s sound off (start_image = the frame above) | 2026-10-11 | people/shots/marco-169-t1.mp4 | PICK (Gate E) + USED: visitor chapter hook |
 | 7ed04469-42da-4b89-80b0-3f58c9329300 | test-shot | kling3_0 pro 5 s sound off (start_image = the frame above) | 2026-10-11 | people/shots/marco-169-t2.mp4 |  |
 | f82fa47f-cb22-497d-97e5-a70bf03aab65 | test-shot | kling3_0 pro 5 s sound off (start_image = the frame above) | 2026-10-11 | people/shots/marco-916-t1.mp4 |  |
 | 30b610c5-fab3-49ab-b3e7-429fffc15cf3 | test-shot | kling3_0 pro 5 s sound off (start_image = the frame above) | 2026-10-11 | people/shots/marco-916-t2.mp4 | PICK: Marco 9:16 test shot |
-| 5de90aee-67d9-4cd9-9b5f-66d27936e736 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-169-t1.mp4 | PICK: Salma 16:9 test shot |
+| 5de90aee-67d9-4cd9-9b5f-66d27936e736 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-169-t1.mp4 | PICK (Gate E) + USED: admin EP1 hook/end |
 | 98426453-4643-49db-b11c-b4675c5b4b21 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-169-t2.mp4 |  |
 | 807cfae8-0152-4c07-a614-834166df8f67 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-916-t1.mp4 | PICK: Salma 9:16 test shot |
 | d6eb3737-0583-4e43-885d-61c95b02c80c | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-916-t2.mp4 |  |
 
-78 Higgsfield generations recorded. Elements: olleik-demo-catalog-style 310febdd-c4a9-499d-be0b-cc30b46b9e5f, olleik-marco 2f647b1b-7746-4ecd-9510-49fb41c197e7, olleik-salma ce092dc3-a897-47f2-a82c-5e5b7f773e9a, olleik-driver 93840d9d-15f2-4d88-92b9-3e71f5a93a9d.
+95 Higgsfield generations recorded. Elements: olleik-demo-catalog-style 310febdd-c4a9-499d-be0b-cc30b46b9e5f, olleik-marco 2f647b1b-7746-4ecd-9510-49fb41c197e7, olleik-salma ce092dc3-a897-47f2-a82c-5e5b7f773e9a, olleik-driver 93840d9d-15f2-4d88-92b9-3e71f5a93a9d.

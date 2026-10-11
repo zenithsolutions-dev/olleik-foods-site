@@ -34,7 +34,7 @@ function Seq({ dir, n, at }: { dir: string; n: number; at: number }) {
 }
 
 // ——— H-A "The 11:04 PM text" ———
-const TEXTS = ["Can you add 2 cases of tomatoes?", "and lemons", "sorry, 3 cases", "did you get my last msg?", "Need it by morning", "+ basil", "Call me", "??"];
+const TEXTS = ["price list v3 (final) (2)", "Can you do 4 cases by Fri??", "Missed call (3)", "send me the new list pls", "price changed again?", "voice note 0:47", "??", "you up?"];
 export function HookA() {
   const f = useCurrentFrame();
   const unread = Math.min(37, Math.floor(interpolate(f, [0, 42], [9, 37], clamp)));
@@ -51,13 +51,14 @@ export function HookA() {
           const k = spring({ frame: f - at, fps: 30, config: { damping: 14, stiffness: 160 } });
           if (f < at) return null;
           return (
-            <div key={i} style={{ position: "absolute", left: 1180 + (i % 2) * 36, top: 120 + i * 74 - (f - at) * 0.6, transform: `translateY(${(1 - k) * -30}px) scale(${0.9 + 0.1 * k})`, opacity: k * (1 - i * 0.06), background: "rgba(245,245,247,0.92)", borderRadius: 22, padding: "16px 26px", fontFamily: F.sans, fontSize: 30, color: "#111", boxShadow: "0 10px 30px rgba(0,0,0,.45)", whiteSpace: "nowrap" }}>
+            <div key={i} style={{ position: "absolute", left: 1180 + (i % 2) * 36, top: 150 + i * 70 - (f - at) * 0.6, transform: `translateY(${(1 - k) * -30}px) scale(${0.9 + 0.1 * k})`, opacity: k * (1 - i * 0.06), background: "rgba(245,245,247,0.92)", borderRadius: 22, padding: "16px 26px", fontFamily: F.sans, fontSize: 30, color: "#111", boxShadow: "0 10px 30px rgba(0,0,0,.45)", whiteSpace: "nowrap" }}>
               {t}
             </div>
           );
         })}
-        <div style={{ position: "absolute", left: 1086, top: 112, width: 74, height: 74, borderRadius: 37, background: "#e5484d", color: "white", fontFamily: F.sans, fontWeight: 700, fontSize: 36, display: "grid", placeItems: "center", transform: `scale(${1 + 0.2 * Math.max(0, Math.sin(f * 1.3)) * (f < SNAP ? 1 : 0)})` }}>
-          {unread}
+        <div style={{ position: "absolute", left: 1180, top: 66, display: "flex", alignItems: "center", gap: 12, background: "rgba(20,20,22,.78)", borderRadius: 999, padding: "10px 22px 10px 12px", fontFamily: F.sans, fontWeight: 600, fontSize: 30, color: "#fff", transform: `scale(${1 + 0.12 * Math.max(0, Math.sin(f * 1.3)) * (f < SNAP ? 1 : 0)})`, transformOrigin: "0% 50%" }}>
+          <span style={{ minWidth: 52, height: 52, borderRadius: 26, background: "#e5484d", display: "grid", placeItems: "center", fontWeight: 700 }}>{unread}</span>
+          unread
         </div>
       </AbsoluteFill>
       {/* the snap: the screen light floods, the line lands (expressive type) */}
@@ -153,7 +154,8 @@ export function HookC() {
 
 // ——— H-D "Two hands" ———
 // Clip impact frames (24 fps source, measured from motion) are re-timed onto the 108 BPM grid: each chop lands on a beat.
-const IMPACTS = [11, 27, 51, 66, 90, 106];
+// Gate F: clean single-knife take (chop-a-t1), cropped; deep motion minima = knife resting on the board after a strike.
+const IMPACTS = [11, 38, 61, 80, 99, 118];
 const BEATS = IMPACTS.map((_, k) => 6 + k * BEAT);
 const clipAt = (f: number) => {
   if (f <= BEATS[0]) return IMPACTS[0] - (BEATS[0] - f) * 0.8;
@@ -170,7 +172,7 @@ export function HookD() {
     <AbsoluteFill style={{ background: "#0f1210" }}>
       <AbsoluteFill style={{ width: 1920 - 760 * split, overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, width: 1920, left: -200 * split }}>
-          <Seq dir="hd-chop" n={121} at={clipAt(f)} />
+          <Seq dir="hd-chop2" n={121} at={clipAt(f)} />
         </div>
       </AbsoluteFill>
       {f >= SNAP && (
