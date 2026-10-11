@@ -17,22 +17,24 @@ import type { CursorKey, WorldShot } from "./World";
 
 const shots = (manifest as unknown as { shots: Record<string, { boxes: Record<string, { x: number; y: number; w?: number; width?: number; h?: number; height?: number } | null> }> }).shots;
 const meta = tiles as Record<string, { wPx: number; hPx: number }>;
-const boxesOf = (key: string): Record<string, Box> =>
+export const boxesOf = (key: string): Record<string, Box> =>
   Object.fromEntries(Object.entries(shots[`v3/${key}`].boxes).filter(([, v]) => v).map(([k, v]) => [k, { x: v!.x, y: v!.y, w: v!.w ?? v!.width ?? 0, h: v!.h ?? v!.height ?? 0 }]));
-const worldOf = (key: string, anchors: string[], extra: Record<string, Box> = {}): World => ({
+export const worldOf = (key: string, anchors: string[], extra: Record<string, Box> = {}): World => ({
   id: key, w: meta[key].wPx / 3, h: meta[key].hPx / 3, boxes: { ...boxesOf(key), ...extra }, anchors,
 });
 const BEAT = 1800 / 108;
-const b = (k: number) => Math.round(k * BEAT); // local beat k
-const center = (bx: Box, dx = 0, dy = 0) => ({ x: bx.x + bx.w / 2 + dx, y: bx.y + bx.h / 2 + dy });
+/** Height of the caption band (Episode3.tsx BAND): forbidden boxes may sit under it, never above it. */
+export const BAND_PX = 132;
+export const b = (k: number) => Math.round(k * BEAT); // local beat k
+export const center = (bx: Box, dx = 0, dy = 0) => ({ x: bx.x + bx.w / 2 + dx, y: bx.y + bx.h / 2 + dy });
 /** Camera key that puts a box's centre at screen height `sy` (above the caption band) at zoom z. */
-const aim = (w: World, box: string, f: number, z: number, ease: Key["ease"] = "snap", sy = 450, dx = 0): Key => {
+export const aim = (w: World, box: string, f: number, z: number, ease: Key["ease"] = "snap", sy = 450, dx = 0): Key => {
   const c = center(w.boxes[box]);
   return { f, cx: c.x + dx, cy: c.y + (OUT_H / 2 - sy) / scaleAt(w, z), z, ease, eye: box };
 };
 /** A short drift after a key (the camera never stops dead). */
-const drift = (k: Key, f: number, dz = 0.015, dx = 6, dy = -4): Key => ({ f, cx: k.cx + dx, cy: k.cy + dy, z: k.z + dz, ease: "linear" });
-const tapAt = (w: World, box: string, f: number, arrive: number): CursorKey[] => {
+export const drift = (k: Key, f: number, dz = 0.015, dx = 6, dy = -4): Key => ({ f, cx: k.cx + dx, cy: k.cy + dy, z: k.z + dz, ease: "linear" });
+export const tapAt = (w: World, box: string, f: number, arrive: number): CursorKey[] => {
   const c = center(w.boxes[box], 8, 4);
   return [{ f: arrive, ...c }, { f, ...c, press: true }, { f: f + 7, x: c.x + 6, y: c.y + 6 }];
 };
@@ -40,18 +42,20 @@ const tapAt = (w: World, box: string, f: number, arrive: number): CursorKey[] =>
 export type Seg =
   | { kind: "world"; from: number; dur: number; shot: WorldShot; whipIn?: boolean; whipOut?: boolean }
   | { kind: "live"; from: number; dur: number; src: string; start: number; line?: string; lineAt?: number; punchAt?: number }
-  | { kind: "next"; from: number; dur: number; line: string };
+  | { kind: "next"; from: number; dur: number; line: string }
+  | { kind: "end"; from: number; dur: number; line: string; cta?: string; url?: string };
 export type Caption = { from: number; to: number; text: string };
-export type Manual = { id: string; frames: number; segs: Seg[]; captions: Caption[]; tag: string };
+/** chapters: a small label in the caption band (the full visitor manual names each chapter there). */
+export type Manual = { id: string; frames: number; segs: Seg[]; captions: Caption[]; tag: string; chapters?: { from: number; label: string }[] };
 
 // ————————————————————————— Visitor Chapter 4: Ordering —————————————————————————
-const catW: World = { ...CATALOG, boxes: { ...CATALOG.boxes, searchRow: { x: 168, y: 254, w: 612, h: 38 } }, anchors: [...CATALOG.anchors, "searchRow"] };
-const VC = { t0: b(3), t1: b(5), t2: b(7), cart: b(9), len: b(10) + 4 };
+export const catW: World = { ...CATALOG, boxes: { ...CATALOG.boxes, searchRow: { x: 168, y: 254, w: 612, h: 38 } }, anchors: [...CATALOG.anchors, "searchRow"] };
+export const VC = { t0: b(3), t1: b(5), t2: b(7), cart: b(9), len: b(10) + 4 };
 // the buttons sit 530 px below the search row: at z 1.15 and cy 600 both stay in frame (anchor rule) and the button row
 // stays above the caption band
 const btnKey = (box: string, f: number): Key => ({ f, cx: center(catW.boxes[box]).x, cy: 600, z: 1.15, ease: "snap", eye: box });
 const vk0 = btnKey("btn0", VC.t0 - 8), vk1 = btnKey("btn1", VC.t1 - 8), vk2 = btnKey("btn2", VC.t2 - 8), vk3 = aim(catW, "cartWide", VC.cart - 8, 1.3, "snap", 400);
-const catalogShot: WorldShot = {
+export const catalogShot: WorldShot = {
   world: catW,
   plate: [[0, "v3/catalog-0"], [VC.t0, "v3/catalog-1"], [VC.t1, "v3/catalog-2"], [VC.t2, "v3/catalog-3"]],
   keys: [{ f: 0, cx: 720, cy: 420, z: 1.0 }, { f: 10, cx: 716, cy: 430, z: 1.03, ease: "linear" }, vk0, drift(vk0, VC.t0 + 8), vk1, drift(vk1, VC.t1 + 8), vk2, drift(vk2, VC.t2 + 8), vk3, drift(vk3, VC.len, 0.03, 4, -6)],
@@ -60,9 +64,9 @@ const catalogShot: WorldShot = {
 };
 
 const cartW = worldOf("cart", ["nav", "headline", "total", "checkout"]);
-const CT = { tap: b(4), len: b(5) + 2 };
+export const CT = { tap: b(4), len: b(5) + 2 };
 const ck0: Key = { f: 14, cx: 720, cy: 400, z: 1.15, ease: "expo", eye: "headline" }, ck1 = aim(cartW, "checkout", CT.tap - 8, 1.4, "snap", 430, -60);
-const cartShot: WorldShot = {
+export const cartShot: WorldShot = {
   world: cartW, plate: "v3/cart",
   keys: [{ f: 0, cx: 720, cy: 420, z: 1.0 }, ck0, drift(ck0, 26), ck1, drift(ck1, CT.len)],
   cursor: [{ f: 0, x: 1180, y: 900 }, ...tapAt(cartW, "checkout", CT.tap, CT.tap - 8)],
@@ -70,9 +74,9 @@ const cartShot: WorldShot = {
 
 // typed note: text extent and the field's inner box, measured on the real captures (checkout-1 → checkout-2)
 const ckW = worldOf("checkout-0", ["headline", "summary", "delivery", "pickup", "notes", "submit"], { typed: { x: 417, y: 702, w: 174, h: 20 }, noteField: { x: 408, y: 695, w: 600, h: 54 } });
-const CK = { delivery: b(3), typeFrom: b(4), typeDur: b(2), submit: b(8), len: b(9) + 2 };
+export const CK = { delivery: b(3), typeFrom: b(4), typeDur: b(2), submit: b(8), len: b(9) + 2 };
 const kk0 = aim(ckW, "delivery", CK.delivery - 8, 1.35, "snap", 440, -120), kk1 = aim(ckW, "notes", CK.typeFrom - 2, 1.35, "snap", 450, -40), kk2 = aim(ckW, "submit", CK.submit - 8, 1.38, "snap", 430, -140);
-const ckShot: WorldShot = {
+export const ckShot: WorldShot = {
   world: ckW,
   plate: [[0, "v3/checkout-0"], [CK.delivery, "v3/checkout-1"], [CK.typeFrom + CK.typeDur, "v3/checkout-2"]],
   wipes: [{ box: "typed", field: "noteField", bg: "#ffffff", f: CK.typeFrom, dur: CK.typeDur, to: "v3/checkout-2" }],
@@ -82,14 +86,14 @@ const ckShot: WorldShot = {
 
 const placedW = worldOf("order-placed", ["nav", "banner", "headline"]);
 const pk0 = aim(placedW, "banner", 16, 1.45, "expo", 380), pk1 = aim(placedW, "status", b(3), 1.5, "snap", 430, -200);
-const placedShot: WorldShot = {
+export const placedShot: WorldShot = {
   world: placedW, plate: "v3/order-placed",
   keys: [{ f: 0, cx: 720, cy: 405, z: 1.0 }, pk0, drift(pk0, b(2)), pk1, drift(pk1, b(5))],
 };
 
 const ordersW = worldOf("orders", ["nav", "headline", "first"]);
 const ok0 = aim(ordersW, "first", 16, 1.2, "expo", 420, 0);
-const ordersShot: WorldShot = {
+export const ordersShot: WorldShot = {
   world: ordersW, plate: "v3/orders",
   keys: [{ f: 0, cx: 720, cy: 405, z: 1.0 }, ok0, drift(ok0, b(3), 0.02, 20, 0), { ...aim(ordersW, "first", b(5), 1.3, "glide", 440, 120), eye: undefined }],
 };
@@ -121,16 +125,17 @@ export const VISITOR_CH4: Manual = {
 // ————————————————————————— Admin Episode 1: Orders —————————————————————————
 const dashW = worldOf("admin-dashboard", ["headline", "newOrders", "ordersNav"]);
 const DB = { nav: b(4), len: b(5) + 2 };
-const dk0 = aim(dashW, "newOrders", 14, 1.45, "expo", 420, 160), dk1 = aim(dashW, "ordersNav", DB.nav - 8, 1.4, "snap", 430, 300);
+// the sidebar (256 px) is either whole in frame or fully out: a cut sliver of it reads as a stray chip
+const dk0 = aim(dashW, "newOrders", 14, 1.3, "expo", 448, 420), dk1 = aim(dashW, "ordersNav", DB.nav - 8, 1.3, "snap", 430, 426);
 const dashShot: WorldShot = {
   world: dashW, plate: "v3/admin-dashboard",
-  keys: [{ f: 0, cx: 720, cy: 405, z: 1.0 }, dk0, drift(dk0, 30), dk1, drift(dk1, DB.len)],
+  keys: [{ f: 0, cx: 720, cy: 405, z: 1.0 }, dk0, drift(dk0, 30), dk1, drift(dk1, DB.len, 0.015, -6, -4)],
   cursor: [{ f: 0, x: 900, y: 760 }, { f: 30, x: 440, y: 330 }, ...tapAt(dashW, "ordersNav", DB.nav, DB.nav - 8)],
 };
 
 const listW = worldOf("admin-orders", ["headline", "tabNew", "firstRow"]);
 const OL = { tabNew: b(2), row: b(4), len: b(5) + 2 };
-const lk0 = aim(listW, "tabNew", OL.tabNew - 8, 1.35, "expo", 420, 180), lk1 = aim(listW, "firstRow", OL.row - 8, 1.3, "snap", 430, 60);
+const lk0 = aim(listW, "tabNew", OL.tabNew - 8, 1.35, "expo", 420, 386), lk1 = aim(listW, "firstRow", OL.row - 8, 1.3, "snap", 430, 0);
 const listShot: WorldShot = {
   world: listW, plate: [[0, "v3/admin-orders"], [OL.tabNew, "v3/admin-orders-new"]], // a hard switch, as the app does (no double image)
   keys: [{ f: 0, cx: 720, cy: 405, z: 1.0 }, lk0, drift(lk0, OL.tabNew + 6), lk1, drift(lk1, OL.len)],
@@ -187,14 +192,14 @@ export const ADMIN_EP1: Manual = {
 
 export const MANUALS = { "V3-VISITOR-CH4": VISITOR_CH4, "V3-EP1": ADMIN_EP1 } as const;
 for (const m of Object.values(MANUALS)) {
-  for (const s of m.segs) if (s.kind === "world") validateCamera(s.shot.world, s.shot.keys, s.dur);
+  for (const s of m.segs) if (s.kind === "world") validateCamera(s.shot.world, s.shot.keys, s.dur, BAND_PX);
   for (const c of m.captions) assertLine(c.text);
   for (const s of m.segs) if (s.kind !== "world" && s.line) assertLine(s.line);
 }
 
 /** All on-screen lines of a manual in time order (captions, hook lines, the closing "Next" line). */
 const linesOf = (m: Manual) => {
-  const extra = m.segs.flatMap((s) => (s.kind === "live" && s.line ? [{ from: s.from + (s.lineAt ?? 0), to: s.from + s.dur, text: s.line }] : s.kind === "next" ? [{ from: s.from + 4, to: s.from + s.dur, text: s.line }] : []));
+  const extra = m.segs.flatMap((s) => (s.kind === "live" && s.line ? [{ from: s.from + (s.lineAt ?? 0), to: s.from + s.dur, text: s.line }] : s.kind === "next" || s.kind === "end" ? [{ from: s.from + 4, to: s.from + s.dur, text: s.line }] : []));
   return [...extra, ...m.captions].sort((a, c) => a.from - c.from);
 };
 /** SRT text for a manual (the same lines as on screen). */
@@ -214,6 +219,7 @@ export const manualEvents = (m: Manual) => {
       continue;
     }
     if (s.kind === "next") { ev.push({ f: s.from, sfx: "whip", vel: 0.4, note: "whip to the closing line" }, { f: s.from + 6, sfx: "pluck", vel: 0.5, note: "Next line" }); continue; }
+    if (s.kind === "end") { ev.push({ f: s.from, sfx: "whip", vel: 0.4, note: "whip to the end card" }, { f: s.from + 2, sfx: "pop", vel: 0.45, note: "logo lands" }, { f: s.from + 3, sfx: "bell", vel: 0.5, note: "end card" }); if (s.cta) ev.push({ f: s.from + 22, sfx: "pop", vel: 0.3, pitch: 2, note: "button" }); continue; }
     const w = s.shot.world.w;
     const panX = (x: number) => Math.max(-0.6, Math.min(0.6, (x - w / 2) / (w * 0.8)));
     if (s.whipIn) ev.push({ f: s.from, sfx: "whip", vel: 0.45, note: "whip in (page change)" });

@@ -33,6 +33,9 @@ export type World = {
   frameW?: number; // CSS width that fills the frame at z = 1 (default: the page width)
   boxes: Record<string, Box>;
   anchors: string[]; // box names that count as structural anchors
+  /** Boxes that must NEVER be visible (placeholder business details on documents, fake hero stats, a generated invite
+   * URL, the public footer's placeholder phone). Checked on every frame; the caption band counts as covering. */
+  forbid?: string[];
 };
 export type Ease = "arrive" | "inout" | "linear" | "glide" | "snap" | "expo";
 export type Key = { f: number; cx: number; cy: number; z: number; ease?: Ease; eye?: string };
@@ -90,8 +93,25 @@ export const insideFraction = (cam: Cam, b: Box) => {
   return (ix * iy) / (b.w * b.h);
 };
 
-export function validateCamera(world: World, keys: Key[], frames: number) {
+/** Fraction of box b inside the VISIBLE part of the frame (the bottom `coveredPx` output pixels are a caption band). */
+export const visibleFraction = (cam: Cam, b: Box, coveredPx = 0) => {
+  const l = cam.cx - cam.vw / 2, t = cam.cy - cam.vh / 2;
+  const vis = cam.vh - coveredPx / cam.s;
+  const ix = Math.max(0, Math.min(b.x + b.w, l + cam.vw) - Math.max(b.x, l));
+  const iy = Math.max(0, Math.min(b.y + b.h, t + vis) - Math.max(b.y, t));
+  return (ix * iy) / (b.w * b.h);
+};
+
+export function validateCamera(world: World, keys: Key[], frames: number, coveredPx = 0) {
   const errors: string[] = [];
+  for (const name of world.forbid ?? []) if (!world.boxes[name]) errors.push(`${world.id}: forbidden box ${name} is not measured`);
+  for (let f = 0; f < frames; f++) {
+    const c = cameraAt(world, keys, f);
+    for (const name of world.forbid ?? []) {
+      const b = world.boxes[name];
+      if (b && visibleFraction(c, b, coveredPx) > 0) { errors.push(`${world.id} frame ${f}: forbidden ${name} visible (${(visibleFraction(c, b, coveredPx) * 100).toFixed(1)}%)`); f = frames; break; }
+    }
+  }
   for (const k of keys) {
     if (k.z > MAX_ZOOM + 1e-6) errors.push(`key f${k.f}: zoom ${k.z} > ${MAX_ZOOM}`);
     if (scaleAt(world, k.z) > NATIVE + 1e-6) errors.push(`key f${k.f}: ${scaleAt(world, k.z).toFixed(2)} px/CSS px > native ${NATIVE}`);

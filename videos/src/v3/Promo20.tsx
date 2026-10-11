@@ -296,7 +296,8 @@ function SentShot() {
   );
 }
 
-function EndCard() {
+/** The end card (promo, and the manuals' outro): logo on the beat, then the line, the button and the address. */
+export function EndCard({ line: lineIn, cta = "Become a customer →", url = BRAND.url }: { line?: string; cta?: string; url?: string } = {}) {
   const f = useCurrentFrame();
   const beat = 1800 / 108;
   const s = spring({ frame: f, fps: 30, config: { damping: 13, stiffness: 170 } });
@@ -304,7 +305,7 @@ function EndCard() {
   // the button answers the grid twice after it lands (V3.1 §5: nothing holds longer than a beat)
   const bump = (at: number) => { const d = f - at * beat; return d >= 0 ? Math.sin(Math.min(1, d / 8) * Math.PI) * Math.exp(-d / 14) : 0; };
   const pulse = 1 + 0.07 * (bump(2.5) + bump(3.25));
-  const line = assertLine(BRAND.tagline);
+  const line = assertLine(lineIn ?? BRAND.tagline);
   return (
     <AbsoluteFill style={{ background: C.paper }}>
       <AbsoluteFill style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 26, transform: `scale(${interpolate(f, [0, 61], [1.0, 1.1])}) translateY(${interpolate(f, [0, 61], [10, -10])}px)` }}>
@@ -314,8 +315,8 @@ function EndCard() {
         </div>
         <div style={{ fontFamily: F.serif, fontSize: 46, color: C.tealDark, opacity: k(0.5), transform: `translateY(${(1 - k(0.5)) * 26}px)` }}>{line}</div>
         <div style={{ display: "flex", gap: 22, alignItems: "center" }}>
-          <div style={{ background: C.orange, color: "#fff", fontFamily: F.sans, fontWeight: 600, fontSize: 32, padding: "16px 34px", borderRadius: 999, opacity: k(1.25), transform: `translateY(${(1 - k(1.25)) * 26}px) scale(${pulse})` }}>Become a customer →</div>
-          <div style={{ fontFamily: F.sans, fontSize: 30, color: C.soft, opacity: k(1.75), transform: `translateX(${(1 - k(1.75)) * -24}px)` }}>{BRAND.url}</div>
+          <div style={{ background: C.orange, color: "#fff", fontFamily: F.sans, fontWeight: 600, fontSize: 32, padding: "16px 34px", borderRadius: 999, opacity: k(1.25), transform: `translateY(${(1 - k(1.25)) * 26}px) scale(${pulse})`, display: cta ? "block" : "none" }}>{cta}</div>
+          <div style={{ fontFamily: F.sans, fontSize: 30, color: C.soft, opacity: k(1.75), transform: `translateX(${(1 - k(1.75)) * -24}px)` }}>{url}</div>
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

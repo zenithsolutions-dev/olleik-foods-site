@@ -22,7 +22,7 @@ import { PlateState, states } from "./plates";
  */
 export type { PlateState };
 /** Typing in a field: `field` = the field's inner box, `box` = the typed text's extent, `bg` = the field's background. */
-export type Wipe = { box: string; field: string; bg: string; f: number; dur: number; to: string };
+export type Wipe = { box: string; field: string; bg: string; f: number; dur: number; to: string; hold?: boolean }; // hold: keep the typed field until the plate itself switches to `to`
 export type CursorKey = { f: number; x: number; y: number; press?: boolean };
 export type BoundType = { text: string; box: string; dx: number; dy: number; from: number; to: number; size?: number; weight?: number; color?: string; align?: "left" | "center"; italic?: boolean };
 export type WorldShot = {
@@ -118,10 +118,12 @@ function Scene({ shot, t, frame }: { shot: WorldShot; t: number; frame: number }
         // typing: the field shows the real typed capture (its placeholder is gone, as in a browser) and the not-yet-typed
         // part of the text is covered with the field's own flat background colour (pixel-exact, sampled from the capture)
         const d = frame - w.f;
-        if (d < 0 || d >= w.dur) return null;
+        // a held field shows until the plate itself switches to the typed capture (and never after)
+        const until = w.hold ? (states(shot.plate).find((st) => st[1] === w.to)?.[0] ?? Infinity) : w.f + w.dur;
+        if (d < 0 || frame >= until) return null;
         const fb = world.boxes[w.field], tb = world.boxes[w.box];
         const pf = project(cam, fb.x, fb.y), pt = project(cam, tb.x, tb.y);
-        const k = (d + 1) / w.dur;
+        const k = Math.min(1, (d + 1) / w.dur);
         return (
           <React.Fragment key={i}>
             <div style={{ position: "absolute", left: pf.x, top: pf.y, width: fb.w * cam.s, height: fb.h * cam.s, overflow: "hidden" }}>

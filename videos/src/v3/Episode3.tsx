@@ -4,6 +4,7 @@ import { C, F } from "../theme";
 import { assertLine } from "./lines";
 import type { Manual, Seg } from "./manuals";
 import { WorldView } from "./World";
+import { EndCard } from "./Promo20";
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const easeIn = (t: number) => t * t * t;
@@ -80,8 +81,14 @@ function Captions({ m }: { m: Manual }) {
   const k = c ? interpolate(f, [c.from, c.from + 4, c.to - 4, c.to], [0, 1, 1, 0], clamp) : 0;
   if (c) assertLine(c.text);
   if (!onPage) return null;
+  const chapter = [...(m.chapters ?? [])].reverse().find((c) => f >= c.from);
   return (
     <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: BAND, background: C.paper, borderTop: `1px solid ${C.line}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      {chapter && (
+        <div style={{ position: "absolute", left: 56, top: 0, bottom: 0, display: "flex", alignItems: "center", fontFamily: F.sans, fontWeight: 700, fontSize: 22, letterSpacing: "0.16em", textTransform: "uppercase", color: C.orange }}>
+          {assertLine(chapter.label)}
+        </div>
+      )}
       {c && (
         <div style={{ opacity: k, transform: `translateY(${(1 - k) * 12}px)`, color: C.tealDark, fontFamily: F.sans, fontWeight: 600, fontSize: 44, letterSpacing: "-0.01em", maxWidth: 1600, textAlign: "center" }}>
           {c.text}
@@ -109,6 +116,8 @@ export function ManualFilm({ m, audioSrc }: { m: Manual; audioSrc?: string }) {
         <Sequence key={i} from={s.from} durationInFrames={s.dur}>
           {s.kind === "live" ? (
             <Live seg={s} />
+          ) : s.kind === "end" ? (
+            <EndCard line={s.line} cta={s.cta} url={s.url} />
           ) : s.kind === "next" ? (
             <Whip dur={s.dur} whipIn>
               <Next seg={s} />

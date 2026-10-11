@@ -265,6 +265,18 @@ Model column: the model requested (the API reports nano_banana_pro jobs as `nano
 | 7540a7c1-d5ba-4926-aed1-51cf2b7ed97f | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/B-folk-t2.mp4 | USED: music bed B |
 | 5fb2824b-01c2-4d9b-9783-71635a2a7fac | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/C-marimba-t1.mp4 |  |
 | c63265eb-f5de-4817-81e5-72ef915e53b2 | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/C-marimba-t2.mp4 | USED: music bed C |
+| fb1076a2-5529-4722-bfe9-f0db46d6f69f | partb hook-clip | kling3_0 pro 5 s (start_image: ep2-b) | 2026-10-12 | higgsfield/partb/clips/ep2-t1.mp4 | USED: Episode 2 hook (muted) |
+| eb139f14-f192-45e3-9874-6811b6f0ce3b | partb hook-clip | kling3_0 pro 5 s (start_image: ep3-a) | 2026-10-12 | higgsfield/partb/clips/ep3-t1.mp4 | USED: Episode 3 hook (muted) |
+| 88a318d5-371d-4cc8-ba4d-a29be8aa89ba | partb hook-clip | kling3_0 pro 5 s (start_image: ep4-b) | 2026-10-12 | higgsfield/partb/clips/ep4-t1.mp4 | USED: Episode 4 hook (muted) |
+| 594b190b-f7d6-467b-976a-6b3a9c1c54bb | partb hook-clip | kling3_0 pro 5 s (start_image: ep5-a) | 2026-10-12 | higgsfield/partb/clips/ep5-t1.mp4 | USED: Episode 5 hook (muted) |
+| accd4933-a4b6-4d11-bbe0-6104aab8502e | partb start-frame | nano_banana_pro 16:9 2k | 2026-10-12 | higgsfield/partb/frames/ep2-a.png | REJECTED: a brand logo on the back of the tablet |
+| 7d06edf1-2db0-4c46-a4ba-d98896a56994 | partb start-frame | nano_banana_pro 16:9 2k | 2026-10-12 | higgsfield/partb/frames/ep2-b.png | USED: start frame of the Episode 2 hook |
+| b7413292-fc24-41de-9a86-7e8a12bf4c34 | partb start-frame | nano_banana_pro 16:9 2k | 2026-10-12 | higgsfield/partb/frames/ep3-a.png | USED: start frame of the Episode 3 hook |
+| b0137dc5-6222-4fbf-8781-5e99e8258829 | partb start-frame | nano_banana_pro 16:9 2k | 2026-10-12 | higgsfield/partb/frames/ep3-b.png | NOT USED |
+| 4feab437-b186-458b-8135-1a4668438866 | partb start-frame | nano_banana_pro 16:9 2k | 2026-10-12 | higgsfield/partb/frames/ep4-a.png | NOT USED |
+| f7194c77-ee5a-4773-a642-df93f6087d41 | partb start-frame | nano_banana_pro 16:9 2k | 2026-10-12 | higgsfield/partb/frames/ep4-b.png | USED: start frame of the Episode 4 hook |
+| 3d412e2c-b267-48f1-a66d-645f6450725d | partb start-frame | nano_banana_pro 16:9 2k | 2026-10-12 | higgsfield/partb/frames/ep5-a.png | USED: start frame of the Episode 5 hook |
+| e713cb51-918a-4a07-9861-5534a2d3482b | partb start-frame | nano_banana_pro 16:9 2k | 2026-10-12 | higgsfield/partb/frames/ep5-b.png | NOT USED |
 | f546c66e-0649-4dd6-bc04-7ac063047d67 | product-anchor | nano_banana_pro | 2026-10-11 | higgsfield/products/anchor-a.png | unused take (fill card visible) |
 | 02cd24c9-8f36-47e8-a4c8-91b402ccfd8f | product-photo | nano_banana_pro | 2026-10-11 | products/raw/MEAT-203.png | USED: loaded into the local demo stack |
 | 8b908ce5-c517-47f8-a576-b77ed808304a | product-photo | nano_banana_pro | 2026-10-11 | products/raw/PRD-007.png | Red Bell Peppers (left in the local DB by the V1 add-product capture) |
@@ -327,4 +339,4 @@ Model column: the model requested (the API reports nano_banana_pro jobs as `nano
 | 807cfae8-0152-4c07-a614-834166df8f67 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-916-t1.mp4 | PICK: Salma 9:16 test shot |
 | d6eb3737-0583-4e43-885d-61c95b02c80c | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-916-t2.mp4 |  |
 
-116 Higgsfield generations recorded. Elements: olleik-demo-catalog-style 310febdd-c4a9-499d-be0b-cc30b46b9e5f, olleik-marco 2f647b1b-7746-4ecd-9510-49fb41c197e7, olleik-salma ce092dc3-a897-47f2-a82c-5e5b7f773e9a, olleik-driver 93840d9d-15f2-4d88-92b9-3e71f5a93a9d.
+128 Higgsfield generations recorded. Elements: olleik-demo-catalog-style 310febdd-c4a9-499d-be0b-cc30b46b9e5f, olleik-marco 2f647b1b-7746-4ecd-9510-49fb41c197e7, olleik-salma ce092dc3-a897-47f2-a82c-5e5b7f773e9a, olleik-driver 93840d9d-15f2-4d88-92b9-3e71f5a93a9d.

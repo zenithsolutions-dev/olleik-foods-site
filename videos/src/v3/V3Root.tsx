@@ -5,6 +5,7 @@ import { WorldView } from "./World";
 import { HookRoot } from "./hooksRoot";
 import { ManualFilm } from "./Episode3";
 import { MANUALS } from "./manuals";
+import { FULL_MANUALS } from "./manualsFull";
 import { Promo20, PROMO_FRAMES } from "./Promo20";
 
 function CameraTest({ audioSrc }: { audioSrc?: string }) {
@@ -22,7 +23,7 @@ export function V3Root() {
     <>
       <HookRoot />
       <Composition id="V3-Promo20" component={Promo20} durationInFrames={PROMO_FRAMES} fps={30} width={1920} height={1080} defaultProps={{} as { audioSrc?: string }} />
-      {Object.values(MANUALS).map((m) => (
+      {[...Object.values(MANUALS), ...Object.values(FULL_MANUALS)].map((m) => (
         <Composition key={m.id} id={m.id} component={({ audioSrc }: { audioSrc?: string }) => <ManualFilm m={m} audioSrc={audioSrc} />} durationInFrames={m.frames} fps={30} width={1920} height={1080} defaultProps={{} as { audioSrc?: string }} />
       ))}
       <Composition id="V3-CameraTest" component={CameraTest} durationInFrames={CAMERA_TEST_FRAMES} fps={30} width={1920} height={1080} defaultProps={{} as { audioSrc?: string }} />

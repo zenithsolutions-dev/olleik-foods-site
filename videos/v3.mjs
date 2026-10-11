@@ -111,6 +111,22 @@ async function srt(outDir = `${OUT}/mp4`) {
   rmSync(tmp, { force: true });
 }
 
+/** SRT files for the Part B usage videos (manualsFull.ts), named as delivered. */
+const FULL_NAMES = { "V3-VISITOR-FULL": "manual-visitor", "V3-EP1-FULL": "manual-ep1", "V3-EP2": "manual-ep2", "V3-EP3": "manual-ep3", "V3-EP4": "manual-ep4", "V3-EP5": "manual-ep5" };
+async function srtFull(outDir = `${OUT}/mp4`) {
+  const { build } = await import("esbuild");
+  const tmp = resolve(`${OUT}/tmp-srtf.mjs`);
+  await build({ entryPoints: [resolve("src/v3/manualsFull.ts")], bundle: true, format: "esm", platform: "node", outfile: tmp, external: ["remotion"], loader: { ".json": "json" }, logLevel: "error", banner: { js: "import { createRequire } from \"module\"; const require = createRequire(import.meta.url);" } });
+  const mod = await import(pathToFileURL(tmp).href);
+  const { srtOf } = mod;
+  mkdirSync(outDir, { recursive: true });
+  for (const [id, m] of Object.entries(mod.FULL_MANUALS)) {
+    writeFileSync(`${outDir}/${FULL_NAMES[id]}.en.srt`, srtOf(m));
+    console.log(`${outDir}/${FULL_NAMES[id]}.en.srt`);
+  }
+  rmSync(tmp, { force: true });
+}
+
 const [cmd, a, b, c, e] = process.argv.slice(2);
 const list = (x) => String(x).split(",").map(Number);
 if (cmd === "stills") await stills(a, list(b));
@@ -119,4 +135,5 @@ else if (cmd === "audio") await audio(a, b, c ?? -14, e ?? "src/v3/shots.ts", pr
 else if (cmd === "mux") mux(a, b);
 else if (cmd === "qa") qa(a, b, list(c));
 else if (cmd === "srt") await srt(a);
+else if (cmd === "srtfull") await srtFull(a);
 else console.log("usage: ./run.sh v3.mjs stills|render|audio|mux|qa …");

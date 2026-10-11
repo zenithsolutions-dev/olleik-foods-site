@@ -7,7 +7,10 @@ SRC = "public/footage/v3"; DST = f"{SRC}/tiles"; TILE = 1800
 # Overscroll margin for the manuals (CSS px): the page's own last pixel row repeated below the page, so the camera can
 # frame bottom controls above the caption band. No UI is added or changed; box positions are unchanged.
 PAD = {n: 160 for n in ["cart", "checkout-0", "checkout-1", "checkout-2", "order-placed", "orders", "admin-dashboard",
-                        "admin-orders", "admin-orders-new", "admin-order-new", "admin-order-confirmed", "admin-order-prepared", "admin-order-completed"]}
+                        "admin-orders", "admin-orders-new", "admin-order-new", "admin-order-confirmed", "admin-order-prepared", "admin-order-completed",
+                        # Part B (full manual and episodes 2-5)
+                        "portal", "search-1", "search-2", "leads-0", "leads-1", "cust-new-0", "cust-new-1", "customers", "categories",
+                        "assign", "pricing", "cust-detail-0", "cust-detail-2", "admin-login", "low-stock", "offers", "account"]}
 os.makedirs(DST, exist_ok=True)
 meta = {}
 for f in sorted(glob.glob(f"{SRC}/*.png")):
