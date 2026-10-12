@@ -59,7 +59,7 @@ export async function stockOf(sku: string): Promise<number | null> {
   return r[0]?.stock_qty ?? null;
 }
 
-export type LineSpec = { sku: string; qty: number; priceCents?: number };
+export type LineSpec = { sku: string; qty: number; priceCents?: number; wasAssigned?: boolean };
 
 /** Insert a complete order (header, lines, cost snapshots) with the given status and return its id. */
 export async function createOrder(
@@ -93,7 +93,7 @@ export async function createOrder(
       qty: l.qty,
       base_price_cents: l.p.list_price_cents,
       unit_price_cents: l.price,
-      was_assigned: true,
+      was_assigned: l.wasAssigned ?? true,
       line_total_cents: l.qty * l.price,
     })),
   );
