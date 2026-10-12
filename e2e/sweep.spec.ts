@@ -1,21 +1,11 @@
 import { test, expect, authFile, pageProblems } from "./helpers/fixtures";
-import { select } from "./helpers/db";
+import { dynamicRoutes } from "./helpers/ids";
 
 // Route sweep: every page, as the role that should see it, at phone and desktop width.
 // Per page: HTTP status, no console/page errors, no failed or 5xx requests (the auto `issues` fixture),
 // no horizontal overflow, no broken or alt-less images, every form control labelled, every button/link named.
 
 type Route = { path: string; heading?: RegExp | string; role: "public" | "admin" | "copperleaf" };
-
-async function dynamicRoutes() {
-  const orders = await select<{ id: string; status: string }>("orders?select=id,status&order=created_at.desc&limit=200");
-  const completed = orders.find((o) => o.status === "completed")!.id;
-  const fresh = orders.find((o) => o.status === "new")!.id;
-  const cl = await select<{ id: string }>("customers?select=id&business_name=eq.Copperleaf%20Kitchen");
-  const clOrders = await select<{ id: string }>(`orders?select=id&customer_id=eq.${cl[0].id}&order=created_at.desc&limit=1`);
-  const tpl = await select<{ id: string }>("offer_templates?select=id&limit=1");
-  return { completed, fresh, customerId: cl[0].id, customerOrder: clOrders[0].id, templateId: tpl[0].id };
-}
 
 const PUBLIC: Route[] = [
   "/", "/about", "/apply", "/careers", "/catalog", "/contact", "/delivery", "/faq", "/login", "/resources",
@@ -82,7 +72,7 @@ for (const [role, group, paths] of [
   test.describe(`${group} pages`, () => {
     test.use({ storageState: authFile(role) });
     for (const mk of paths) {
-      test(mk({ completed: "<completed-order>", fresh: "<new-order>", customerId: "<customer>", customerOrder: "<own-order>", templateId: "<template>" }), async ({ page }) => {
+      test(mk({ completed: "<completed-order>", fresh: "<new-order>", customerId: "<customer>", customerOrder: "<own-order>", otherCustomerOrder: "<other>", templateId: "<template>" }), async ({ page }) => {
         const p = mk(ids);
         const res = await page.goto(p);
         expect(res?.status(), "http status").toBe(200);

@@ -1,4 +1,5 @@
 import "server-only";
+import { isUuid } from "@/lib/uuid";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { topThumbs, type ThumbItem } from "@/lib/product-thumbs";
 import type { OfferDiscountKind, ProductUnit } from "@/lib/admin/types";
@@ -356,6 +357,7 @@ export async function fetchMyOrders(range?: {
 }
 
 export async function fetchMyOrder(id: string): Promise<PortalOrderDetail | null> {
+  if (!isUuid(id)) return null;
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("orders")

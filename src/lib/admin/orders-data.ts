@@ -1,4 +1,5 @@
 import "server-only";
+import { isUuid } from "@/lib/uuid";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { topThumbs, type ThumbItem } from "@/lib/product-thumbs";
 import type { OrderFulfillment, OrderStatus } from "@/lib/portal/portal-data";
@@ -150,6 +151,7 @@ export type AdminOrderDetail = {
 };
 
 export async function fetchAdminOrder(id: string): Promise<AdminOrderDetail | null> {
+  if (!isUuid(id)) return null;
   const admin = getAdminClient();
   if (!admin) return null;
 
