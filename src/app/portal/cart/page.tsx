@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { formatMoney } from "@/lib/portal/format";
 import type { CartPricing } from "@/lib/orders/submit";
+import { ProductThumb } from "@/components/product-thumb";
 import { useCart } from "../cart-context";
 import { priceCart } from "../orders-actions";
 
@@ -117,13 +118,16 @@ export default function CartPage() {
       ) : pricing ? (
         <>
           <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-surface">
-            {pricing.lines.map((l) => (
+            {pricing.lines.map((l, idx) => (
               <div
                 key={l.productId}
-                className="flex flex-wrap items-center gap-3 border-b border-[var(--border)] px-5 py-4 last:border-b-0"
+                data-testid="cart-line"
+                className="flex gap-3 border-b border-[var(--border)] px-4 py-4 last:border-b-0 sm:px-5"
               >
+                <ProductThumb src={l.imageUrl} name={l.name} size="lg" eager={idx < 4} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-foreground">
+                  {/* The name wraps in full (never truncated): on a phone it used to be cut to 2-3 letters. */}
+                  <p className="font-medium leading-snug text-foreground">
                     {l.name}
                     {!l.available && (
                       <span className="ml-2 rounded-full bg-zinc-200 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-zinc-600">
@@ -134,52 +138,56 @@ export default function CartPage() {
                   <p className="text-xs text-muted">
                     {l.sku} · {l.unitSize} / {l.unit}
                   </p>
-                  <p className="mt-0.5 text-xs">
+                  <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
                     <span className="font-mono font-semibold text-brand-deep">
                       {formatMoney(l.unitPriceCents)}
                     </span>
                     {l.appliedOfferTitle && (
-                      <span className="ml-1.5 text-emerald-700">
+                      <span className="text-emerald-700">
                         {l.appliedOfferTitle} (was {formatMoney(l.basePriceCents)})
                       </span>
                     )}
                     {l.assigned && !l.appliedOfferTitle && (
-                      <span className="ml-1.5 rounded-full bg-brand/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-brand-deep">
+                      <span className="rounded-full bg-brand/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-brand-deep">
                         Your price
                       </span>
                     )}
                   </p>
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1 rounded-full border border-[var(--border-strong)] px-1 py-0.5">
+                      <button
+                        type="button"
+                        aria-label={`Decrease ${l.name}`}
+                        onClick={() => cart.setQty(l.productId, l.qty - 1)}
+                        className="grid h-8 w-8 place-items-center rounded-full hover:bg-brand-mist"
+                      >
+                        <Minus size={14} />
+                      </button>
+                      <span className="w-8 text-center text-sm font-semibold">{l.qty}</span>
+                      <button
+                        type="button"
+                        aria-label={`Increase ${l.name}`}
+                        onClick={() => cart.setQty(l.productId, l.qty + 1)}
+                        className="grid h-8 w-8 place-items-center rounded-full hover:bg-brand-mist"
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-right font-mono text-sm font-semibold text-brand-deep">
+                        {formatMoney(l.lineTotalCents)}
+                      </p>
+                      <button
+                        type="button"
+                        aria-label={`Remove ${l.name}`}
+                        onClick={() => cart.remove(l.productId)}
+                        className="rounded p-2 text-muted hover:text-red-600"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 rounded-full border border-[var(--border-strong)] px-1 py-0.5">
-                  <button
-                    type="button"
-                    aria-label={`Decrease ${l.name}`}
-                    onClick={() => cart.setQty(l.productId, l.qty - 1)}
-                    className="grid h-7 w-7 place-items-center rounded-full hover:bg-brand-mist"
-                  >
-                    <Minus size={13} />
-                  </button>
-                  <span className="w-8 text-center text-sm font-semibold">{l.qty}</span>
-                  <button
-                    type="button"
-                    aria-label={`Increase ${l.name}`}
-                    onClick={() => cart.setQty(l.productId, l.qty + 1)}
-                    className="grid h-7 w-7 place-items-center rounded-full hover:bg-brand-mist"
-                  >
-                    <Plus size={13} />
-                  </button>
-                </div>
-                <p className="w-20 text-right font-mono text-sm font-semibold text-brand-deep">
-                  {formatMoney(l.lineTotalCents)}
-                </p>
-                <button
-                  type="button"
-                  aria-label={`Remove ${l.name}`}
-                  onClick={() => cart.remove(l.productId)}
-                  className="rounded p-1.5 text-muted hover:text-red-600"
-                >
-                  <Trash2 size={15} />
-                </button>
               </div>
             ))}
             <div className="flex items-center justify-between bg-brand-mist/30 px-5 py-4">
