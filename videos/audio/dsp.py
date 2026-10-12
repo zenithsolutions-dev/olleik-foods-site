@@ -188,19 +188,35 @@ def lufs(st):
     return float(-0.691 + 10 * np.log10(np.mean(g2)))
 
 
+def peak4(st, block_s=20, pad=64):
+    """Per-sample inter-sample peak (4x oversampled |x|, max over channels), in float32 blocks of `block_s` seconds with
+    a small overlap: a 12-minute stereo mix no longer needs several 2 GB float64 arrays at once."""
+    n = len(st)
+    out = np.empty(n, dtype=np.float32)
+    block = int(SR * block_s)
+    for s in range(0, n, block):
+        a, b = max(0, s - pad), min(n, s + block + pad)
+        up = np.abs(signal.resample_poly(np.asarray(st[a:b], dtype=np.float32), 4, 1, axis=0))
+        if up.ndim > 1:
+            up = up.max(axis=1)
+        pk = up[: (len(up) // 4) * 4].reshape(-1, 4).max(axis=1)
+        m = min(block, n - s)
+        seg = pk[s - a: s - a + m]
+        out[s: s + len(seg)] = seg
+        if len(seg) < m:
+            out[s + len(seg): s + m] = np.abs(np.asarray(st[s + len(seg): s + m])).max(axis=-1) if np.ndim(st) > 1 else np.abs(st[s + len(seg): s + m])
+    return out
+
+
 def true_peak_db(st):
-    up = signal.resample_poly(st, 4, 1, axis=0)
-    return float(db(np.max(np.abs(up))))
+    return float(db(float(np.max(peak4(st)))))
 
 
 def limiter(st, ceiling_db=-1.2, lookahead_ms=5, release_ms=80):
     """Look-ahead peak limiter driven by a 4x-oversampled peak estimate (keeps true peak under the ceiling)."""
     ceil = from_db(ceiling_db)
     # Inter-sample peaks: interpolate the signal itself (4x), then take |x| per original sample.
-    up = np.abs(signal.resample_poly(st, 4, 1, axis=0)).max(axis=1)
-    peak = up[: (len(up) // 4) * 4].reshape(-1, 4).max(axis=1)[: len(st)]
-    if len(peak) < len(st):
-        peak = np.pad(peak, (0, len(st) - len(peak)))
+    peak = peak4(st).astype(np.float64)
     need = np.minimum(1.0, ceil / np.maximum(peak, 1e-9))
     la = int(SR * lookahead_ms / 1000)
     # Minimum over the look-ahead window so gain is down before the peak arrives.

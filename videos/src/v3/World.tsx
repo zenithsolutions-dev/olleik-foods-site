@@ -32,6 +32,8 @@ export type WorldShot = {
   wipes?: Wipe[];
   cursor?: CursorKey[];
   type?: BoundType[];
+  /** Phone screens: a touch shows as a soft fingertip only around each press (fingers do not hover). */
+  touch?: boolean;
 };
 
 /** Captures are split into 600-CSS-px tiles (capture/tile.py): Chrome cannot decode a 40-megapixel PNG in one piece. */
@@ -134,7 +136,17 @@ function Scene({ shot, t, frame }: { shot: WorldShot; t: number; frame: number }
         );
       })}
       {(shot.type ?? []).map((ty, i) => <KineticType key={i} ty={ty} cam={cam} home={home} frame={frame} world={world} />)}
-      {shot.cursor && (() => {
+      {shot.cursor && shot.touch && (() => {
+        const press = shot.cursor.filter((k) => k.press).find((k) => frame >= k.f - 9 && frame <= k.f + 7);
+        if (!press) return null;
+        const d = frame - press.f;
+        const k = d < 0 ? interpolate(d, [-9, -3], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) : interpolate(d, [2, 7], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+        const down = Math.abs(d) <= 2 ? 1 : 0;
+        const pt = project(cam, press.x, press.y);
+        const r = 21 * (1 - 0.12 * down);
+        return <div style={{ position: "absolute", left: pt.x - r, top: pt.y - r, width: 2 * r, height: 2 * r, borderRadius: r, background: `rgba(20,32,26,${0.26 + 0.12 * down})`, border: "2px solid rgba(255,255,255,.7)", opacity: k, boxShadow: "0 2px 6px rgba(0,0,0,.25)" }} />;
+      })()}
+      {shot.cursor && !shot.touch && (() => {
         const c = cursorAt(shot.cursor, t);
         const pressed = shot.cursor.some((k) => k.press && frame >= k.f - 2 && frame <= k.f + 2) ? 1 : 0;
         const pt = project(cam, c.x, c.y);
@@ -149,7 +161,7 @@ export function WorldView({ shot, frameOffset = 0 }: { shot: WorldShot; frameOff
   const frame = useCurrentFrame() + frameOffset;
   const offsets = shutterSamples(speedAt(shot.world, shot.keys, frame));
   return (
-    <AbsoluteFill style={{ background: "#fbf8f2", width: OUT_W, height: OUT_H }}>
+    <AbsoluteFill style={{ background: "#fbf8f2", width: shot.world.viewW ?? OUT_W, height: shot.world.viewH ?? OUT_H, overflow: "hidden" }}>
       {offsets.map((o, i) => (
         <AbsoluteFill key={i} style={{ opacity: 1 / (i + 1) }}>
           <Scene shot={shot} t={frame + o} frame={frame} />

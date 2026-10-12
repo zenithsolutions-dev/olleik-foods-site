@@ -1,0 +1,578 @@
+{
+ "title": "Olleik Foods: the whole system, visitor, customer and admin",
+ "status": "Pending Review",
+ "voice": {
+  "engine": "Higgsfield seed_audio",
+  "voice_id": "3c9d6053-6334-592c-8997-4e325286af3f",
+  "voice_type": "preset",
+  "name": "Holden (owner's choice)"
+ },
+ "pronunciation": "\"Olleik\" is written \"Oh-lake\" in the spoken text only; on screen it stays \"Olleik\"",
+ "rules": "calm, short sentences; no marketing claims, no delivery-time promises, no spoken prices",
+ "lines": [
+  {
+   "id": "f00",
+   "chapter": 0,
+   "text": "This film follows one restaurant through the whole Olleik system, from its first visit to its invoices.",
+   "speak": "This film follows one restaurant through the whole Oh-lake system, from its first visit to its invoices.",
+   "targetSeconds": 6.8,
+   "caption": "One restaurant, through the whole Olleik system"
+  },
+  {
+   "id": "f01",
+   "chapter": 1,
+   "text": "On the left is what a visitor or customer sees on a phone. On the right is the Olleik admin, on a desktop.",
+   "speak": "On the left is what a visitor or customer sees on a phone. On the right is the Oh-lake admin, on a desktop.",
+   "targetSeconds": 9.2,
+   "caption": "Left: the customer's phone. Right: the admin"
+  },
+  {
+   "id": "f02",
+   "chapter": 1,
+   "text": "When something on one side causes a change on the other, a line of light links the two. The categories on the public site come straight from the admin's category list.",
+   "targetSeconds": 12.4,
+   "caption": "Public categories come from the admin's list"
+  },
+  {
+   "id": "f02b",
+   "chapter": 1,
+   "text": "The public catalog page shows the same categories, each with its own page of products.",
+   "targetSeconds": 6.0,
+   "caption": "The public catalog shows the same categories"
+  },
+  {
+   "id": "f03",
+   "chapter": 1,
+   "text": "Each category page lists the products the admin keeps active, with their photos. Prices stay private until a customer signs in.",
+   "targetSeconds": 8.4,
+   "caption": "Active products with photos, no public prices"
+  },
+  {
+   "id": "f04",
+   "chapter": 2,
+   "text": "A restaurant owner wants to buy from Olleik. On the home page, they tap Become a customer.",
+   "speak": "A restaurant owner wants to buy from Oh-lake. On the home page, they tap Become a customer.",
+   "targetSeconds": 6.8,
+   "caption": "A restaurant owner taps Become a customer"
+  },
+  {
+   "id": "f05",
+   "chapter": 2,
+   "text": "They fill in the application: business name, contact, email, phone and address.",
+   "targetSeconds": 4.8,
+   "caption": "The application form"
+  },
+  {
+   "id": "f06",
+   "chapter": 2,
+   "text": "They add the type of business and a short note, and submit. Now watch the admin side. The application appears on the Leads page, marked new.",
+   "targetSeconds": 10.4,
+   "caption": "The application arrives in Leads, marked new"
+  },
+  {
+   "id": "f07",
+   "chapter": 2,
+   "text": "The phone confirms that the application was received. The dashboard also lists it under Recent leads.",
+   "targetSeconds": 6.4,
+   "caption": "Also listed under Recent leads"
+  },
+  {
+   "id": "f07b",
+   "chapter": 2,
+   "text": "On the Leads page, tabs sort the applications by status: new, contacted, approved and rejected.",
+   "targetSeconds": 6.0,
+   "caption": "Leads are sorted by status"
+  },
+  {
+   "id": "f08",
+   "chapter": 2,
+   "text": "The site also has a contact form and a supplier form. Those messages are saved, but the admin does not show them yet.",
+   "targetSeconds": 9.2,
+   "caption": "Contact and supplier forms: saved, not shown in the admin"
+  },
+  {
+   "id": "f08b",
+   "chapter": 2,
+   "text": "The site also has pages about the company, delivery and common questions.",
+   "targetSeconds": 4.8,
+   "caption": "About, delivery and questions pages"
+  },
+  {
+   "id": "f09",
+   "chapter": 3,
+   "text": "On the Leads page, the admin reviews the application and marks it approved.",
+   "targetSeconds": 5.2,
+   "caption": "The admin marks the lead approved"
+  },
+  {
+   "id": "f10",
+   "chapter": 3,
+   "text": "Approved leads wait on the Add a customer page. One click converts the lead into a customer account.",
+   "targetSeconds": 7.2,
+   "caption": "Convert the approved lead into a customer"
+  },
+  {
+   "id": "f10b",
+   "chapter": 3,
+   "text": "An account can also be created by hand, under Manual entry, for a customer who did not apply online.",
+   "targetSeconds": 7.6,
+   "caption": "Manual entry for customers who did not apply online"
+  },
+  {
+   "id": "f11",
+   "chapter": 3,
+   "text": "The new account opens with a setup checklist. It is not invited yet, and it has no products.",
+   "targetSeconds": 7.2,
+   "caption": "A setup checklist for the new account"
+  },
+  {
+   "id": "f12",
+   "chapter": 3,
+   "text": "The admin can send an invitation by email, or copy a one-time link to send by message. The customer opens it and sees a welcome page with their business name.",
+   "targetSeconds": 12.0,
+   "caption": "An invitation opens a welcome page"
+  },
+  {
+   "id": "f13",
+   "chapter": 3,
+   "text": "They choose a password and save it. They are now signed in to their own portal, and on the admin side the account shows as active.",
+   "targetSeconds": 10.4,
+   "caption": "Signed in: the account is now active"
+  },
+  {
+   "id": "f13b",
+   "chapter": 3,
+   "text": "The welcome banner appears only on this first visit to the portal.",
+   "targetSeconds": 4.8,
+   "caption": "A welcome banner on the first visit"
+  },
+  {
+   "id": "f14",
+   "chapter": 3,
+   "text": "Their catalog is still empty. Nothing is visible until the admin sets it up.",
+   "targetSeconds": 5.6,
+   "caption": "The catalog is empty until the admin sets it up"
+  },
+  {
+   "id": "f15",
+   "chapter": 4,
+   "text": "The admin opens Add product and picks the items this restaurant buys.",
+   "targetSeconds": 4.8,
+   "caption": "The admin picks this customer's products"
+  },
+  {
+   "id": "f16",
+   "chapter": 4,
+   "text": "As soon as they are added, the customer's catalog fills up. Each product shows a price marked Your price.",
+   "targetSeconds": 7.6,
+   "caption": "The catalog fills up, each price marked Your price"
+  },
+  {
+   "id": "f17",
+   "chapter": 4,
+   "text": "Each price comes from the margin rules. The table shows the cost, the list price, the customer's price, the profit, and the rule behind it.",
+   "targetSeconds": 10.0,
+   "caption": "Cost, list price, customer price, profit and rule"
+  },
+  {
+   "id": "f18",
+   "chapter": 4,
+   "text": "The admin can also type a price by hand. The customer sees the new price in their catalog.",
+   "targetSeconds": 7.2,
+   "caption": "A price typed by hand reaches the customer"
+  },
+  {
+   "id": "f19",
+   "chapter": 4,
+   "text": "A margin for this customer reprices every product that follows the rules. Prices typed by hand stay as they are.",
+   "targetSeconds": 8.0,
+   "caption": "A customer margin reprices the computed prices"
+  },
+  {
+   "id": "f20",
+   "chapter": 4,
+   "text": "Catalog visibility can open whole categories. The extra products show at the list price, without the Your price label.",
+   "targetSeconds": 7.6,
+   "caption": "Visibility opens whole categories at list price"
+  },
+  {
+   "id": "f21",
+   "chapter": 4,
+   "text": "A hidden product disappears from this customer's catalog, even when it is assigned.",
+   "targetSeconds": 5.2,
+   "caption": "A hidden product disappears for this customer"
+  },
+  {
+   "id": "f22",
+   "chapter": 4,
+   "text": "Assign products does the same for many customers at once, with a preview of cost and profit before anything changes.",
+   "targetSeconds": 8.0,
+   "caption": "Assign many products to many customers"
+  },
+  {
+   "id": "f23",
+   "chapter": 4,
+   "text": "The Margin rules page holds the global, product, category and customer margins. A new rule updates the affected customer prices automatically.",
+   "targetSeconds": 8.4,
+   "caption": "A new margin rule updates prices automatically"
+  },
+  {
+   "id": "f24",
+   "chapter": 4,
+   "text": "From the customer page, the admin can also recompute prices, change many prices at once, copy a catalog from another customer, or export it.",
+   "targetSeconds": 9.6,
+   "caption": "Recompute, bulk prices, copy a catalog, export"
+  },
+  {
+   "id": "f25",
+   "chapter": 5,
+   "text": "Offers are set per customer. Here the admin creates a welcome offer on salmon, for two weeks.",
+   "targetSeconds": 6.8,
+   "caption": "The admin creates an offer for this customer"
+  },
+  {
+   "id": "f26",
+   "chapter": 5,
+   "text": "The offer appears right away on the customer's Offers page.",
+   "targetSeconds": 4.0,
+   "caption": "It appears on the customer's Offers page"
+  },
+  {
+   "id": "f27",
+   "chapter": 5,
+   "text": "In the catalog, the salmon now shows the offer price, with the regular price struck through.",
+   "targetSeconds": 6.4,
+   "caption": "The catalog shows the offer price"
+  },
+  {
+   "id": "f28",
+   "chapter": 5,
+   "text": "An offer template can be applied to many customers in one step. The preview shows exactly what will change, and the customer sees the new offer.",
+   "targetSeconds": 10.4,
+   "caption": "A template applied to many customers at once"
+  },
+  {
+   "id": "f29",
+   "chapter": 5,
+   "text": "Running now lists the active offers and each applied batch, which can be undone as a whole.",
+   "targetSeconds": 6.8,
+   "caption": "Running offers, and batches that can be undone"
+  },
+  {
+   "id": "f29b",
+   "chapter": 5,
+   "text": "Templates are reusable offers, such as a weekend promotion, kept in the Offer library.",
+   "targetSeconds": 5.6,
+   "caption": "Templates are reusable offers"
+  },
+  {
+   "id": "f30",
+   "chapter": 6,
+   "text": "The customer searches the catalog and adds salmon to the cart.",
+   "targetSeconds": 4.4,
+   "caption": "The customer searches and adds to the cart"
+  },
+  {
+   "id": "f31",
+   "chapter": 6,
+   "text": "They add cream, takeout cups and oat milk, choosing the quantities as they go.",
+   "targetSeconds": 5.6,
+   "caption": "Choosing quantities"
+  },
+  {
+   "id": "f32",
+   "chapter": 6,
+   "text": "The cart shows the exact price of each line, including the offer.",
+   "targetSeconds": 4.8,
+   "caption": "The cart shows the exact prices"
+  },
+  {
+   "id": "f33",
+   "chapter": 6,
+   "text": "At checkout they choose delivery or pickup, and can leave a note. There is no online payment. The order follows the account's payment terms.",
+   "targetSeconds": 9.6,
+   "caption": "Delivery or pickup, a note, no online payment"
+  },
+  {
+   "id": "f34",
+   "chapter": 6,
+   "text": "They submit the order. Now watch the admin side. It appears at once in the New tab, with a number in the sidebar and an alert sound.",
+   "targetSeconds": 10.8,
+   "caption": "The order appears in New at once"
+  },
+  {
+   "id": "f35",
+   "chapter": 6,
+   "text": "On the phone, the order shows as Received. The dashboard counts it as waiting for confirmation.",
+   "targetSeconds": 6.4,
+   "caption": "Received, and waiting for confirmation"
+  },
+  {
+   "id": "f36",
+   "chapter": 7,
+   "text": "The admin opens the order. Each line shows its cost and profit, which the customer never sees.",
+   "targetSeconds": 6.8,
+   "caption": "Cost and profit, for the admin only"
+  },
+  {
+   "id": "f36b",
+   "chapter": 7,
+   "text": "The order also shows who placed it, with the note left at checkout.",
+   "targetSeconds": 5.2,
+   "caption": "The customer and the checkout note"
+  },
+  {
+   "id": "f37",
+   "chapter": 7,
+   "text": "When the admin confirms, the system checks the stock. There are not enough takeout cups.",
+   "targetSeconds": 6.0,
+   "caption": "The stock check finds a shortage"
+  },
+  {
+   "id": "f38",
+   "chapter": 7,
+   "text": "The admin confirms anyway. The stock is taken out, and on the customer's phone the order is now Confirmed.",
+   "targetSeconds": 7.6,
+   "caption": "Confirmed on both sides"
+  },
+  {
+   "id": "f39",
+   "chapter": 7,
+   "text": "The cups are now unavailable to every customer. The oat milk came from an open category, so it is now part of this customer's catalog.",
+   "targetSeconds": 10.0,
+   "caption": "Cups unavailable, oat milk added to the catalog"
+  },
+  {
+   "id": "f40",
+   "chapter": 7,
+   "text": "When the order is packed, the admin marks it prepared. The customer sees Ready.",
+   "targetSeconds": 5.6,
+   "caption": "Prepared for the admin, Ready for the customer"
+  },
+  {
+   "id": "f41",
+   "chapter": 7,
+   "text": "Once it is handed over, the admin completes it, and the customer sees Completed.",
+   "targetSeconds": 5.6,
+   "caption": "Completed on both sides"
+  },
+  {
+   "id": "f41b",
+   "chapter": 7,
+   "text": "The customer's order page always shows the current status, and refreshes on its own.",
+   "targetSeconds": 5.6,
+   "caption": "The order page keeps itself up to date"
+  },
+  {
+   "id": "f42",
+   "chapter": 7,
+   "text": "A second order can be cancelled, with a reason that stays with the admin. The customer sees Cancelled, and any stock taken for it goes back.",
+   "targetSeconds": 10.4,
+   "caption": "A cancelled order, on both sides"
+  },
+  {
+   "id": "f43",
+   "chapter": 7,
+   "text": "Both sides keep the full order history, and the admin lists can be filtered by date.",
+   "targetSeconds": 6.4,
+   "caption": "Order history, filtered by date"
+  },
+  {
+   "id": "f44",
+   "chapter": 8,
+   "text": "Each order has an invoice. Both sides print the same document, with the business details at the top.",
+   "targetSeconds": 7.2,
+   "caption": "The same invoice on both sides"
+  },
+  {
+   "id": "f45",
+   "chapter": 8,
+   "text": "The customer's statement for a period matches the admin's customer copy.",
+   "targetSeconds": 4.4,
+   "caption": "The statement matches the customer copy"
+  },
+  {
+   "id": "f45b",
+   "chapter": 8,
+   "text": "A statement can be printed for any period, using the period filter at the top.",
+   "targetSeconds": 6.0,
+   "caption": "Statements for any period"
+  },
+  {
+   "id": "f46",
+   "chapter": 8,
+   "text": "The admin also has an internal copy, with cost and profit, clearly marked as internal.",
+   "targetSeconds": 6.0,
+   "caption": "An internal copy with cost and profit"
+  },
+  {
+   "id": "f47",
+   "chapter": 8,
+   "text": "A cancelled order keeps its invoice, marked as cancelled, for the record.",
+   "targetSeconds": 4.8,
+   "caption": "A cancelled invoice is kept for the record"
+  },
+  {
+   "id": "f48",
+   "chapter": 9,
+   "text": "Back on the admin side, confirming the order reduced the stock. The cups now show as oversold.",
+   "targetSeconds": 6.8,
+   "caption": "The order reduced the stock"
+  },
+  {
+   "id": "f48b",
+   "chapter": 9,
+   "text": "The dashboard also lists today's top products and top customers, with links to the full analytics.",
+   "targetSeconds": 6.4,
+   "caption": "Top products and customers"
+  },
+  {
+   "id": "f49",
+   "chapter": 9,
+   "text": "The dashboard shows today's revenue and profit, and flags the low stock.",
+   "targetSeconds": 4.8,
+   "caption": "Today's revenue, profit and low stock"
+  },
+  {
+   "id": "f49b",
+   "chapter": 9,
+   "text": "The dashboard also flags customers who were invited but have not signed in yet, so the team can follow up.",
+   "targetSeconds": 8.0,
+   "caption": "Invited customers who have not signed in"
+  },
+  {
+   "id": "f50",
+   "chapter": 9,
+   "text": "The low-stock and unavailable statements list what needs reordering.",
+   "targetSeconds": 3.6,
+   "caption": "Low-stock and unavailable statements"
+  },
+  {
+   "id": "f50b",
+   "chapter": 9,
+   "text": "On the Products page, low and oversold stock is flagged in the stock column.",
+   "targetSeconds": 5.6,
+   "caption": "Stock flags on the Products page"
+  },
+  {
+   "id": "f51",
+   "chapter": 9,
+   "text": "When new stock arrives, the admin receives it. It settles the oversold units first, and the cups are available again for customers.",
+   "targetSeconds": 8.8,
+   "caption": "Received stock makes the cups available again"
+  },
+  {
+   "id": "f52",
+   "chapter": 9,
+   "text": "Analytics shows the revenue trend, best sellers, top customers, and customers who have gone quiet.",
+   "targetSeconds": 6.0,
+   "caption": "Analytics: trend, best sellers, customers"
+  },
+  {
+   "id": "f52b",
+   "chapter": 9,
+   "text": "Further down, analytics shows the best sellers by units, revenue and profit, and the products that are not moving.",
+   "targetSeconds": 7.6,
+   "caption": "Best sellers and slow movers"
+  },
+  {
+   "id": "f53",
+   "chapter": 9,
+   "text": "The report builder prints a summary for any period. Adding cost and profit turns it into an internal report.",
+   "targetSeconds": 7.6,
+   "caption": "Reports for any period"
+  },
+  {
+   "id": "f54",
+   "chapter": 9,
+   "text": "The product list can be printed for customers, or with cost columns for internal use.",
+   "targetSeconds": 6.0,
+   "caption": "The printable product list"
+  },
+  {
+   "id": "f55",
+   "chapter": 10,
+   "text": "The admin adds a new product, with its photo, cost, price and starting stock.",
+   "targetSeconds": 5.6,
+   "caption": "A new product with its photo"
+  },
+  {
+   "id": "f56",
+   "chapter": 10,
+   "text": "Once it is created, it appears on the public site, still without a price.",
+   "targetSeconds": 5.6,
+   "caption": "It appears on the public site"
+  },
+  {
+   "id": "f57",
+   "chapter": 10,
+   "text": "When a product is set to inactive, it leaves the public site.",
+   "targetSeconds": 4.8,
+   "caption": "An inactive product leaves the public site"
+  },
+  {
+   "id": "f58",
+   "chapter": 10,
+   "text": "It also leaves every customer's catalog.",
+   "targetSeconds": 2.4,
+   "caption": "And every customer's catalog"
+  },
+  {
+   "id": "f59",
+   "chapter": 10,
+   "text": "Categories can have one level of subcategories, which customers see in their catalog filter.",
+   "targetSeconds": 5.6,
+   "caption": "Categories and subcategories"
+  },
+  {
+   "id": "f60",
+   "chapter": 11,
+   "text": "When the admin edits the account, the customer's Account page shows the new details.",
+   "targetSeconds": 5.6,
+   "caption": "Account changes reach the customer"
+  },
+  {
+   "id": "f61",
+   "chapter": 11,
+   "text": "If the account is suspended, the customer can no longer open the portal.",
+   "targetSeconds": 5.2,
+   "caption": "A suspended account is locked out"
+  },
+  {
+   "id": "f62",
+   "chapter": 11,
+   "text": "Setting it back to active restores access, with the catalog and prices kept.",
+   "targetSeconds": 5.2,
+   "caption": "Active again, catalog and prices kept"
+  },
+  {
+   "id": "f62b",
+   "chapter": 11,
+   "text": "The customer list shows every account with its status, phone, payment terms and catalog size.",
+   "targetSeconds": 6.0,
+   "caption": "Every account in the customer list"
+  },
+  {
+   "id": "f63",
+   "chapter": 11,
+   "text": "Customers can reset their own password from the sign-in page. Admins use a separate sign-in, open only to approved emails.",
+   "targetSeconds": 8.0,
+   "caption": "Password reset, and the admin sign-in"
+  },
+  {
+   "id": "f64",
+   "chapter": 11,
+   "text": "Finally, order alerts can be switched on, so a sound plays when a new order arrives.",
+   "targetSeconds": 6.4,
+   "caption": "Order alerts with sound"
+  },
+  {
+   "id": "f65",
+   "chapter": 12,
+   "text": "That is the full loop, from application to invoice, on both sides of Olleik.",
+   "speak": "That is the full loop, from application to invoice, on both sides of Oh-lake.",
+   "targetSeconds": 5.6,
+   "caption": "From application to invoice, on both sides"
+  }
+ ]
+}

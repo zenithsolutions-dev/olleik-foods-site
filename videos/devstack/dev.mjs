@@ -22,6 +22,8 @@ Object.assign(env, {
   SUPABASE_SERVICE_ROLE_KEY: keys.serviceKey,
   ADMIN_EMAILS: DEMO_ADMIN,
   NEXT_TELEMETRY_DISABLED: "1",
+  // the business runs on Toronto time: server-rendered dates then match the capture browser (no hydration mismatch)
+  TZ: "America/Toronto",
   // Fictional demo business details for the documents (brief V3.2 §10.1, Pending Review). Videos only: the
   // real registered details must still be entered before handover.
   BUSINESS_LEGAL_NAME: "Olleik Foods Ltd.",

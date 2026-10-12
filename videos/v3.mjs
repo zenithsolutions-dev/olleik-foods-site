@@ -34,7 +34,7 @@ async function render(id, name, props = {}) {
   const comp = await selectComposition({ serveUrl: s, id, inputProps: props, port: PORT });
   const out = resolve(`${OUT}/video/${name}-picture.mp4`);
   const t0 = Date.now();
-  await renderMedia({ serveUrl: s, composition: comp, inputProps: props, codec: "h264", crf: 16, muted: true, outputLocation: out, concurrency: Number(process.env.CONC ?? 3), x264Preset: "slow", pixelFormat: "yuv420p", colorSpace: "bt709", port: PORT, timeoutInMilliseconds: 120000 });
+  await renderMedia({ serveUrl: s, composition: comp, inputProps: props, codec: "h264", crf: 16, muted: true, outputLocation: out, concurrency: Number(process.env.CONC ?? 3), x264Preset: "slow", pixelFormat: "yuv420p", colorSpace: "bt709", port: PORT, timeoutInMilliseconds: 120000, onProgress: ({ progress }) => { const p = Math.floor(progress * 100); if (p !== render.last && p % 2 === 0) { render.last = p; console.log(`render ${p}% ${((Date.now() - t0) / 1000).toFixed(0)} s`); } } });
   console.log(`${out}  ${comp.durationInFrames} frames in ${((Date.now() - t0) / 1000).toFixed(0)} s`);
 }
 

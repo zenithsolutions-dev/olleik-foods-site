@@ -11,7 +11,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 os.chdir(ROOT)
 reason = sys.argv[1]
-lines = {l["id"]: l for f in ("VISITOR", "ADMIN") for l in json.load(open(f"narration/{f}.json", encoding="utf8"))["lines"]}
+lines = {l["id"]: l for f in ("VISITOR", "ADMIN", "FULL") for l in json.load(open(f"narration/{f}.json", encoding="utf8"))["lines"]}
 L = pathlib.Path("higgsfield/ledger.json")
 for arg in sys.argv[2:]:
     i, job, url = arg.split("=", 2)

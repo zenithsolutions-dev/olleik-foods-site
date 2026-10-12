@@ -3,6 +3,7 @@
 //   node videos/capture/<part>.mjs   (from the project root, with devstack/stack.mjs and the demo dev server running)
 // Shots land in videos/public/footage/<group>/<shotId>.png; manifest.json is merged part by part.
 import { chromium } from "playwright-core";
+import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -165,7 +166,17 @@ export async function shot(page, key, desc, opts = {}) {
   }).catch(() => {});
   if (opts.before) await opts.before(page);
   const boxes = await boxesOf(page, opts.boxes ?? {});
-  await page.screenshot({ path: file, fullPage: Boolean(opts.full), animations: "disabled", caret: "initial" });
+  const H = opts.full ? await page.evaluate(() => document.documentElement.scrollHeight) : 0;
+  if (opts.full && H * SCALE > 15000) {
+    // Chrome garbles one screenshot taller than ~16k px: capture 4000-CSS-px chunks and stitch them (capture/stitch.py)
+    const parts = [];
+    for (let y = 0, i = 0; y < H; y += 4000, i++) {
+      const part = file.replace(/\.png$/, `.part${i}.png`);
+      await page.screenshot({ path: part, fullPage: true, clip: { x: 0, y, width: page.viewportSize().width, height: Math.min(4000, H - y) }, animations: "disabled", caret: "initial" });
+      parts.push(part);
+    }
+    execFileSync("python", [join(HERE, "stitch.py"), file, ...parts]);
+  } else await page.screenshot({ path: file, fullPage: Boolean(opts.full), animations: "disabled", caret: "initial" });
   const vp = page.viewportSize();
   const url = new URL(page.url());
   const entry = {

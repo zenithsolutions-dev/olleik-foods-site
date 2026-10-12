@@ -125,6 +125,7 @@ const userJson = (u) => ({
   is_anonymous: false,
 });
 const refresh = new Map(); // refresh token → user id (in memory: sessions end when the stack stops)
+const links = new Map(); // one-time invite / recovery link token → user id (generate_link; in memory, used once)
 const session = (u) => {
   const now = Math.floor(Date.now() / 1000);
   const exp = now + 3600;
@@ -168,6 +169,13 @@ async function auth(req, path, q, body, claims) {
     const u = await byId(claims.sub);
     return u ? { status: 200, body: userJson(u) } : err(403, "user_not_found", "User from sub claim in JWT does not exist");
   }
+  if (path === "/verify" && req.method === "POST" && body.token_hash && links.has(body.token_hash)) {
+    // a generated invite / recovery link (verifyOtp with token_hash): one use, then a normal session
+    const id = links.get(body.token_hash);
+    links.delete(body.token_hash);
+    await pool.query("update auth.users set email_confirmed_at = coalesce(email_confirmed_at, now()), last_sign_in_at = now() where id = $1", [id]);
+    return { status: 200, body: session(await byId(id)) };
+  }
   if (path === "/verify") return err(403, "otp_expired", "Email link is invalid or has expired");
   // ——— admin (service role only) ———
   if (!isService) return err(403, "not_admin", "User not allowed");
@@ -180,6 +188,7 @@ async function auth(req, path, q, body, claims) {
     let u = await byEmail(body.email);
     if (!u) u = (await pool.query("insert into auth.users (email, invited_at, raw_user_meta_data) values ($1, now(), $2) returning *", [body.email, body.data ?? {}])).rows[0];
     const tok = randomBytes(16).toString("hex");
+    links.set(tok, u.id);
     return { status: 200, body: { ...userJson(u), action_link: `http://127.0.0.1:${GW_PORT}/auth/v1/verify?token=${tok}&type=${body.type}`, email_otp: "000000", hashed_token: tok, redirect_to: body.redirect_to ?? "", verification_type: body.type } };
   }
   if (path === "/admin/users" && req.method === "GET") {
@@ -250,7 +259,23 @@ const gw = http.createServer(async (req, res) => {
       if (req.method === "GET") return existsSync(file) ? res.writeHead(200, cors).end(readFileSync(file)) : res.writeHead(404, cors).end();
       if (req.method === "POST" || req.method === "PUT") {
         mkdirSync(dirname(file), { recursive: true });
-        writeFileSync(file, raw);
+        // storage-js sends a File / Blob as multipart/form-data: keep only the file part's bytes
+        let bytes = raw;
+        const m = /boundary=(?:"([^"]+)"|([^;]+))/.exec(req.headers["content-type"] ?? "");
+        if (m) {
+          const sep = Buffer.from(`--${m[1] ?? m[2]}`);
+          let at = raw.indexOf(sep);
+          while (at >= 0) {
+            const next = raw.indexOf(sep, at + sep.length);
+            if (next < 0) break;
+            const part = raw.subarray(at + sep.length + 2, next - 2);
+            const hEnd = part.indexOf("\r\n\r\n");
+            const head = part.subarray(0, hEnd).toString();
+            if (/content-type:\s*(image|application\/octet)/i.test(head) || /filename=/i.test(head)) { bytes = part.subarray(hEnd + 4); break; }
+            at = next;
+          }
+        }
+        writeFileSync(file, bytes);
         res.writeHead(200, { "content-type": "application/json", ...cors });
         return res.end(JSON.stringify({ Key: rel, Id: randomUUID() }));
       }

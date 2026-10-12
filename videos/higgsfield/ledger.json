@@ -2454,5 +2454,1075 @@
   "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_004841_de97b0fc-4854-4c98-b38d-7e92373827db.wav",
   "prompt": "[voice Holden 3c9d6053, seed_audio, take 5] Tap Add to put an item in your cart. Add as many as you need.",
   "status": "not used: \"Add\" swallowed (take 4 kept)"
+ },
+ {
+  "job_id": "eb7cdd53-24fa-4835-bd4f-ea2df20b903b",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f00.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051220_eb7cdd53-24fa-4835-bd4f-ea2df20b903b.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] This film follows one restaurant through the whole Oh-lake system, from its first visit to its invoices."
+ },
+ {
+  "job_id": "34069245-f214-47bb-91e8-7e2ac08d81d8",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f01.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051221_34069245-f214-47bb-91e8-7e2ac08d81d8.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] On the left is what a visitor or customer sees on a phone. On the right is the Oh-lake admin, on a desktop."
+ },
+ {
+  "job_id": "7a364c92-7027-49bd-a060-f615d5d566c0",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f02.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051220_7a364c92-7027-49bd-a060-f615d5d566c0.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] When something on one side causes a change on the other, a line of light links the two. The categories on the public site come straight from the admin's category list."
+ },
+ {
+  "job_id": "56af874b-3747-47f7-b0c8-15512c658fc7",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f03-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051221_56af874b-3747-47f7-b0c8-15512c658fc7.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Each category page lists the products the admin keeps active, with their photos. Prices stay private until a customer signs in.",
+  "status": "rejected: a stray word before the line (trimmed in the mix, retaken so no take holds stray words)"
+ },
+ {
+  "job_id": "04b9a20a-eee5-4b39-a620-2b4ab4216747",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f04.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051221_04b9a20a-eee5-4b39-a620-2b4ab4216747.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] A restaurant owner wants to buy from Oh-lake. On the home page, they tap Become a customer."
+ },
+ {
+  "job_id": "5348d8dc-1496-4359-933d-138d46d6e0c9",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f05.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051220_5348d8dc-1496-4359-933d-138d46d6e0c9.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] They fill in the application: business name, contact, email, phone and address."
+ },
+ {
+  "job_id": "0cf08204-f31b-4a48-80ee-fdcf28d459ef",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f06-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051221_0cf08204-f31b-4a48-80ee-fdcf28d459ef.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] They add the type of business and a short note, and submit. Now watch the admin side. The application appears on the Leads page, marked new.",
+  "status": "rejected: stray or garbled words before the line, or a repeated phrase (faster-whisper check)"
+ },
+ {
+  "job_id": "06603057-ac4a-4e81-8840-c22d7b59d206",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f07.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051221_06603057-ac4a-4e81-8840-c22d7b59d206.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The phone confirms that the application was received. The dashboard also lists it under Recent leads."
+ },
+ {
+  "job_id": "8cfb28a9-8ebb-4a76-9a50-046c86b169d3",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f08.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051220_8cfb28a9-8ebb-4a76-9a50-046c86b169d3.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The site also has a contact form and a supplier form. Those messages are saved, but the admin does not show them yet."
+ },
+ {
+  "job_id": "6c3fe69a-b7d3-41b8-8431-9006e429e403",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f09.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051221_6c3fe69a-b7d3-41b8-8431-9006e429e403.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] On the Leads page, the admin reviews the application and marks it approved."
+ },
+ {
+  "job_id": "31c9203d-638c-4467-9c5d-87bc20dd2438",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f10.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051221_31c9203d-638c-4467-9c5d-87bc20dd2438.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Approved leads wait on the Add a customer page. One click converts the lead into a customer account."
+ },
+ {
+  "job_id": "8297bb81-1db4-4650-9140-bf3edf52a7c5",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f11-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051340_8297bb81-1db4-4650-9140-bf3edf52a7c5.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The new account opens with a setup checklist. It is not invited yet, and it has no products.",
+  "status": "rejected: first word clipped, or stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "12191fa0-a327-4f22-b347-bc6df877853d",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f12.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051340_12191fa0-a327-4f22-b347-bc6df877853d.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The admin can send an invitation by email, or copy a one-time link to send by message. The customer opens it and sees a welcome page with their business name."
+ },
+ {
+  "job_id": "4530ef4b-ceb0-4f76-aa8f-72b9fa5e0f13",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f13-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051341_4530ef4b-ceb0-4f76-aa8f-72b9fa5e0f13.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] They choose a password and save it. They are now signed in to their own portal, and on the admin side the account shows as active.",
+  "status": "rejected: first word clipped, or stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "ac7e1ca1-c660-4e56-acce-e13cf68cd80b",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f14.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051341_ac7e1ca1-c660-4e56-acce-e13cf68cd80b.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Their catalog is still empty. Nothing is visible until the admin sets it up."
+ },
+ {
+  "job_id": "35d8f4b6-fe72-44ef-a04c-740e7885d7da",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f15.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051340_35d8f4b6-fe72-44ef-a04c-740e7885d7da.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The admin opens Add product and picks the items this restaurant buys."
+ },
+ {
+  "job_id": "73fb1a72-5a1a-4132-a489-82fac40bff43",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f16.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051341_73fb1a72-5a1a-4132-a489-82fac40bff43.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] As soon as they are added, the customer's catalog fills up. Each product shows a price marked Your price."
+ },
+ {
+  "job_id": "2448c1e4-49ea-4200-a278-7bf2eaaeeed1",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f17.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051340_2448c1e4-49ea-4200-a278-7bf2eaaeeed1.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Each price comes from the margin rules. The table shows the cost, the list price, the customer's price, the profit, and the rule behind it."
+ },
+ {
+  "job_id": "ff1a2b1f-9776-4db1-bc07-8ecc25773395",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f18-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051341_ff1a2b1f-9776-4db1-bc07-8ecc25773395.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The admin can also type a price by hand. The customer sees the new price in their catalog.",
+  "status": "rejected: first word clipped, or stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "0aadc48f-3ed6-4724-846a-21ad43e3bd11",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f19.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051340_0aadc48f-3ed6-4724-846a-21ad43e3bd11.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] A margin for this customer reprices every product that follows the rules. Prices typed by hand stay as they are."
+ },
+ {
+  "job_id": "b82b1188-e632-4c78-b852-31b23f7941da",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f20.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051340_b82b1188-e632-4c78-b852-31b23f7941da.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Catalog visibility can open whole categories. The extra products show at the list price, without the Your price label."
+ },
+ {
+  "job_id": "ee6ba3eb-748e-4598-8e31-9c583a7959e6",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f21.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051340_ee6ba3eb-748e-4598-8e31-9c583a7959e6.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] A hidden product disappears from this customer's catalog, even when it is assigned."
+ },
+ {
+  "job_id": "536d8a95-6160-4f6c-86e8-495b89d83665",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f22.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051443_536d8a95-6160-4f6c-86e8-495b89d83665.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Assign products does the same for many customers at once, with a preview of cost and profit before anything changes."
+ },
+ {
+  "job_id": "b0c48690-c0ad-4fa7-a5c9-d398c784c9a8",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f23.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051443_b0c48690-c0ad-4fa7-a5c9-d398c784c9a8.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The Margin rules page holds the global, product, category and customer margins. A new rule updates the affected customer prices automatically."
+ },
+ {
+  "job_id": "53e9cde2-7093-436e-a186-92ae2dd1a560",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f24-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051443_53e9cde2-7093-436e-a186-92ae2dd1a560.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] From the customer page, the admin can also recompute prices, change many prices at once, copy a catalog from another customer, or export it.",
+  "status": "rejected: first word clipped, or stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "b2d6ae0d-42b0-42b5-bb11-6e525973f155",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f25.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051443_b2d6ae0d-42b0-42b5-bb11-6e525973f155.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Offers are set per customer. Here the admin creates a welcome offer on salmon, for two weeks."
+ },
+ {
+  "job_id": "fea282e2-ef56-4da3-9e0a-238875b8615e",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f26.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051443_fea282e2-ef56-4da3-9e0a-238875b8615e.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The offer appears right away on the customer's Offers page."
+ },
+ {
+  "job_id": "d0ba3ced-2e32-4af6-b002-bd2f89f079ab",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f27-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051443_d0ba3ced-2e32-4af6-b002-bd2f89f079ab.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] In the catalog, the salmon now shows the offer price, with the regular price struck through.",
+  "status": "rejected: stray or garbled words before the line, or a repeated phrase (faster-whisper check)"
+ },
+ {
+  "job_id": "7c781acd-149c-42d6-9663-a452d8b20a6a",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f28.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051443_7c781acd-149c-42d6-9663-a452d8b20a6a.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] An offer template can be applied to many customers in one step. The preview shows exactly what will change, and the customer sees the new offer."
+ },
+ {
+  "job_id": "31ebf01d-8260-484d-bb0d-6f20ed50681a",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f29.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051443_31ebf01d-8260-484d-bb0d-6f20ed50681a.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Running now lists the active offers and each applied batch, which can be undone as a whole."
+ },
+ {
+  "job_id": "8da22dd5-2a2e-4be1-99da-16f5be0c1e3c",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f30-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051443_8da22dd5-2a2e-4be1-99da-16f5be0c1e3c.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The customer searches the catalog and adds salmon to the cart.",
+  "status": "rejected: stray or garbled words before the line, or a repeated phrase (faster-whisper check)"
+ },
+ {
+  "job_id": "57fb6ad3-3377-46be-b1eb-406840dbf594",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f32-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051443_57fb6ad3-3377-46be-b1eb-406840dbf594.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The cart shows the exact price of each line, including the offer.",
+  "status": "rejected: stray or garbled words before the line, or a repeated phrase (faster-whisper check)"
+ },
+ {
+  "job_id": "2a06b007-c229-4d13-8ee0-231edf2a16fd",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f31.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051614_2a06b007-c229-4d13-8ee0-231edf2a16fd.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] They add cream, takeout cups and oat milk, choosing the quantities as they go."
+ },
+ {
+  "job_id": "4719e914-b136-46b9-bbda-239a95659a76",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f33.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051614_4719e914-b136-46b9-bbda-239a95659a76.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] At checkout they choose delivery or pickup, and can leave a note. There is no online payment. The order follows the account's payment terms."
+ },
+ {
+  "job_id": "ae280d61-ce95-4400-a194-d99b10a238a9",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f34-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051614_ae280d61-ce95-4400-a194-d99b10a238a9.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] They submit the order. Now watch the admin side. It appears at once in the New tab, with a count in the sidebar and an alert sound.",
+  "status": "rejected: stray or garbled words before the line, or a repeated phrase (faster-whisper check)"
+ },
+ {
+  "job_id": "dfce107c-334e-41c6-8df8-55d2a769a09b",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f35.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051614_dfce107c-334e-41c6-8df8-55d2a769a09b.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] On the phone, the order shows as Received. The dashboard counts it as waiting for confirmation."
+ },
+ {
+  "job_id": "4ddd2abb-d350-437c-8416-de775d6ed914",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f36-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051614_4ddd2abb-d350-437c-8416-de775d6ed914.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The admin opens the order. Each line shows its cost and profit, which the customer never sees.",
+  "status": "rejected: stray or garbled words before the line, or a repeated phrase (faster-whisper check)"
+ },
+ {
+  "job_id": "c4698774-267a-4074-bce9-b4f2899f2549",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f37.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051614_c4698774-267a-4074-bce9-b4f2899f2549.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] When the admin confirms, the system checks the stock. There are not enough takeout cups."
+ },
+ {
+  "job_id": "437e52b1-c5e6-4323-9b24-fe2e7fe6b076",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f38.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051614_437e52b1-c5e6-4323-9b24-fe2e7fe6b076.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The admin confirms anyway. The stock is taken out, and on the customer's phone the order is now Confirmed."
+ },
+ {
+  "job_id": "a573c159-5f75-4ac7-a0c9-b10eb629cc25",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f39.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051614_a573c159-5f75-4ac7-a0c9-b10eb629cc25.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The cups are now unavailable to every customer. The oat milk came from an open category, so it is now part of this customer's catalog."
+ },
+ {
+  "job_id": "06b18af1-0379-46c1-97ff-41ce0fb4acb0",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f40.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051615_06b18af1-0379-46c1-97ff-41ce0fb4acb0.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] When the order is packed, the admin marks it prepared. The customer sees Ready."
+ },
+ {
+  "job_id": "e7937b15-137a-4179-a65d-3504d0bb3403",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f41.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051614_e7937b15-137a-4179-a65d-3504d0bb3403.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Once it is handed over, the admin completes it, and the customer sees Completed."
+ },
+ {
+  "job_id": "b492faf2-572e-46f8-8534-6391427b5b69",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f42.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051614_b492faf2-572e-46f8-8534-6391427b5b69.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] A second order can be cancelled, with a reason that stays with the admin. The customer sees Cancelled, and any stock taken for it goes back."
+ },
+ {
+  "job_id": "d7e88f46-0508-4016-af45-f76a4bed0891",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f44-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051715_d7e88f46-0508-4016-af45-f76a4bed0891.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Each order has an invoice. Both sides print the same document, with the business details at the top.",
+  "status": "rejected: stray or garbled words before the line, or a repeated phrase (faster-whisper check)"
+ },
+ {
+  "job_id": "659b6aae-c7d8-4519-b769-ceff6a4802a1",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f45-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051715_659b6aae-c7d8-4519-b769-ceff6a4802a1.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The customer's statement for a period matches the admin's customer copy.",
+  "status": "rejected: first word clipped, or stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "df1f8864-4f6e-42e6-b310-b5e0231abff3",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f46.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051715_df1f8864-4f6e-42e6-b310-b5e0231abff3.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The admin also has an internal copy, with cost and profit, clearly marked as internal."
+ },
+ {
+  "job_id": "b98d20f3-4603-443e-8f02-9d4e1e35ae4d",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f47.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051715_b98d20f3-4603-443e-8f02-9d4e1e35ae4d.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] A cancelled order keeps its invoice, marked as cancelled, for the record."
+ },
+ {
+  "job_id": "e45f4938-5ae1-42cb-98f3-eb2de65ad972",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f48.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051715_e45f4938-5ae1-42cb-98f3-eb2de65ad972.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Back on the admin side, confirming the order reduced the stock. The cups now show as oversold."
+ },
+ {
+  "job_id": "b58a126e-cd37-4023-8302-2cf9d8bd022b",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f49.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051715_b58a126e-cd37-4023-8302-2cf9d8bd022b.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The dashboard shows today's revenue and profit, and flags the low stock."
+ },
+ {
+  "job_id": "71385e41-fff7-427a-84d8-c9d85fb78727",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f50-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051715_71385e41-fff7-427a-84d8-c9d85fb78727.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The low-stock and unavailable statements list what needs reordering.",
+  "status": "rejected: stray or garbled words before the line, or a repeated phrase (faster-whisper check)"
+ },
+ {
+  "job_id": "094746ae-dd2f-4d3d-ad18-b41d966dc276",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f51-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051715_094746ae-dd2f-4d3d-ad18-b41d966dc276.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] When new stock arrives, the admin receives it. The system names the oversold order, and the cups are available again for customers.",
+  "status": "rejected: stray or garbled words before the line, or a repeated phrase (faster-whisper check)"
+ },
+ {
+  "job_id": "c9c53e3c-90d9-456d-bced-95014f3e5c7b",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f52.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051715_c9c53e3c-90d9-456d-bced-95014f3e5c7b.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Analytics shows the revenue trend, best sellers, top customers, and customers who have gone quiet."
+ },
+ {
+  "job_id": "422cffc4-8f83-4520-b4a0-1b1dd576f10f",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f53.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051715_422cffc4-8f83-4520-b4a0-1b1dd576f10f.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The report builder prints a summary for any period. Adding cost and profit turns it into an internal report."
+ },
+ {
+  "job_id": "14667f3d-d2b3-4773-bbb7-6ef1ee14c2f1",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f43.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_14667f3d-d2b3-4773-bbb7-6ef1ee14c2f1.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Both sides keep the full order history, and the admin lists can be filtered by date."
+ },
+ {
+  "job_id": "7003f9d6-efaa-405e-af98-814d939e2bbb",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f54.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_7003f9d6-efaa-405e-af98-814d939e2bbb.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The product list can be printed for customers, or with cost columns for internal use."
+ },
+ {
+  "job_id": "12c51528-3c4e-490b-bdc6-53bd9c4d3504",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f55-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_12c51528-3c4e-490b-bdc6-53bd9c4d3504.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The admin adds a new product, with its photo, cost, price and starting stock.",
+  "status": "rejected: first word clipped, or stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "0cdc11be-7dd8-472d-be39-334d29cb80b9",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f56.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_0cdc11be-7dd8-472d-be39-334d29cb80b9.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Once it is created, it appears on the public site, still without a price."
+ },
+ {
+  "job_id": "92f0023f-e68b-4690-8cb1-8c1b9a0a8fc2",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f57.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_92f0023f-e68b-4690-8cb1-8c1b9a0a8fc2.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] When a product is set to inactive, it leaves the public site."
+ },
+ {
+  "job_id": "881937f7-6f8c-4e0f-9035-229d5d18d832",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f58.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_881937f7-6f8c-4e0f-9035-229d5d18d832.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] It also leaves every customer's catalog."
+ },
+ {
+  "job_id": "227aa199-54d5-4dfb-981f-01ebd3bcb9e9",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f59.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_227aa199-54d5-4dfb-981f-01ebd3bcb9e9.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Categories can have one level of subcategories, which customers see in their catalog filter."
+ },
+ {
+  "job_id": "6c3f14d8-6110-4be0-8999-86f62705a7d7",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f60-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_6c3f14d8-6110-4be0-8999-86f62705a7d7.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] When the admin edits the account, the customer's Account page shows the new details.",
+  "status": "rejected: stray syllable before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "7589a280-3430-4f15-9107-38eab8788023",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f61-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_7589a280-3430-4f15-9107-38eab8788023.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] If the account is suspended, the customer can no longer open the portal.",
+  "status": "rejected: stray or garbled words before the line, or a repeated phrase (faster-whisper check)"
+ },
+ {
+  "job_id": "39f6da79-f127-4683-8736-77f14a6e6553",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f62.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_39f6da79-f127-4683-8736-77f14a6e6553.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Setting it back to active restores access, with the catalog and prices kept."
+ },
+ {
+  "job_id": "1f8d4abe-d229-441f-9033-2bd828de17b8",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f63.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051814_1f8d4abe-d229-441f-9033-2bd828de17b8.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Customers can reset their own password from the sign-in page. Admins use a separate sign-in, open only to approved emails."
+ },
+ {
+  "job_id": "3e61ab15-0cee-4c45-8ab5-8474b1e29691",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f64.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051939_3e61ab15-0cee-4c45-8ab5-8474b1e29691.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Finally, order alerts can be switched on, so a sound plays when a new order arrives."
+ },
+ {
+  "job_id": "dca71938-95a0-4863-ac1e-11fcdaa58440",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f65.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_051939_dca71938-95a0-4863-ac1e-11fcdaa58440.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] That is the full loop, from application to invoice, on both sides of Oh-lake."
+ },
+ {
+  "job_id": "52e14e15-56a6-44c0-b51b-e6d50a224733",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f06.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052302_52e14e15-56a6-44c0-b51b-e6d50a224733.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] They add the type of business and a short note, and submit. Now watch the admin side. The application appears on the Leads page, marked new."
+ },
+ {
+  "job_id": "5b7365aa-05a1-45ed-8062-6c269ac519d1",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f27.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052302_5b7365aa-05a1-45ed-8062-6c269ac519d1.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] In the catalog, the salmon now shows the offer price, with the regular price struck through."
+ },
+ {
+  "job_id": "81be8b22-1903-45c3-a86f-e01eaed3148c",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f30.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052302_81be8b22-1903-45c3-a86f-e01eaed3148c.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The customer searches the catalog and adds salmon to the cart."
+ },
+ {
+  "job_id": "3ca50fea-25da-4253-92c0-b57402377037",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f32.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052303_3ca50fea-25da-4253-92c0-b57402377037.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The cart shows the exact price of each line, including the offer."
+ },
+ {
+  "job_id": "648e7e66-4e17-4fae-94ea-5f54d6684702",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f34-t2.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052302_648e7e66-4e17-4fae-94ea-5f54d6684702.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] They submit the order. Now watch the admin side. It appears at once in the New tab, with a number in the sidebar and an alert sound.",
+  "status": "rejected: first word clipped, or stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "83dc5ddc-bdad-4879-ae41-839d1a05c603",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f36.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052302_83dc5ddc-bdad-4879-ae41-839d1a05c603.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The admin opens the order. Each line shows its cost and profit, which the customer never sees."
+ },
+ {
+  "job_id": "0950aab5-0ba9-4649-8d45-d4a79c2068c9",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f44.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052302_0950aab5-0ba9-4649-8d45-d4a79c2068c9.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] Each order has an invoice. Both sides print the same document, with the business details at the top."
+ },
+ {
+  "job_id": "82f387e5-ab0e-43f7-952f-767b7317d188",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f50.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052302_82f387e5-ab0e-43f7-952f-767b7317d188.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The low-stock and unavailable statements list what needs reordering."
+ },
+ {
+  "job_id": "e76efe57-9507-4fdc-b749-770fbe43d032",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f51-t2.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052302_e76efe57-9507-4fdc-b749-770fbe43d032.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] When new stock arrives, the admin receives it. The system names the oversold order, and the cups are available again for customers.",
+  "status": "rejected: first word clipped, or stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "8db6ac91-5a8a-4cfc-baf8-37168816b8f4",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f61.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052303_8db6ac91-5a8a-4cfc-baf8-37168816b8f4.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] If the account is suspended, the customer can no longer open the portal."
+ },
+ {
+  "job_id": "7f33b3ec-096c-4a8c-b7d1-317ea13c9b06",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f60.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052407_7f33b3ec-096c-4a8c-b7d1-317ea13c9b06.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] When the admin edits the account, the customer's Account page shows the new details."
+ },
+ {
+  "job_id": "47269c6b-0a8e-4430-8178-28ad7e09ebfd",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f11.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052813_47269c6b-0a8e-4430-8178-28ad7e09ebfd.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The new account opens with a setup checklist. It is not invited yet, and it has no products."
+ },
+ {
+  "job_id": "2c8bd443-9d4c-49c0-a608-d94503ccd006",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f13.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052814_2c8bd443-9d4c-49c0-a608-d94503ccd006.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] They choose a password and save it. They are now signed in to their own portal, and on the admin side the account shows as active."
+ },
+ {
+  "job_id": "f9ff4f19-162b-4f8f-a8bd-b1b6a28708cb",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f18.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052813_f9ff4f19-162b-4f8f-a8bd-b1b6a28708cb.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The admin can also type a price by hand. The customer sees the new price in their catalog."
+ },
+ {
+  "job_id": "42528a3a-9f9d-4be1-8b2a-51e7127beecb",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f24-t2.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052814_42528a3a-9f9d-4be1-8b2a-51e7127beecb.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] From the customer page, the admin can also recompute prices, change many prices at once, copy a catalog from another customer, or export it.",
+  "status": "rejected: stray words before or inside the line (faster-whisper check)"
+ },
+ {
+  "job_id": "356f4292-754b-4755-a45f-47af012914f6",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f34-t3.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052813_356f4292-754b-4755-a45f-47af012914f6.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 3] They submit the order. Now watch the admin side. It appears at once in the New tab, with a number in the sidebar and an alert sound.",
+  "status": "rejected: stray words before or inside the line (faster-whisper check)"
+ },
+ {
+  "job_id": "46289af4-5a10-426b-9490-9b588b01aa14",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f45.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052813_46289af4-5a10-426b-9490-9b588b01aa14.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The customer's statement for a period matches the admin's customer copy."
+ },
+ {
+  "job_id": "6a1bbb9f-bf83-4d60-b8c5-219f90aea58a",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f51-t3.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052814_6a1bbb9f-bf83-4d60-b8c5-219f90aea58a.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 3] When new stock arrives, the admin receives it. The system names the oversold order, and the cups are available again for customers.",
+  "status": "rejected: line reworded to match the captured stock notice (the order was already completed, so the app does not name it)"
+ },
+ {
+  "job_id": "8924eb87-7b2a-44d5-8e6f-9e89b4d1b976",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f55.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052815_8924eb87-7b2a-44d5-8e6f-9e89b4d1b976.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The admin adds a new product, with its photo, cost, price and starting stock."
+ },
+ {
+  "job_id": "d16aef0e-0784-4403-9c37-91bb5fd99211",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f24.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052954_d16aef0e-0784-4403-9c37-91bb5fd99211.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 3] From the customer page, the admin can also recompute prices, change many prices at once, copy a catalog from another customer, or export it."
+ },
+ {
+  "job_id": "56b79ba8-7ca0-4cc9-9a20-fef63b9a4491",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f34.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052954_56b79ba8-7ca0-4cc9-9a20-fef63b9a4491.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 4] They submit the order. Now watch the admin side. It appears at once in the New tab, with a number in the sidebar and an alert sound."
+ },
+ {
+  "job_id": "d08a9f3e-933e-4dc0-a28f-eeaedf6a37cf",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f24-alt.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052954_d08a9f3e-933e-4dc0-a28f-eeaedf6a37cf.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, alternate] From the customer page, the admin can also recompute prices, change many prices at once, copy a catalog from another customer, or export it.",
+  "status": "not used: alternate take generated in parallel (the other take passed the check)"
+ },
+ {
+  "job_id": "d50101ac-ba90-45b5-a816-f9b77c5aa21f",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f34-alt.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_052955_d50101ac-ba90-45b5-a816-f9b77c5aa21f.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, alternate] They submit the order. Now watch the admin side. It appears at once in the New tab, with a number in the sidebar and an alert sound.",
+  "status": "not used: alternate take generated in parallel (the other take passed the check)"
+ },
+ {
+  "job_id": "b32c87e0-3b75-45e1-a3fe-151e3c4bbf40",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f51.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_055116_b32c87e0-3b75-45e1-a3fe-151e3c4bbf40.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 4] When new stock arrives, the admin receives it. It settles the oversold units first, and the cups are available again for customers."
+ },
+ {
+  "job_id": "10e6cc46-d942-4247-8e92-f77ec43736ae",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f51-alt.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_055116_10e6cc46-d942-4247-8e92-f77ec43736ae.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, alternate] When new stock arrives, the admin receives it. It settles the oversold units first, and the cups are available again for customers.",
+  "status": "not used: alternate take generated in parallel (the other take passed the check)"
+ },
+ {
+  "job_id": "90779297-14cd-4879-8eb6-6b17342b9c03",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f02b-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060518_90779297-14cd-4879-8eb6-6b17342b9c03.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The public catalog page shows the same categories, each with its own page of products.",
+  "status": "rejected: stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "ed87dc7c-5292-4846-9e14-850c8420de0c",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f07b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060517_ed87dc7c-5292-4846-9e14-850c8420de0c.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] On the Leads page, tabs sort the applications by status: new, contacted, approved and rejected."
+ },
+ {
+  "job_id": "404b54e9-7f6c-4adb-bd82-3a571bde1ddf",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f10b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060517_404b54e9-7f6c-4adb-bd82-3a571bde1ddf.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] An account can also be created by hand, under Manual entry, for a customer who did not apply online."
+ },
+ {
+  "job_id": "2f7dc106-4f8d-4053-bdc2-07434d74dfda",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f13b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060517_2f7dc106-4f8d-4053-bdc2-07434d74dfda.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The welcome banner appears only on this first visit to the portal."
+ },
+ {
+  "job_id": "0a11cbe1-726b-4e89-bbac-ae313323bcf4",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f29b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060517_0a11cbe1-726b-4e89-bbac-ae313323bcf4.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Templates are reusable offers, such as a weekend promotion, kept in the Offer library."
+ },
+ {
+  "job_id": "945de062-33ff-4349-82b1-ea7289340fc9",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f36b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060517_945de062-33ff-4349-82b1-ea7289340fc9.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The order also shows who placed it, with the note left at checkout."
+ },
+ {
+  "job_id": "5899c86a-822e-4fc2-aea2-bca8b76e1722",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f41b-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060517_5899c86a-822e-4fc2-aea2-bca8b76e1722.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The customer's order page always shows the current status, and refreshes on its own.",
+  "status": "rejected: stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "564b4366-7d02-4cfd-92c8-53cf4387b5b3",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f45b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060518_564b4366-7d02-4cfd-92c8-53cf4387b5b3.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] A statement can be printed for any period, using the period filter at the top."
+ },
+ {
+  "job_id": "6671e161-a42e-4a6f-a82f-60f6d5eeda44",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f48b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060517_6671e161-a42e-4a6f-a82f-60f6d5eeda44.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The dashboard also lists today's top products and top customers, with links to the full analytics."
+ },
+ {
+  "job_id": "5e1cc335-3767-49f0-a2a2-9f54c6900814",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f49b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060517_5e1cc335-3767-49f0-a2a2-9f54c6900814.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The dashboard also flags customers who were invited but have not signed in yet, so the team can follow up."
+ },
+ {
+  "job_id": "861d43c8-ccd4-4499-89bb-6031d85e681c",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f50b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060518_861d43c8-ccd4-4499-89bb-6031d85e681c.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] On the Products page, low and oversold stock is flagged in the stock column."
+ },
+ {
+  "job_id": "2970e9c0-945f-4e6e-bf48-a5794ae9d718",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f52b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060651_2970e9c0-945f-4e6e-bf48-a5794ae9d718.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] Further down, analytics shows the best sellers by units, revenue and profit, and the products that are not moving."
+ },
+ {
+  "job_id": "014ee218-7718-47d9-8faa-18be50d3337e",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f02b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060802_014ee218-7718-47d9-8faa-18be50d3337e.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The public catalog page shows the same categories, each with its own page of products."
+ },
+ {
+  "job_id": "4832042b-66b9-4dbe-88ea-378d1a301124",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f41b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060802_4832042b-66b9-4dbe-88ea-378d1a301124.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The customer's order page always shows the current status, and refreshes on its own."
+ },
+ {
+  "job_id": "2d9dbc4a-c134-4c48-9c80-b74c40da4696",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f02b-alt.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060802_2d9dbc4a-c134-4c48-9c80-b74c40da4696.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, alternate] The public catalog page shows the same categories, each with its own page of products.",
+  "status": "not used: alternate take generated in parallel (the other take passed the check)"
+ },
+ {
+  "job_id": "63ddbabb-cdbf-4d7d-bdcd-b3c863ab5886",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f41b-alt.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_060802_63ddbabb-cdbf-4d7d-bdcd-b3c863ab5886.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, alternate] The customer's order page always shows the current status, and refreshes on its own.",
+  "status": "not used: alternate take generated in parallel (the other take passed the check)"
+ },
+ {
+  "job_id": "aafbf7a6-056a-44d8-8fb4-3fea9dd639d6",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f08b-t1.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_062141_aafbf7a6-056a-44d8-8fb4-3fea9dd639d6.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The site also has pages about the company, delivery and common questions.",
+  "status": "rejected: stray word before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "91c53e61-1fdc-4fc3-bce3-255ebe8ff4ea",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f62b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_062141_91c53e61-1fdc-4fc3-bce3-255ebe8ff4ea.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 1] The customer list shows every account with its status, phone, payment terms and catalog size."
+ },
+ {
+  "job_id": "b91e32c6-8e73-4bba-a410-71a7f68cc134",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f08b-t2.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_062141_b91e32c6-8e73-4bba-a410-71a7f68cc134.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] The site also has pages about the company, delivery and common questions.",
+  "status": "rejected: stray words before the line (faster-whisper check)"
+ },
+ {
+  "job_id": "0ed613e8-dce9-4759-bfc4-9afd7d3a9e63",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f62b-alt.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_062141_0ed613e8-dce9-4759-bfc4-9afd7d3a9e63.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, alternate] The customer list shows every account with its status, phone, payment terms and catalog size.",
+  "status": "not used: alternate take generated in parallel (the other take passed the check)"
+ },
+ {
+  "job_id": "c2095139-88ec-44fb-a5cd-13cfa69cfe4d",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f08b.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_062325_c2095139-88ec-44fb-a5cd-13cfa69cfe4d.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 3] The site also has pages about the company, delivery and common questions."
+ },
+ {
+  "job_id": "11eee9cb-c993-4cd8-a05c-f7fbee724361",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f08b-alt.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_062325_11eee9cb-c993-4cd8-a05c-f7fbee724361.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, alternate] The site also has pages about the company, delivery and common questions.",
+  "status": "not used: alternate take generated in parallel (the other take passed the check)"
+ },
+ {
+  "job_id": "ee436cf7-47e8-4019-ad1f-2a31829d8f5c",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/rejected/f03-t2.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_062711_ee436cf7-47e8-4019-ad1f-2a31829d8f5c.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 2] Each category page lists the products the admin keeps active, with their photos. Prices stay private until a customer signs in.",
+  "status": "rejected: stray syllable joined to the first word (faster-whisper check)"
+ },
+ {
+  "job_id": "35e421fa-3618-45a8-b6f2-47ec3aa72df1",
+  "kind": "narration",
+  "model": "seed_audio",
+  "file": "narration/audio/f03.wav",
+  "date": "2026-10-12",
+  "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3ETOgvEnAwpHNT7z5STF2VhUfTy/hf_20261012_062712_35e421fa-3618-45a8-b6f2-47ec3aa72df1.wav",
+  "prompt": "[voice Holden 3c9d6053, seed_audio, take 3] Each category page lists the products the admin keeps active, with their photos. Prices stay private until a customer signs in."
  }
 ]

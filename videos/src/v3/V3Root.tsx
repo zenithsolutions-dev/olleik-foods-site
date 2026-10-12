@@ -11,6 +11,8 @@ import { VOICED } from "./voiced";
 import { VoicedFilm } from "./VoicedFilm";
 import { CUTS } from "./cuts";
 import { CutFilm, SquareFilm, VerticalFilm } from "./CutFilms";
+import { FULL_FILM } from "./fullStory";
+import { FullFilm } from "./FullFilm";
 
 function CameraTest({ audioSrc }: { audioSrc?: string }) {
   return (
@@ -37,6 +39,7 @@ export function V3Root() {
         const Film = c.w === c.h ? SquareFilm : c.h > c.w ? VerticalFilm : CutFilm;
         return <Composition key={c.id} id={c.id} component={({ audioSrc }: { audioSrc?: string }) => <Film cut={c} audioSrc={audioSrc} />} durationInFrames={c.frames} fps={30} width={c.w} height={c.h} defaultProps={{} as { audioSrc?: string }} />;
       })}
+      <Composition id="FULL-SYSTEM" component={({ audioSrc }: { audioSrc?: string }) => <FullFilm m={FULL_FILM} audioSrc={audioSrc} />} durationInFrames={FULL_FILM.frames} fps={30} width={1920} height={1080} defaultProps={{} as { audioSrc?: string }} />
       <Composition id="V3-CameraTest" component={CameraTest} durationInFrames={CAMERA_TEST_FRAMES} fps={30} width={1920} height={1080} defaultProps={{} as { audioSrc?: string }} />
     </>
   );

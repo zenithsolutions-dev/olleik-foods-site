@@ -29,7 +29,9 @@ let s = 20261008;
 const rnd = () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648);
 const pick = (a) => a[Math.floor(rnd() * a.length)];
 const DAY = 86400000;
-const NOW = new Date("2026-10-08T14:00:00-04:00").getTime();
+// FULL film (feat/videos-full): history is relative to the moment of seeding, so "Today" on the dashboard is real.
+const NOW = process.env.SEED_FIXED ? new Date("2026-10-08T14:00:00-04:00").getTime() : Math.floor(Date.now() / 60000) * 60000;
+const ago = (min) => new Date(NOW - min * 60000).toISOString();
 const at = (daysAgo, hour = 9 + Math.floor(rnd() * 8)) => new Date(NOW - daysAgo * DAY - (14 - hour) * 3600000 + Math.floor(rnd() * 50) * 60000).toISOString();
 
 // ——— clean slate (keeps the schema, categories and the generic product seed) ———
@@ -38,6 +40,13 @@ await q("delete from order_stock_movements; delete from order_item_costs; delete
 await q("delete from customer_offers; delete from offer_templates; delete from customer_product_pricing_meta; delete from pricing_rules");
 await q("delete from customer_hidden_products; delete from customer_visible_categories; delete from customer_products; delete from customers; delete from leads");
 await q("delete from contact_messages; delete from vendor_submissions; delete from auth.users");
+// what the FULL film's capture run creates or changes (a product, a subcategory, a deactivated product)
+await q("delete from order_stock_movements where product_id in (select id from products where sku = 'PRD-007')");
+await q("delete from product_inventory where product_id in (select id from products where sku = 'PRD-007')");
+await q("delete from product_costs where product_id in (select id from products where sku = 'PRD-007')");
+await q("delete from products where sku = 'PRD-007'");
+await q("delete from categories where name = 'Fresh Herbs'");
+await q("update products set is_active = true");
 await q("commit");
 
 // ——— catalogue: the 14 seeded products + more generic items (demo SKUs and prices) ———
@@ -68,9 +77,15 @@ const products = (await q("select id, sku, name, unit, unit_size, list_price_cen
 const P = Object.fromEntries(products.map((p) => [p.sku, p]));
 for (const p of products) {
   await q("insert into product_costs (product_id, cost_cents) values ($1, $2) on conflict (product_id) do update set cost_cents = excluded.cost_cents", [p.id, Math.round(p.list_price_cents * (0.62 + rnd() * 0.12))]);
-  const low = { "DRY-102": [9, 12], "BEV-501": [4, 10], "SEA-302": [0, 6], "PKG-703": [3, 8] }[p.sku];
+  const low = { "DRY-102": [9, 12], "BEV-501": [4, 10], "SEA-302": [5, 8], "PKG-703": [3, 8] }[p.sku];
   await q("insert into product_inventory (product_id, stock_qty, low_stock_threshold) values ($1,$2,$3) on conflict (product_id) do update set stock_qty = excluded.stock_qty, low_stock_threshold = excluded.low_stock_threshold", [p.id, low ? low[0] : 40 + Math.floor(rnd() * 160), low ? low[1] : 10]);
 }
+
+// Margin rules (the waterfall the admin manages on /admin/pricing): a global default, two category rules, one product rule.
+await q("insert into pricing_rules (scope, margin_percent) values ('global', 30)");
+await q("insert into pricing_rules (scope, category_id, margin_percent) values ('category', $1, 24), ('category', $2, 38)", [cats["Seafood"], cats["Beverages"]]);
+await q("insert into pricing_rules (scope, product_id, margin_percent) values ('product', $1, 45)", [P["PRD-005"].id]);
+await q("update products p set is_available = (i.stock_qty > 0) from product_inventory i where i.product_id = p.id");
 
 // ——— demo logins (local auth emulator) ———
 const api = async (path, body) => {
@@ -176,10 +191,10 @@ for (let d = 77; d >= 1; d--) {
   }
 }
 // Today: three new orders waiting for the admin (one with a delivery note), one confirmed.
-await insertOrder("harbourline", lineFor("harbourline", 4), { status: "new", created: at(0, 8), notes: "Corporate lunch Friday, please deliver before 10am" });
-await insertOrder("bluestone", lineFor("bluestone", 3), { status: "new", created: at(0, 10) });
-await insertOrder("juniper", lineFor("juniper", 3), { status: "new", created: at(0, 11), fulfillment: "pickup" });
-await insertOrder("ember", lineFor("ember", 4), { status: "confirmed", created: at(0, 7) });
+await insertOrder("harbourline", lineFor("harbourline", 4), { status: "new", created: ago(42), notes: "Corporate lunch Friday, please deliver before 10am" });
+await insertOrder("bluestone", lineFor("bluestone", 3), { status: "new", created: ago(31) });
+await insertOrder("juniper", lineFor("juniper", 3), { status: "new", created: ago(18), fulfillment: "pickup" });
+await insertOrder("ember", lineFor("ember", 4), { status: "confirmed", created: ago(55) });
 n += 4;
 
 keys.demoAccounts = accounts;

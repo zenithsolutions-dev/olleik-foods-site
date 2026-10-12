@@ -15,9 +15,14 @@ PAD = {n: 160 for n in ["cart", "checkout-0", "checkout-1", "checkout-2", "order
                         "order-detail", "doc-invoice", "doc-admin-invoice", "doc-low-stock", "doc-out-of-stock", "doc-reports",
                         "products-0", "analytics", "cust-prices", "cust-detail-1", "home", "apply-2", "login-0", "login-1", "apply-0", "apply-1",
                         "doc-statement", "doc-admin-statement", "doc-products"]}
+# FULL film (feat/videos-full): every split-screen capture ("f-…") gets the same overscroll margin
+for f in glob.glob(f"{SRC}/f-*.png"):
+    PAD.setdefault(os.path.basename(f)[:-4], 160)
+import sys
+ONLY = sys.argv[1] if len(sys.argv) > 1 else ""  # name prefix: re-tile only those (the rest of tiles.json is kept)
 os.makedirs(DST, exist_ok=True)
-meta = {}
-for f in sorted(glob.glob(f"{SRC}/*.png")):
+meta = json.load(open(f"{SRC}/tiles.json")) if ONLY and os.path.exists(f"{SRC}/tiles.json") else {}
+for f in sorted(glob.glob(f"{SRC}/{ONLY}*.png")):
     n = os.path.basename(f)[:-4]
     im = Image.open(f)
     pad = PAD.get(n, 0) * 3
@@ -31,4 +36,4 @@ for f in sorted(glob.glob(f"{SRC}/*.png")):
         im.crop((0, i * TILE, im.width, min(im.height, (i + 1) * TILE))).save(f"{DST}/{n}-{i}.png", optimize=False, compress_level=3)
     meta[n] = {"wPx": im.width, "hPx": im.height, "n": k, "padCss": PAD.get(n, 0)}
 json.dump(meta, open(f"{SRC}/tiles.json", "w"), indent=1)
-print(json.dumps(meta))
+print(len(meta), "tiled")

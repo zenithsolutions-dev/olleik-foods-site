@@ -14,7 +14,7 @@ import soundfile as sf
 from faster_whisper import WhisperModel
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-lines = json.load(open(f"{HERE}/VISITOR.json", encoding="utf8"))["lines"] + json.load(open(f"{HERE}/ADMIN.json", encoding="utf8"))["lines"]
+lines = [l for f in ("VISITOR", "ADMIN", "FULL") for l in json.load(open(f"{HERE}/{f}.json", encoding="utf8"))["lines"]]
 only = set(sys.argv[1:])
 model = WhisperModel("small", device="cpu", compute_type="int8")
 ALIAS = {"organized": "organised", "1": "one", "oh": "o"}
@@ -36,8 +36,14 @@ for ln in lines:
         continue
     p = f"{HERE}/audio/{ln['id']}.wav"
     x, sr = sf.read(p)
-    segs, _ = model.transcribe(p, beam_size=5, language="en", word_timestamps=True)
+    # whisper drops a first word that starts at the very first sample: transcribe with 0.4 s of silence in front
+    PAD = 0.4
+    tmp = f"{HERE}/audio/_pad.wav"
+    sf.write(tmp, np.concatenate([np.zeros((int(sr * PAD),) + x.shape[1:]), x]), sr)
+    segs, _ = model.transcribe(tmp, beam_size=5, language="en", word_timestamps=True)
     ws = [w for s in segs for w in s.words]
+    for w in ws:
+        w.start, w.end = max(0.0, w.start - PAD), max(0.0, w.end - PAD)
     # one entry per normalised token, each keeping its whisper word's timing ("O-Lake" → "o", "lake")
     flat = [(tok, w) for w in ws for tok in norm(w.word)]
     got = [t for t, _ in flat]
@@ -75,7 +81,7 @@ for ln in lines:
     inner_extra = extra - first - (len(ws) - 1 - last)
     ok = missing <= 1 and inner_extra <= 1 and gap_in >= 0.25 and gap_out >= 0.25
     tr = "".join(w.word for w in ws).strip()
-    out[ln["id"]] = {"file": f"narration/audio/{ln['id']}.wav", "seconds": round(len(x) / sr, 3), "sr": sr, "speech_start": round(s0, 3), "speech_end": round(s1, 3), "transcript": tr, "missing": missing, "extra": extra, "trimmed_words": first + (len(ws) - 1 - last), "ok": ok}
+    out[ln["id"]] = {"file": f"narration/audio/{ln['id']}.wav", "seconds": round(len(x) / sr, 3), "sr": sr, "speech_start": round(s0, 3), "speech_end": round(s1, 3), "transcript": tr, "missing": missing, "extra": extra, "trimmed_words": int(first + (len(ws) - 1 - last)), "ok": bool(ok)}
     if not ok:
         bad.append(ln["id"])
     print(f"{ln['id']} {len(x) / sr:5.2f}s speech {s0:5.2f}-{s1:5.2f} miss {missing} extra {extra} {'ok ' if ok else 'BAD'} | {tr}")

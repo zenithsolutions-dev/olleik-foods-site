@@ -36,6 +36,9 @@ export type World = {
   /** Boxes that must NEVER be visible (placeholder business details on documents, fake hero stats, a generated invite
    * URL, the public footer's placeholder phone). Checked on every frame; the caption band counts as covering. */
   forbid?: string[];
+  /** Output size of the view this world is drawn into (a split-screen pane); default the full 1920×1080 frame. */
+  viewW?: number;
+  viewH?: number;
 };
 export type Ease = "arrive" | "inout" | "linear" | "glide" | "snap" | "expo";
 export type Key = { f: number; cx: number; cy: number; z: number; ease?: Ease; eye?: string };
@@ -51,7 +54,8 @@ const EASES: Record<Ease, (t: number) => number> = {
 };
 
 /** Output pixels per page CSS pixel at zoom z. */
-export const scaleAt = (world: World, z: number) => (OUT_W / (world.frameW ?? world.w)) * z;
+export const scaleAt = (world: World, z: number) => ((world.viewW ?? OUT_W) / (world.frameW ?? world.w)) * z;
+export const viewOf = (world: World) => ({ W: world.viewW ?? OUT_W, H: world.viewH ?? OUT_H });
 
 export function cameraAt(world: World, keys: Key[], f: number): Cam {
   let a = keys[0];
@@ -62,8 +66,8 @@ export function cameraAt(world: World, keys: Key[], f: number): Cam {
   const t = a === b ? 0 : EASES[b.ease ?? "inout"]((f - a.f) / (b.f - a.f));
   const z = Math.exp(Math.log(a.z) + (Math.log(b.z) - Math.log(a.z)) * t);
   const s = scaleAt(world, z);
-  const vw = OUT_W / s;
-  const vh = OUT_H / s;
+  const vw = (world.viewW ?? OUT_W) / s;
+  const vh = (world.viewH ?? OUT_H) / s;
   // Keep the view inside the page.
   const cx = Math.min(Math.max(a.cx + (b.cx - a.cx) * t, vw / 2), world.w - vw / 2);
   const cy = Math.min(Math.max(a.cy + (b.cy - a.cy) * t, vh / 2), Math.max(vh / 2, world.h - vh / 2));
@@ -75,7 +79,7 @@ export function speedAt(world: World, keys: Key[], f: number) {
   const a = cameraAt(world, keys, f - 0.5);
   const b = cameraAt(world, keys, f + 0.5);
   const pan = Math.hypot((b.cx - a.cx) * b.s, (b.cy - a.cy) * b.s);
-  const zoom = Math.abs(b.s - a.s) / b.s * OUT_W * 0.5; // edge displacement from scale change
+  const zoom = Math.abs(b.s - a.s) / b.s * (world.viewW ?? OUT_W) * 0.5; // edge displacement from scale change
   return pan + zoom;
 }
 
@@ -83,7 +87,7 @@ export function speedAt(world: World, keys: Key[], f: number) {
 export function project(cam: Cam, x: number, y: number, p = 0, hx = cam.cx, hy = cam.cy) {
   const ox = -(cam.cx - hx) * p;
   const oy = -(cam.cy - hy) * p;
-  return { x: (x + ox - cam.cx) * cam.s + OUT_W / 2, y: (y + oy - cam.cy) * cam.s + OUT_H / 2 };
+  return { x: (x + ox - cam.cx) * cam.s + (cam.vw * cam.s) / 2, y: (y + oy - cam.cy) * cam.s + (cam.vh * cam.s) / 2 };
 }
 
 export const insideFraction = (cam: Cam, b: Box) => {
@@ -102,7 +106,7 @@ export const visibleFraction = (cam: Cam, b: Box, coveredPx = 0) => {
   return (ix * iy) / (b.w * b.h);
 };
 
-export function validateCamera(world: World, keys: Key[], frames: number, coveredPx = 0) {
+export function validateCamera(world: World, keys: Key[], frames: number, coveredPx = 0, travelling?: (f: number) => boolean) {
   const errors: string[] = [];
   for (const name of world.forbid ?? []) if (!world.boxes[name]) errors.push(`${world.id}: forbidden box ${name} is not measured`);
   for (let f = 0; f < frames; f++) {
@@ -121,6 +125,7 @@ export function validateCamera(world: World, keys: Key[], frames: number, covere
     }
   }
   for (let f = 0; f < frames; f++) {
+    if (travelling?.(f)) continue; // a fast move between two targets (motion-blurred, like a whip) needs no anchor
     const c = cameraAt(world, keys, f);
     const best = Math.max(0, ...world.anchors.filter((a) => world.boxes[a]).map((a) => insideFraction(c, world.boxes[a])));
     if (best < 0.6) { errors.push(`${world.id} frame ${f}: no structural anchor in frame (best ${(best * 100).toFixed(0)}%)`); break; }
