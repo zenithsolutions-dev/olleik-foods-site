@@ -18,7 +18,7 @@ worktree are removed at the end (see "Cleanup").
 | `tsc --noEmit` | green (was green on main) |
 | `npm run lint` | green, 0 errors 0 warnings (main: **7 errors**, 1 warning, all in the home page / suppliers import) |
 | `npm run build` (plain, and with the local stack's values) | green |
-| Playwright suite, local stack, 375 px + 1440 px | RESULT_E2E |
+| Playwright suite, local stack, 375 px + 1440 px | **370 passed, 0 failed, 8 skipped** (7 viewport-specific by design, 1 `fixme` for the newsletter box); 26 spec files' worth across desktop and phone, about 5 minutes against `next start` |
 | Existing integration suites against the local stack (`test:inventory`, `dashboard`, `dates`, `documents`, `statements`, `bulk-offers`, `analytics`, `reports`, `visibility`, `orders`, `scripts/test-schema-preflight.mjs`) | all PASS |
 | Pure suites (`test:offers`, `pricing-engine`, `guard:portal`) plus new `test:offers-format`, `test:format-dates`, `test:money` | all PASS |
 
@@ -108,7 +108,7 @@ sweep now asserts the final path; the login state keeps only cookies. The Turbop
 ## Before / after evidence
 
 - Lint: main `✖ 8 problems (7 errors, 1 warning)`; branch 0.
-- Running now: before, `test:offers-format` fails with `ERR_MODULE_NOT_FOUND ... admin/store` (the client module cannot be loaded outside React); after, 8 PASS. Browser evidence of the old crash BEFORE_NOTE.
+- Running now: before, `test:offers-format` fails with `ERR_MODULE_NOT_FOUND ... admin/store` (the client module cannot be loaded outside React); after, 8 PASS. Browser evidence: with the old import restored and the app rebuilt, `GET /admin/offers?tab=running` returned **HTTP 500** with `Attempted to call formatMoney() from the server but formatMoney is on the client`; with the fix the same Playwright test passes.
 - Cart on a phone: before, names rendered as "Ag…", "Cr…", "Bo…"; after, full names with 64 px photos (screenshots taken during the work, see the PR description).
 - Hydration: before, `Hydration failed ... Oct 8, 11:30 a.m. vs Oct 8, 6:30 p.m.` on `/admin/orders`; after, none in the sweep or the suite.
 - Phone sweep: before the fixes 4 pages overflowed and, once clipping was detected, 3 more tables were cut off; after, 0.
