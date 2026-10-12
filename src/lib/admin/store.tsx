@@ -245,7 +245,7 @@ export function useAdmin(): AdminContextValue {
 
 // === Helpers ===
 
-export { formatMoney } from "@/lib/money";
+export { formatMoney } from "../money";
 
 export function formatDate(iso: string): string {
   return formatBusinessTime(iso, { year: "numeric", month: "short", day: "numeric" });
