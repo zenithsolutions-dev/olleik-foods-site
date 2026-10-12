@@ -29,7 +29,7 @@ function sequence(parts: ({ kind: "world"; dur: number; shot: WorldShot; whipIn?
 
 // ═════════════════════════════ Visitor manual: Marco's First Order ═════════════════════════════
 // Chapter 1 · Apply (the application form: typed in place, then sent)
-const applyW = worldOf("apply-0", ["nav", "headline", "form"], {
+export const applyW = worldOf("apply-0", ["nav", "headline", "form"], {
   footer: { x: 0, y: 833, w: 1440, h: 700 }, // the site footer (placeholder phone) on the form page and the sent page
   tBn: { x: 701, y: 297, w: 125, h: 15 }, fBn: { x: 691, y: 284, w: 257, h: 38 },
   tCn: { x: 983, y: 297, w: 92, h: 13 }, fCn: { x: 972, y: 284, w: 257, h: 38 },
@@ -52,7 +52,7 @@ const applyShot: WorldShot = {
   cursor: [{ f: 0, x: 1100, y: 760 }, { f: 24, x: 760, y: 303 }, { f: 40, x: 1050, y: 303 }, { f: 54, x: 760, y: 391 }, { f: 72, x: 1050, y: 391 }, { f: 86, x: 800, y: 479 }, { f: 104, x: 800, y: 668 }, ...press(applyW, "submit", AP.submit, AP.submit - 10)],
 };
 // Chapter 2 · Sign in, then the portal
-const loginW = worldOf("login-0", ["headline", "card"], {
+export const loginW = worldOf("login-0", ["headline", "card"], {
   footer: { x: 0, y: 734, w: 1440, h: 500 },
   tEm: { x: 565, y: 399, w: 188, h: 15 }, fEm: { x: 555, y: 388, w: 330, h: 34 },
   tPw: { x: 565, y: 478, w: 77, h: 8 }, fPw: { x: 555, y: 464, w: 330, h: 34 },
@@ -65,14 +65,14 @@ const loginShot: WorldShot = {
   keys: [K(0, 720, 420, 1.0), K(14, 720, 470, 1.4, "expo", "card"), K(72, 724, 474, 1.41, "linear")],
   cursor: [{ f: 0, x: 980, y: 700 }, { f: 16, x: 820, y: 405 }, { f: 34, x: 820, y: 481 }, ...press(loginW, "submit", 58, 50)],
 };
-const portalW = worldOf("portal", ["nav", "headline", "catalogCard"]);
+export const portalW = worldOf("portal", ["nav", "headline", "catalogCard"]);
 const portalShot: WorldShot = {
   world: portalW, plate: "v3/portal",
   keys: [K(0, 720, 405, 1.0), K(14, 720, 320, 1.27, "expo", "catalogCard"), K(62, 718, 316, 1.28, "linear")],
   cursor: [{ f: 0, x: 1000, y: 700 }, ...press(portalW, "catalogCard", 48, 40, -120, 10)],
 };
 // Chapter 3 · Your catalog: your price, search, offers
-const cat3W: World = {
+export const cat3W: World = {
   ...CATALOG,
   boxes: { ...CATALOG.boxes, searchRow: { x: 168, y: 254, w: 622, h: 38 }, priceRow: { x: 184, y: 646, w: 330, h: 32 }, tSr: { x: 184, y: 267, w: 49, h: 14 }, fSr: { x: 172, y: 258, w: 276, h: 30 }, searchBtn: { x: 711, y: 255, w: 79, h: 36 }, card0: CATALOG.boxes.card0 },
   anchors: [...CATALOG.anchors, "searchRow", "card0", "card1", "card2"],
@@ -84,7 +84,7 @@ const searchShot: WorldShot = {
   keys: [K(0, 420, 600, 1.45, undefined, "priceRow"), K(10, 426, 606, 1.47, "linear"), K(36, 560, 360, 1.35, "snap", "searchRow"), K(70, 566, 364, 1.36, "linear"), K(84, 554, 553, 1.3, "snap", "card0"), K(110, 560, 550, 1.31, "linear")],
   cursor: [{ f: 0, x: 520, y: 760 }, { f: 30, x: 330, y: 276 }, ...press(cat3W, "searchBtn", 72, 64)],
 };
-const offersW = worldOf("offers", ["nav", "headline", "offerCard"], { offerCard: { x: 168, y: 255, w: 1104, h: 133 } });
+export const offersW = worldOf("offers", ["nav", "headline", "offerCard"], { offerCard: { x: 168, y: 255, w: 1104, h: 133 } });
 const offersShot: WorldShot = { world: offersW, plate: "v3/offers", keys: [K(0, 720, 405, 1.0), K(14, 720, 330, 1.25, "expo", "offerCard"), K(66, 718, 324, 1.26, "linear")] };
 // Chapter 5 · Follow up: the order's status, the statement, the account
 const ordersW = worldOf("orders", ["nav", "headline", "first"]);
@@ -96,7 +96,7 @@ const ordersShot2: WorldShot = {
 const stmtW = worldOf("statement", ["totals", "products"], { totals: { x: 377, y: 450, w: 686, h: 180 }, products: { x: 377, y: 690, w: 686, h: 300 } });
 stmtW.forbid = ["docHeader", "docFooter"]; // the document header carries the unset business details
 const stmtShot: WorldShot = { world: stmtW, plate: "v3/statement", keys: [K(0, 720, 760, 1.3, undefined, "totals"), K(20, 720, 800, 1.32, "linear"), K(40, 720, 860, 1.35, "snap", "products"), K(72, 716, 866, 1.36, "linear")] };
-const accountW = worldOf("account", ["nav", "headline", "table"], { table: { x: 168, y: 255, w: 1104, h: 317 } });
+export const accountW = worldOf("account", ["nav", "headline", "table"], { table: { x: 168, y: 255, w: 1104, h: 317 } });
 const accountShot: WorldShot = { world: accountW, plate: "v3/account", keys: [K(0, 720, 405, 1.0), K(14, 720, 410, 1.25, "expo", "table"), K(66, 718, 406, 1.26, "linear")] };
 
 const V = sequence([
@@ -139,21 +139,21 @@ export const VISITOR_FULL: Manual = {
 };
 
 // ═════════════════════════════ Admin Episode 2 · Customers and approvals ═════════════════════════════
-const leadsW = worldOf("leads-0", ["headline", "first"]);
+export const leadsW = worldOf("leads-0", ["headline", "first"]);
 const leadsShot: WorldShot = {
   world: leadsW, plate: [[0, "v3/leads-0"], [52, "v3/leads-1"]],
   keys: [K(0, 720, 405, 1.0), K(14, 848, 421, 1.3, "expo", "first"), K(86, 852, 424, 1.3, "linear")],
   cursor: [{ f: 0, x: 900, y: 720 }, ...press(leadsW, "firstStatus", 52, 42)],
 };
-const newW = worldOf("cust-new-0", ["headline", "lead"]);
+export const newW = worldOf("cust-new-0", ["headline", "lead"]);
 const newShot: WorldShot = {
   world: newW, plate: [[0, "v3/cust-new-0"], [30, "v3/cust-new-1"]],
   keys: [K(0, 720, 405, 1.0), K(12, 848, 410, 1.3, "expo", "lead"), K(70, 852, 406, 1.3, "linear")],
   cursor: [{ f: 0, x: 700, y: 700 }, ...press(newW, "check", 30, 20, 0, 0), ...press(newW, "convert", 56, 46)],
 };
-const custW = worldOf("customers", ["headline", "newOne"]);
+export const custW = worldOf("customers", ["headline", "newOne"]);
 const custShot: WorldShot = { world: custW, plate: "v3/customers", keys: [K(0, 720, 405, 1.0), K(14, 848, 584, 1.3, "expo", "newOne"), K(66, 852, 580, 1.3, "linear")] };
-const pricesW = worldOf("cust-prices", ["prices", "firstPrice"]);
+export const pricesW = worldOf("cust-prices", ["prices", "firstPrice"]);
 const pricesShot: WorldShot = { world: pricesW, plate: "v3/cust-prices", keys: [K(0, 720, 1500, 1.0), K(14, 848, 1600, 1.3, "snap", "prices"), K(66, 852, 1610, 1.3, "linear")] };
 const E2 = sequence([
   { kind: "live", dur: 60, src: "v3/clips/f2/ep2.mp4", start: 1.6, line: "A new restaurant wants an account", lineAt: 4, punchAt: 34 },
@@ -176,7 +176,7 @@ export const ADMIN_EP2: Manual = {
 };
 
 // ═════════════════════════════ Admin Episode 3 · Products and prices ═════════════════════════════
-const prodW = worldOf("products-0", ["headline", "stockCol", "add", "sku", "priceFields", "newRow", "rowsA", "rowsB", "rowsC"], {
+export const prodW = worldOf("products-0", ["headline", "stockCol", "add", "sku", "priceFields", "newRow", "rowsA", "rowsB", "rowsC"], {
   rowsA: { x: 297, y: 700, w: 1102, h: 400 }, rowsB: { x: 297, y: 1100, w: 1102, h: 400 }, rowsC: { x: 297, y: 1500, w: 1102, h: 400 }, // the table itself, as anchors along the long move
   priceFields: { x: 457, y: 600, w: 526, h: 180 },
   tSku: { x: 470, y: 191, w: 63, h: 14 }, fSku: { x: 459, y: 181, w: 251, h: 34 },
@@ -193,9 +193,9 @@ const prodShot: WorldShot = {
   keys: [K(0, 720, 405, 1.0), K(14, 848, 449, 1.3, "expo", "stockCol"), K(40, 848, 420, 1.3, "snap", "add"), K(PR.add + 2, 852, 424, 1.3, "linear"), K(62, 844, 300, 1.35, "snap", "sku"), K(100, 840, 304, 1.36, "linear"), K(112, 720, 690, 1.35, "snap", "priceFields"), K(136, 724, 694, 1.36, "linear"), K(146, 850, 860, 1.35, "snap", "create"), K(PR.create + 2, 852, 862, 1.35, "linear"), K(172, 760, 1655, 1.1, "snap", "newRow"), K(PR.len, 756, 1660, 1.12, "linear")],
   cursor: [{ f: 0, x: 900, y: 700 }, ...press(prodW, "add", PR.add, 44), { f: 64, x: 520, y: 200 }, { f: 92, x: 780, y: 582 }, ...press(prodW, "create", PR.create, 148)],
 };
-const catsW = worldOf("categories", ["headline", "produce"]);
+export const catsW = worldOf("categories", ["headline", "produce"]);
 const catsShot: WorldShot = { world: catsW, plate: "v3/categories", keys: [K(0, 720, 405, 1.0), K(14, 848, 547, 1.3, "expo", "produce"), K(62, 852, 544, 1.3, "linear")] };
-const assignW = worldOf("assign", ["headline", "pickProducts"]);
+export const assignW = worldOf("assign", ["headline", "pickProducts"]);
 const assignShot: WorldShot = { world: assignW, plate: "v3/assign", keys: [K(0, 720, 405, 1.0), K(14, 848, 380, 1.3, "expo", "pickProducts"), K(66, 844, 376, 1.32, "linear")] };
 const E3 = sequence([
   { kind: "live", dur: 60, src: "v3/clips/f2/ep3.mp4", start: 2.6, line: "A new item comes in on Monday", lineAt: 4, punchAt: 34 },
@@ -218,9 +218,9 @@ export const ADMIN_EP3: Manual = {
 };
 
 // ═════════════════════════════ Admin Episode 4 · Margins and reports ═════════════════════════════
-const pricingW = worldOf("pricing", ["headline", "global", "rules"], { rules: { x: 296, y: 330, w: 1104, h: 400 } });
+export const pricingW = worldOf("pricing", ["headline", "global", "rules"], { rules: { x: 296, y: 330, w: 1104, h: 400 } });
 const pricingShot: WorldShot = { world: pricingW, plate: "v3/pricing", keys: [K(0, 720, 405, 1.0), K(14, 834, 305, 1.3, "expo", "global"), K(40, 838, 310, 1.3, "linear"), K(54, 834, 565, 1.3, "snap", "rules"), K(80, 838, 570, 1.3, "linear")] };
-const anaW = worldOf("analytics", ["headline", "trend", "tableTop"], { tableTop: { x: 297, y: 704, w: 1102, h: 300 } });
+export const anaW = worldOf("analytics", ["headline", "trend", "tableTop"], { tableTop: { x: 297, y: 704, w: 1102, h: 300 } });
 const anaShot: WorldShot = { world: anaW, plate: "v3/analytics", keys: [K(0, 720, 405, 1.0), K(14, 848, 460, 1.25, "expo", "trend"), K(44, 852, 464, 1.25, "linear"), K(58, 848, 900, 1.25, "snap", "tableTop"), K(96, 844, 906, 1.26, "linear")] };
 const repW = worldOf("reports", ["sectionsList", "print"], { sectionsList: { x: 296, y: 520, w: 320, h: 280 } });
 repW.forbid = ["docHeader", "docFooter"]; // the report sheet's header carries the unset business details
@@ -249,7 +249,7 @@ export const ADMIN_EP4: Manual = {
 };
 
 // ═════════════════════════════ Admin Episode 5 · Invites and access ═════════════════════════════
-const detW = worldOf("cust-detail-0", ["headline", "portalCard", "copyLinkB", "visibilityB"], {
+export const detW = worldOf("cust-detail-0", ["headline", "portalCard", "copyLinkB", "visibilityB"], {
   portalCard: { x: 317, y: 221, w: 1062, h: 120 }, copyLinkB: { x: 463, y: 275, w: 111, h: 38 }, visibilityB: { x: 317, y: 753, w: 1062, h: 120 },
 });
 const detShot: WorldShot = {
@@ -257,7 +257,7 @@ const detShot: WorldShot = {
   keys: [K(0, 720, 405, 1.0), K(14, 848, 350, 1.3, "expo", "portalCard"), K(46, 850, 353, 1.31, "linear"), K(60, 848, 400, 1.3, "snap", "copyLinkB"), K(92, 852, 404, 1.3, "linear"), K(104, 822, 855, 1.3, "snap", "visibilityB"), K(140, 820, 860, 1.3, "linear")],
   cursor: [{ f: 0, x: 900, y: 700 }, ...press(detW, "sendEmail", 44, 36), { f: 66, x: 530, y: 300 }, { f: 96, x: 536, y: 304 }],
 };
-const admW = worldOf("admin-login", ["headline", "email"]);
+export const admW = worldOf("admin-login", ["headline", "email"]);
 const admShot: WorldShot = { world: admW, plate: "v3/admin-login", keys: [K(0, 720, 405, 1.0), K(14, 720, 470, 1.4, "expo", "email"), K(66, 716, 474, 1.41, "linear")] };
 const E5 = sequence([
   { kind: "live", dur: 60, src: "v3/clips/f2/ep5.mp4", start: 1.0, line: "The new customer can't sign in yet", lineAt: 4, punchAt: 34 },

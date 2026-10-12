@@ -71,3 +71,25 @@ Phase C: final renders of all cuts and manuals, QA, licences, REPORT.md, deliver
 5. Rhythm: faster. Fast motion graphics, no shot holds for more than one beat without something moving, smooth eased motion with momentum, speed ramps on transitions. Cut density roughly double the Gate F proofs. Same rule for the manuals and episodes.
 6. Strict self-review before delivery: pull QA frames every 0.5 s from the encoded files, inspect each one for pasted overlays, misaligned screens, clipped text, placeholders, trailing periods and frozen moments; write a checklist with pass/fail per file; fix and re-render before sending anything.
 7. Continue the Gate D (V2) work too: the vector-character animatic and manuals from V2 are kept as a second style line and are brought up to the same notes (speed, no periods, clean overlays), so both lines are delivered.
+
+## 10. V3.2 (2026-10-12): demo business details, two voiced user manuals, then the final promo
+Usage videos (Part B/C) and the Gate F re-delivery are approved as a base. Three additions, in this order.
+
+### 10.1 Demo business details in documents (owner decision: fill everything with demo values)
+- Source: `src/lib/business.ts` hard-codes the placeholders and 19 pages read it through `getBusinessIdentity()`.
+- Change (small, on the videos branch): read each field from an env var (`BUSINESS_LEGAL_NAME`, `BUSINESS_ADDRESS`, `BUSINESS_PHONE`, `BUSINESS_EMAIL`) with the current placeholder as the default, so Vercel and `main` behave exactly as before. Set the demo values only in the videos' local demo launcher (`.claude/launch.json` entry and `videos/devstack` env), never in `.env.local` or the hosted project.
+- Demo values (clearly fictional, Pending Review): legal name "Olleik Foods Ltd.", address "120 Market Street, Ottawa, ON K1A 0B1", phone "(613) 555-0142", email "orders@olleik-demo.test". Keep tax disabled.
+- Then re-capture every document screen (customer invoice, admin invoice, customer statement, admin statement, products statement, low-stock, out-of-stock, reports) and drop the forbidden-box rule for document headers. Episode 1 / the admin manual may now open the invoice.
+- Report line for the owner: these are demo details; the real registered details still have to be entered before handover.
+
+### 10.2 Two voiced user manuals (the main deliverable)
+Model: the Marwah Amer manuals (narrated, calm, numbered steps, chapters), produced in the V3 engine.
+- Deliverables: `USER_MANUAL_VISITOR.mp4` (one film, about 2 min: home and apply, sign in, catalog with photos, cart and checkout, order status, invoice and statement, offers and account) and `USER_MANUAL_ADMIN.mp4` (one film, about 4 min, chapters with title cards: dashboard and orders incl. invoice, customers and approvals incl. invite, products and prices, margins and reports, documents). Both 1920x1080 30 fps, voice + captions, plus a silent captioned copy, an SRT, a poster, a chapter list with timestamps. The short episodes stay as extras.
+- Pace: narration-led, not the promo's doubled rhythm. Each step holds as long as its narration line plus one beat; camera moves stay smooth and continuous (V3 rules: no cut on taps, zoom cap, anchors, no pasted overlays, no trailing periods on screen). Slick and simple: one idea per step, a numbered step badge, a cursor or finger that really taps, a soft low music bed (bed C sparse) under the voice.
+- Narration: write `videos/narration/VISITOR.json` and `ADMIN.json` (id, text, targetSeconds), calm professional English, short sentences, no marketing claims, no delivery-time promises, no prices spoken, no real names. Files are Pending Review.
+- Voice: owner-approved per-project exception to the playbook's "never generate voice" rule: generate with Higgsfield speech (prefer the voice used for Marwah Amer, Harrison id 573e5163-59b3-4926-aab1-951ef2985f81, or a close equivalent) one WAV per line into `videos/narration/audio/`; test the pronunciation of "Olleik" first and, if needed, spell it phonetically in the narration text only (on screen stays "Olleik"). Log the exception in PROPOSED_RULE_CHANGES.md and every generation in LICENSES.md.
+- Mix: voice on top at -16 LUFS integrated for the file, music ducked at least 12 dB under the voice, effects as before, true peak <= -1 dBTP; sync of every effect within one frame; narration lines must start within 5 frames of their step's first frame.
+- QA: the existing per-file checklist plus: every narration line audible and not overlapping the next; captions match narration meaning; no document header placeholder remains anywhere.
+
+### 10.3 Final promo cuts (after 10.2 is delivered)
+60 s hero, 30 s, 15 s vertical 9:16 (hook A), 6 s bumper, 1:1 cut, 10 s loop; each with-music (bed C) and no-music; all Gate F fixes applied; end-card URL olleik-foods-site.vercel.app. Same measured QA. Then LICENSES.md, REPORT.md, everything to `D:\olleik-videos\final\` (`manual-visitor\`, `manual-admin\`, `episodes\`, `promo\`, `docs\`) with a README, remove the local demo database, stop. No PR merge without the owner's word.

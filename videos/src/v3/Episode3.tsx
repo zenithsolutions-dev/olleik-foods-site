@@ -13,7 +13,7 @@ export const WHIP = 7; // frames of whip at each side of a page change
 
 /** Whip pan between pages: the outgoing page accelerates out to the left, the next one decelerates in from the right,
  * with a horizontal smear (same direction and speed on both sides, so the join hides in the blur). */
-function Whip({ dur, whipIn, whipOut, children }: { dur: number; whipIn?: boolean; whipOut?: boolean; children: React.ReactNode }) {
+export function Whip({ dur, whipIn, whipOut, children }: { dur: number; whipIn?: boolean; whipOut?: boolean; children: React.ReactNode }) {
   const f = useCurrentFrame();
   let x = 0;
   if (whipOut && f > dur - WHIP) x = -easeIn((f - (dur - WHIP)) / WHIP) * 1500;

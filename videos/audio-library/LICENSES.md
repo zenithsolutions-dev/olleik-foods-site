@@ -201,7 +201,11 @@ items inside a larger end product.
 Rejected while sourcing: Mixkit #1144 and #2354 (download refused, HTTP 403, not used); OpenGameArt “Keyboard Soundpack #1”
 (CC0 but a membrane keyboard, not blue-switch; not used); Pixabay (blocked, HTTP 403); Freesound (login required).
 
-## Higgsfield generations (V3, generated 2026-10-11 on the owner's account; recorded before use)
+## Higgsfield generations (V3/V3.2, generated 2026-10-11 to 2026-10-12 on the owner's account; recorded before use)
+Narration (kind `narration`, `voice-test`): Higgsfield speech, model seed_audio, preset voice "Holden"
+(3c9d6053-6334-592c-8997-4e325286af3f), chosen by the owner; generated under the owner's per-project exception of
+2026-10-12 to the playbook's "never generate voice" rule (logged in the video-factory PROPOSED_RULE_CHANGES.md). One WAV
+per line in videos/narration/audio/ (text: narration/VISITOR.json, ADMIN.json); rejected takes in narration/audio/rejected/.
 Terms: Higgsfield Terms of Use §4.4 — Higgsfield claims no ownership of outputs and does not restrict their commercial
 use; outputs may not be used to train AI models (§5.1(iii), §5.2(iv)); no likeness/IP infringement (§5.1(ii)(b), §5.3).
 Evidence: licenses/higgsfield-terms-2026-10-11.txt. All people are original characters generated from text (no real
@@ -265,6 +269,76 @@ Model column: the model requested (the API reports nano_banana_pro jobs as `nano
 | 7540a7c1-d5ba-4926-aed1-51cf2b7ed97f | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/B-folk-t2.mp4 | USED: music bed B |
 | 5fb2824b-01c2-4d9b-9783-71635a2a7fac | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/C-marimba-t1.mp4 |  |
 | c63265eb-f5de-4817-81e5-72ef915e53b2 | music-source | seedance_2_0 fast 480p 15 s generate_audio=true (only the audio is used) | 2026-10-11 | music/raw/C-marimba-t2.mp4 | USED: music bed C |
+| 5b09d65e-0ee1-468d-b201-16c2e9c181eb | narration | seed_audio | 2026-10-12 | narration/audio/a00.wav | USED: USER_MANUAL_ADMIN narration line a00 |
+| 9961c8cf-66bd-4adb-b934-0aaf963854ba | narration | seed_audio | 2026-10-12 | narration/audio/a01.wav | USED: USER_MANUAL_ADMIN narration line a01 |
+| d2750e52-16a0-425b-bad2-ab23f9d51c01 | narration | seed_audio | 2026-10-12 | narration/audio/a02.wav | USED: USER_MANUAL_ADMIN narration line a02 |
+| 13fba874-8bb6-4c69-9c40-e5ada13de5e8 | narration | seed_audio | 2026-10-12 | narration/audio/a03.wav | USED: USER_MANUAL_ADMIN narration line a03 |
+| d3ea64e6-cfa6-4556-a6c1-238b63c08698 | narration | seed_audio | 2026-10-12 | narration/audio/a04.wav | USED: USER_MANUAL_ADMIN narration line a04 |
+| 8b92d82c-5d11-4989-98e6-9a7691a6fe83 | narration | seed_audio | 2026-10-12 | narration/audio/a05.wav | USED: USER_MANUAL_ADMIN narration line a05 |
+| fda2d1cf-39d3-4f47-939d-8c999dd2af00 | narration | seed_audio | 2026-10-12 | narration/audio/a06.wav | USED: USER_MANUAL_ADMIN narration line a06 |
+| 69c28e4b-5ee9-4084-b838-d0ae5668a455 | narration | seed_audio | 2026-10-12 | narration/audio/a07.wav | USED: USER_MANUAL_ADMIN narration line a07 |
+| 8106faf7-45db-4f1f-adcb-3cef588fdfa3 | narration | seed_audio | 2026-10-12 | narration/audio/a08.wav | USED: USER_MANUAL_ADMIN narration line a08 |
+| b7d14485-037e-4ae2-a052-769c1a76939c | narration | seed_audio | 2026-10-12 | narration/audio/a09.wav | USED: USER_MANUAL_ADMIN narration line a09 |
+| b9073e7a-aa16-4df6-a6e0-42ffb98aa5d2 | narration | seed_audio | 2026-10-12 | narration/audio/a10.wav | USED: USER_MANUAL_ADMIN narration line a10 |
+| cbdd9b82-db9f-4e70-a56f-798b0a042994 | narration | seed_audio | 2026-10-12 | narration/audio/a11.wav | USED: USER_MANUAL_ADMIN narration line a11 |
+| f3166cff-3a48-4607-8e1a-569201eb9639 | narration | seed_audio | 2026-10-12 | narration/audio/a12.wav | USED: USER_MANUAL_ADMIN narration line a12 |
+| ccab8f3a-af44-40b9-85b1-9e0193bb0ac6 | narration | seed_audio | 2026-10-12 | narration/audio/a13.wav | USED: USER_MANUAL_ADMIN narration line a13 |
+| f638f1df-1aa9-430b-935c-d112775129ad | narration | seed_audio | 2026-10-12 | narration/audio/a14.wav | USED: USER_MANUAL_ADMIN narration line a14 |
+| 9bbe2379-f371-4921-93d0-a0943a33292a | narration | seed_audio | 2026-10-12 | narration/audio/a15.wav | USED: USER_MANUAL_ADMIN narration line a15 |
+| 3271d417-85a8-4b05-a451-463b90e39476 | narration | seed_audio | 2026-10-12 | narration/audio/a16.wav | USED: USER_MANUAL_ADMIN narration line a16 |
+| 1aa91b8d-1d0f-468c-b61d-ccd718bc25ad | narration | seed_audio | 2026-10-12 | narration/audio/a17.wav | USED: USER_MANUAL_ADMIN narration line a17 |
+| 4ef32ceb-55d4-44aa-a752-63128c1d1407 | narration | seed_audio | 2026-10-12 | narration/audio/a18.wav | USED: USER_MANUAL_ADMIN narration line a18 |
+| 8e6bf4f6-51d0-4223-aede-f692cb6ccb11 | narration | seed_audio | 2026-10-12 | narration/audio/a19.wav | USED: USER_MANUAL_ADMIN narration line a19 |
+| cb8ea7c2-acb5-4656-b894-dd15bc7caad2 | narration | seed_audio | 2026-10-12 | narration/audio/a20.wav | USED: USER_MANUAL_ADMIN narration line a20 |
+| aacfef52-f68e-4337-8700-ee390e5f566c | narration | seed_audio | 2026-10-12 | narration/audio/a21.wav | USED: USER_MANUAL_ADMIN narration line a21 |
+| 7b35c02a-a795-43e6-a380-95d15ea1a7fc | narration | seed_audio | 2026-10-12 | narration/audio/a22.wav | USED: USER_MANUAL_ADMIN narration line a22 |
+| f742441a-3549-401b-97d6-cb51bbea35c6 | narration | seed_audio | 2026-10-12 | narration/audio/a23.wav | USED: USER_MANUAL_ADMIN narration line a23 |
+| 314adc40-8d11-41ce-ab2f-5010486aab39 | narration | seed_audio | 2026-10-12 | narration/audio/a24.wav | USED: USER_MANUAL_ADMIN narration line a24 |
+| c0c2de07-ca34-4a96-a773-914b44ebee13 | narration | seed_audio | 2026-10-12 | narration/audio/a25.wav | USED: USER_MANUAL_ADMIN narration line a25 |
+| 761bc54d-7c20-44fe-9df3-29d6d45ab9ae | narration | seed_audio | 2026-10-12 | narration/audio/a26.wav | USED: USER_MANUAL_ADMIN narration line a26 |
+| 91581ab9-6d00-4ea3-b44e-63e8430e0efd | narration | seed_audio | 2026-10-12 | narration/audio/a27.wav | USED: USER_MANUAL_ADMIN narration line a27 |
+| 57e0e037-1ba2-4f37-aba4-ec715f2e774e | narration | seed_audio | 2026-10-12 | narration/audio/a28.wav | USED: USER_MANUAL_ADMIN narration line a28 |
+| d4a2cf05-65b7-413d-8027-9c0124de23ad | narration | seed_audio | 2026-10-12 | narration/audio/a29.wav | USED: USER_MANUAL_ADMIN narration line a29 |
+| 0e7c20fc-9d48-4d43-9470-d315e7dfa65d | narration | seed_audio | 2026-10-12 | narration/audio/a30.wav | USED: USER_MANUAL_ADMIN narration line a30 |
+| 9001830a-7914-4764-a89a-039582ae9f9e | narration | seed_audio | 2026-10-12 | narration/audio/a31.wav | USED: USER_MANUAL_ADMIN narration line a31 |
+| 993b0ae5-00e9-4ec4-a4ab-83097265edce | narration | seed_audio | 2026-10-12 | narration/audio/a32.wav | USED: USER_MANUAL_ADMIN narration line a32 |
+| b0331a30-2bc4-469a-a502-7b4570571d24 | narration | seed_audio | 2026-10-12 | narration/audio/a33.wav | USED: USER_MANUAL_ADMIN narration line a33 |
+| 826353a7-08fa-459a-bb27-b15d107e9498 | narration | seed_audio | 2026-10-12 | narration/audio/rejected/a14-t1.wav | rejected: stray syllables or a misread word (faster-whisper check) |
+| f928c642-8277-4823-bb9b-80ac3ba11a09 | narration | seed_audio | 2026-10-12 | narration/audio/rejected/a14-t2.wav | rejected: stray sound before the first word (faster-whisper alignment) |
+| 98ed9c47-3ae2-43cb-96f4-9b0018bd41d2 | narration | seed_audio | 2026-10-12 | narration/audio/rejected/a15-t1.wav | rejected: stray syllables or a misread word (faster-whisper check) |
+| a1e892ff-9c76-4a3c-84e0-4ad8af598823 | narration | seed_audio | 2026-10-12 | narration/audio/rejected/a27-t1.wav | rejected: stray sound before the first word (faster-whisper alignment) |
+| 6f046f0c-59eb-43fa-8a8e-58feededfe2f | narration | seed_audio | 2026-10-12 | narration/audio/rejected/a33-t1.wav | rejected: stray sound before the first word (faster-whisper alignment) |
+| 361a120a-1d59-4225-a421-a385a2b76490 | narration | seed_audio | 2026-10-12 | narration/audio/rejected/v03-t1.wav | rejected: stray syllables or a misread word (faster-whisper check) |
+| 76204a69-b210-4fec-932b-139035c7944c | narration | seed_audio | 2026-10-12 | narration/audio/rejected/v05-t1.wav | rejected: stray syllables or a misread word (faster-whisper check) |
+| 80dcedf5-38f8-4e8d-b386-1946e64d28d3 | narration | seed_audio | 2026-10-12 | narration/audio/rejected/v08-t1.wav | rejected: stray sound before the first word (faster-whisper alignment) |
+| 1293b854-7ba4-45b7-a866-44481082c772 | narration | seed_audio | 2026-10-12 | narration/audio/rejected/v09-t1.wav | rejected: stray syllables or a misread word (faster-whisper check) |
+| 996b9e94-8533-481f-b34b-a55741e80c37 | narration | seed_audio | 2026-10-12 | narration/audio/rejected/v09-t2.wav | rejected: stray sound before the first word (faster-whisper alignment) |
+| 6d4e4ec1-c8b6-47e4-9f69-5a4d10f7387c | narration | seed_audio | 2026-10-12 | narration/audio/rejected/v09-t3.wav | rejected: garbled words inside the line (faster-whisper alignment) |
+| de97b0fc-4854-4c98-b38d-7e92373827db | narration | seed_audio | 2026-10-12 | narration/audio/rejected/v09-t5-alt.wav | not used: "Add" swallowed (take 4 kept) |
+| 03f36fed-716a-4ac1-b46f-221cb788ce5b | narration | seed_audio | 2026-10-12 | narration/audio/rejected/v12-t1.wav | rejected: stray syllables or a misread word (faster-whisper check) |
+| 75ba3601-0100-4d22-b8e1-db54bb8b2d36 | narration | seed_audio | 2026-10-12 | narration/audio/rejected/v12-t2.wav | rejected: stray sound before the first word (faster-whisper alignment) |
+| d3bba246-7fdc-4439-b96f-d21f69e5bf30 | narration | seed_audio | 2026-10-12 | narration/audio/rejected/v15-t1.wav | rejected: stray syllables or a misread word (faster-whisper check) |
+| a29f0c6f-c1e8-4701-8e94-dd0ccda023b1 | narration | seed_audio | 2026-10-12 | narration/audio/v00.wav | USED: USER_MANUAL_VISITOR narration line v00 |
+| 7327beaf-a555-43da-8d92-405fd7859917 | narration | seed_audio | 2026-10-12 | narration/audio/v01.wav | USED: USER_MANUAL_VISITOR narration line v01 |
+| ca25abbd-7145-463a-a1c3-f4e3cf1cda51 | narration | seed_audio | 2026-10-12 | narration/audio/v02.wav | USED: USER_MANUAL_VISITOR narration line v02 |
+| a076ed3e-1d9d-40c7-a4a1-a74b95849ec3 | narration | seed_audio | 2026-10-12 | narration/audio/v03.wav | USED: USER_MANUAL_VISITOR narration line v03 |
+| 0edc7494-4500-4bfc-b5d9-4b03bff12d8f | narration | seed_audio | 2026-10-12 | narration/audio/v04.wav | USED: USER_MANUAL_VISITOR narration line v04 |
+| 1f9ec7cb-36b0-4820-94a5-874a90cf36e5 | narration | seed_audio | 2026-10-12 | narration/audio/v05.wav | USED: USER_MANUAL_VISITOR narration line v05 |
+| 60751ded-b3ea-4898-ab87-91979d98150b | narration | seed_audio | 2026-10-12 | narration/audio/v06.wav | USED: USER_MANUAL_VISITOR narration line v06 |
+| 64c29b01-56ac-4327-b347-b614b4176d8f | narration | seed_audio | 2026-10-12 | narration/audio/v07.wav | USED: USER_MANUAL_VISITOR narration line v07 |
+| 6403b74a-8434-400f-8aef-46a80dbe6164 | narration | seed_audio | 2026-10-12 | narration/audio/v08.wav | USED: USER_MANUAL_VISITOR narration line v08 |
+| 83d015a0-c36b-4bae-b6ee-0ed1a80436aa | narration | seed_audio | 2026-10-12 | narration/audio/v09.wav | USED: USER_MANUAL_VISITOR narration line v09 |
+| 37f6c4af-eb0d-4ffd-bc7c-b6083efa100b | narration | seed_audio | 2026-10-12 | narration/audio/v10.wav | USED: USER_MANUAL_VISITOR narration line v10 |
+| 9eea8da1-7a2c-4bdf-868b-b8154364a87b | narration | seed_audio | 2026-10-12 | narration/audio/v11.wav | USED: USER_MANUAL_VISITOR narration line v11 |
+| 9fbd8ecb-1d02-4e65-91fa-ac9795049c2a | narration | seed_audio | 2026-10-12 | narration/audio/v12.wav | USED: USER_MANUAL_VISITOR narration line v12 |
+| 5f534e00-335b-4703-a3c1-a51bd2929509 | narration | seed_audio | 2026-10-12 | narration/audio/v13.wav | USED: USER_MANUAL_VISITOR narration line v13 |
+| 77b56fba-ab04-4120-a187-db33cda96bcb | narration | seed_audio | 2026-10-12 | narration/audio/v14.wav | USED: USER_MANUAL_VISITOR narration line v14 |
+| cc764465-597a-4bb4-8f53-d58a322d12b0 | narration | seed_audio | 2026-10-12 | narration/audio/v15.wav | USED: USER_MANUAL_VISITOR narration line v15 |
+| 452d7eea-dbae-426e-a4f2-4036059872ff | narration | seed_audio | 2026-10-12 | narration/audio/v16.wav | USED: USER_MANUAL_VISITOR narration line v16 |
+| e33c20eb-6c92-4d06-a7b8-87d607e7da34 | narration | seed_audio | 2026-10-12 | narration/audio/v17.wav | USED: USER_MANUAL_VISITOR narration line v17 |
+| a363ad89-0fcd-4ac5-b29e-ec493b3e06b8 | narration | seed_audio | 2026-10-12 | narration/audio/v18.wav | USED: USER_MANUAL_VISITOR narration line v18 |
+| 4a80085d-bc76-4a3b-b0d8-5b3b6a98230c | narration | seed_audio | 2026-10-12 | narration/audio/v19.wav | USED: USER_MANUAL_VISITOR narration line v19 |
+| 8dba026f-02ea-48f0-9c81-3d8aaabcfa16 | narration | seed_audio | 2026-10-12 | narration/audio/v20.wav | USED: USER_MANUAL_VISITOR narration line v20 |
 | fb1076a2-5529-4722-bfe9-f0db46d6f69f | partb hook-clip | kling3_0 pro 5 s (start_image: ep2-b) | 2026-10-12 | higgsfield/partb/clips/ep2-t1.mp4 | USED: Episode 2 hook (muted) |
 | eb139f14-f192-45e3-9874-6811b6f0ce3b | partb hook-clip | kling3_0 pro 5 s (start_image: ep3-a) | 2026-10-12 | higgsfield/partb/clips/ep3-t1.mp4 | USED: Episode 3 hook (muted) |
 | 88a318d5-371d-4cc8-ba4d-a29be8aa89ba | partb hook-clip | kling3_0 pro 5 s (start_image: ep4-b) | 2026-10-12 | higgsfield/partb/clips/ep4-t1.mp4 | USED: Episode 4 hook (muted) |
@@ -338,5 +412,9 @@ Model column: the model requested (the API reports nano_banana_pro jobs as `nano
 | 98426453-4643-49db-b11c-b4675c5b4b21 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-169-t2.mp4 |  |
 | 807cfae8-0152-4c07-a614-834166df8f67 | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-916-t1.mp4 | PICK: Salma 9:16 test shot |
 | d6eb3737-0583-4e43-885d-61c95b02c80c | test-shot | kling3_0 pro 5 s sound off | 2026-10-11 | people/shots/salma-916-t2.mp4 |  |
+| 3d49bdab-8555-4b3b-9c11-e4bd08593b20 | voice-test | seed_audio | 2026-10-12 | narration/tests/harrison-ohlake.wav | pronunciation test of "Olleik" (not in any cut); voice Harrison, superseded by the owner's choice Holden |
+| 733693a7-d4d2-4546-b893-2ded9cd11ca4 | voice-test | seed_audio | 2026-10-12 | narration/tests/harrison-olleik.wav | pronunciation test of "Olleik" (not in any cut); voice Harrison, superseded by the owner's choice Holden |
+| 907b55b2-fb6b-4a33-9e71-1d04f3738811 | voice-test | seed_audio | 2026-10-12 | narration/tests/holden-ohlake.wav | pronunciation test of "Olleik" (not in any cut) |
+| 61b556b3-6db5-4bb6-80d1-ffc8ebc91156 | voice-test | seed_audio | 2026-10-12 | narration/tests/holden-olleik.wav | pronunciation test of "Olleik" (not in any cut) |
 
-128 Higgsfield generations recorded. Elements: olleik-demo-catalog-style 310febdd-c4a9-499d-be0b-cc30b46b9e5f, olleik-marco 2f647b1b-7746-4ecd-9510-49fb41c197e7, olleik-salma ce092dc3-a897-47f2-a82c-5e5b7f773e9a, olleik-driver 93840d9d-15f2-4d88-92b9-3e71f5a93a9d.
+202 Higgsfield generations recorded. Elements: olleik-demo-catalog-style 310febdd-c4a9-499d-be0b-cc30b46b9e5f, olleik-marco 2f647b1b-7746-4ecd-9510-49fb41c197e7, olleik-salma ce092dc3-a897-47f2-a82c-5e5b7f773e9a, olleik-driver 93840d9d-15f2-4d88-92b9-3e71f5a93a9d.

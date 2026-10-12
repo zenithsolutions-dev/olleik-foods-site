@@ -21,3 +21,6 @@ higgsfield/**/*.wav
 higgsfield/products/web/
 higgsfield/**/*.jpg
 higgsfield/_*
+narration/audio/**/*.wav
+narration/audio/*.wav
+narration/tests/

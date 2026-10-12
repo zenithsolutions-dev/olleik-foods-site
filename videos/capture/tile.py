@@ -10,7 +10,11 @@ PAD = {n: 160 for n in ["cart", "checkout-0", "checkout-1", "checkout-2", "order
                         "admin-orders", "admin-orders-new", "admin-order-new", "admin-order-confirmed", "admin-order-prepared", "admin-order-completed",
                         # Part B (full manual and episodes 2-5)
                         "portal", "search-1", "search-2", "leads-0", "leads-1", "cust-new-0", "cust-new-1", "customers", "categories",
-                        "assign", "pricing", "cust-detail-0", "cust-detail-2", "admin-login", "low-stock", "offers", "account"]}
+                        "assign", "pricing", "cust-detail-0", "cust-detail-2", "admin-login", "low-stock", "offers", "account",
+                        # V3.2 voiced manuals (documents with demo business details, the order page)
+                        "order-detail", "doc-invoice", "doc-admin-invoice", "doc-low-stock", "doc-out-of-stock", "doc-reports",
+                        "products-0", "analytics", "cust-prices", "cust-detail-1", "home", "apply-2", "login-0", "login-1", "apply-0", "apply-1",
+                        "doc-statement", "doc-admin-statement", "doc-products"]}
 os.makedirs(DST, exist_ok=True)
 meta = {}
 for f in sorted(glob.glob(f"{SRC}/*.png")):

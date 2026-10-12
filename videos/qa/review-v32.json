@@ -1,0 +1,426 @@
+{
+ "_note": "V3.2 (brief §10): my frame review of every 0.5 s QA frame of each encoded MP4 (out/qa-v32/<name>/review-NN.jpg, 30 frames per sheet), 2026-10-12. Music and no-music versions share one picture: the picture verdicts are the same.",
+ "files": [
+  {
+   "name": "USER_MANUAL_VISITOR",
+   "file": "manual-visitor/USER_MANUAL_VISITOR.mp4",
+   "title": "Voiced user manual: customer guide (7 chapters, 19 steps)",
+   "target_lufs": -16
+  },
+  {
+   "name": "USER_MANUAL_ADMIN",
+   "file": "manual-admin/USER_MANUAL_ADMIN.mp4",
+   "title": "Voiced user manual: admin guide (5 chapters, 32 steps)",
+   "target_lufs": -16
+  },
+  {
+   "name": "promo-60s-music",
+   "file": "promo/promo-60s-music.mp4",
+   "title": "60 s hero, music bed C",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-60s-nomusic",
+   "file": "promo/promo-60s-nomusic.mp4",
+   "title": "60 s hero, no music",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-30s-music",
+   "file": "promo/promo-30s-music.mp4",
+   "title": "30 s, music bed C",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-30s-nomusic",
+   "file": "promo/promo-30s-nomusic.mp4",
+   "title": "30 s, no music",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-15s-vertical-music",
+   "file": "promo/promo-15s-vertical-music.mp4",
+   "title": "15 s vertical 9:16 (hook A), music bed C",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-15s-vertical-nomusic",
+   "file": "promo/promo-15s-vertical-nomusic.mp4",
+   "title": "15 s vertical 9:16 (hook A), no music",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-6s-bumper-music",
+   "file": "promo/promo-6s-bumper-music.mp4",
+   "title": "6 s bumper, music bed C",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-6s-bumper-nomusic",
+   "file": "promo/promo-6s-bumper-nomusic.mp4",
+   "title": "6 s bumper, no music",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-1x1-music",
+   "file": "promo/promo-1x1-music.mp4",
+   "title": "1:1 (20 s), music bed C",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-1x1-nomusic",
+   "file": "promo/promo-1x1-nomusic.mp4",
+   "title": "1:1 (20 s), no music",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-10s-loop-music",
+   "file": "promo/promo-10s-loop-music.mp4",
+   "title": "10 s seamless loop, music bed C",
+   "target_lufs": -14
+  },
+  {
+   "name": "promo-10s-loop-nomusic",
+   "file": "promo/promo-10s-loop-nomusic.mp4",
+   "title": "10 s seamless loop, no music",
+   "target_lufs": -14
+  }
+ ],
+ "verdicts": {
+  "USER_MANUAL_VISITOR": {
+   "overlays": {
+    "ok": true,
+    "note": "None: every page is one real capture; taps switch to the real after-tap capture; typing reveals the real typed capture; the step badge and captions live in the lower band, never over the UI."
+   },
+   "screens": {
+    "ok": true,
+    "note": "No composited screens (UI captures only)."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No UI text is cut by the caption band; at the end of each push every target keeps air on both sides."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   },
+   "fixed": [
+    "the push ended too tight on wide pages (Offers, Account): headings touched the frame edge",
+    "the sign-in card's logo was cut at the top",
+    "the home page cut its headline at the left edge: it now opens on the whole hero and pushes in to the Become a customer button"
+   ]
+  },
+  "USER_MANUAL_ADMIN": {
+   "overlays": {
+    "ok": true,
+    "note": "None: every page is one real capture; taps switch to the real after-tap capture; typing reveals the real typed capture; the step badge and captions live in the lower band, never over the UI."
+   },
+   "screens": {
+    "ok": true,
+    "note": "No composited screens (UI captures only)."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No UI text is cut by the caption band; the sidebar is either whole or out on every hold."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   },
+   "fixed": [
+    "wide admin targets now drift down at a fixed zoom (sidebar never cut, tables keep their right columns)",
+    "the admin sign-in card sat awkwardly in the frame",
+    "the add-product dialog: the capture's modal ends at the window edge with the undimmed page below; that area is now excluded from the frame (step 20 shows the result in the list)",
+    "the orders list lost its right columns at the end of the push"
+   ]
+  },
+  "promo-60s-music": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   },
+   "fixed": [
+    "admin beat shots clipped the first letters of the page (pricing, leads, invite): the camera now hugs the sidebar's right edge"
+   ]
+  },
+  "promo-60s-nomusic": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   },
+   "fixed": [
+    "the encoded true peak reached −0.8 dBTP: remixed with a lower peak ceiling (now −2.6)",
+    "admin beat shots clipped the first letters of the page (pricing, leads, invite): the camera now hugs the sidebar's right edge"
+   ]
+  },
+  "promo-30s-music": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   },
+   "fixed": [
+    "admin beat shots clipped the first letters of the page (pricing, leads, invite): the camera now hugs the sidebar's right edge"
+   ]
+  },
+  "promo-30s-nomusic": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   },
+   "fixed": [
+    "admin beat shots clipped the first letters of the page (pricing, leads, invite): the camera now hugs the sidebar's right edge"
+   ]
+  },
+  "promo-15s-vertical-music": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   }
+  },
+  "promo-15s-vertical-nomusic": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   }
+  },
+  "promo-6s-bumper-music": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   }
+  },
+  "promo-6s-bumper-nomusic": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   }
+  },
+  "promo-1x1-music": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   }
+  },
+  "promo-1x1-nomusic": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   }
+  },
+  "promo-10s-loop-music": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   }
+  },
+  "promo-10s-loop-nomusic": {
+   "overlays": {
+    "ok": true,
+    "note": "None: UI shots are real captures; the phone and monitor composites are the approved Gate F 2x composites (re-used ranges)."
+   },
+   "screens": {
+    "ok": true,
+    "note": "Composites fitted to the screen rectangles (re-used approved ranges); the vertical crops Salma's 2x monitor composite at native size."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "No clipped text in the new beat shots; on admin pages the view hugs the sidebar's right edge (no letters cut)."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "No business-detail placeholder anywhere: every document shows the demo details."
+   },
+   "periods": {
+    "ok": true,
+    "note": "app copy only"
+   },
+   "fixed": [
+    "the encoded mix sat at −14.5 LUFS with the true peak at −1.0: remixed with a lower peak ceiling (now −14.0 / −1.7)"
+   ]
+  }
+ }
+}

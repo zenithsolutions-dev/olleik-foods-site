@@ -197,6 +197,53 @@ try {
     await full(a, "v3/cust-detail-2", "New customer: invite email sent", db);
     await ctx.close();
   });
+  // V3.2 §10.1: every document screen, now with the fictional demo business details in the header (dev.mjs env),
+  // plus the customer's order page (status) for the voiced visitor manual.
+  await step("docs", async () => {
+    const SHEET = { headline: "main h1, h1 >> nth=0", print: "button:has-text('Print') >> nth=0", ...DOC, table: ".doc-sheet table >> nth=0" };
+    const ctx = await context(browser, "desktop");
+    const c = await customerSignIn(ctx);
+    await go(c, "/portal/orders");
+    const firstHref = await c.locator("main a[href*='/portal/orders/']:not([href$='statement'])").first().getAttribute("href");
+    await go(c, firstHref);
+    await settle(c, 1000);
+    await allImages(c);
+    await full(c, "v3/order-detail", "Customer order page: status and items", { nav: "header >> nth=0", headline: "main h1", status: "main :text-matches('received|confirmed|ready|completed|prepared', 'i') >> nth=0", items: "main table >> nth=0, main ul >> nth=0", invoice: "main a:has-text('Invoice'), main button:has-text('Invoice') >> nth=0" });
+    await go(c, firstHref.replace(/\/$/, "") + "/invoice");
+    await settle(c, 1200);
+    await full(c, "v3/doc-invoice", "Customer invoice (demo business details)", SHEET);
+    await go(c, "/portal/orders/statement");
+    await settle(c, 1200);
+    await full(c, "v3/doc-statement", "Customer statement (demo business details)", { ...SHEET, period: "main select >> nth=0" });
+    await ctx.close();
+
+    const { ctx: actx, a } = await admin();
+    await go(a, "/admin/orders");
+    const ah = await a.locator("main a[href*='/admin/orders/']").first().getAttribute("href");
+    await go(a, ah.replace(/\/$/, "") + "/invoice");
+    await settle(a, 1200);
+    await full(a, "v3/doc-admin-invoice", "Admin invoice (demo business details)", SHEET);
+    await go(a, "/admin/customers");
+    await a.getByText("Copperleaf Kitchen").first().click();
+    await a.waitForURL(/\/admin\/customers\/.+/);
+    const cu = a.url().replace(/[?#].*$/, "").replace(/\/$/, "");
+    await go(a, cu + "/statement");
+    await settle(a, 1200);
+    await full(a, "v3/doc-admin-statement", "Admin customer statement (demo business details)", SHEET);
+    await go(a, "/admin/documents/products");
+    await settle(a, 1200);
+    await full(a, "v3/doc-products", "Products statement (demo business details)", SHEET);
+    await go(a, "/admin/documents/low-stock");
+    await settle(a, 1200);
+    await full(a, "v3/doc-low-stock", "Low-stock statement (demo business details)", SHEET);
+    await go(a, "/admin/documents/out-of-stock");
+    await settle(a, 1200);
+    await full(a, "v3/doc-out-of-stock", "Out-of-stock statement (demo business details)", SHEET);
+    await go(a, "/admin/reports");
+    await settle(a, 1500);
+    await full(a, "v3/doc-reports", "Report builder (demo business details)", { sidebar: "aside", headline: "main h1", presets: "main :text('Presets') >> xpath=ancestor::div[1]", sections: "main :text('Sections') >> xpath=ancestor::div[1]", print: "main button:has-text('Print')", ...DOC });
+    await actx.close();
+  });
 } finally {
   await browser.close();
   console.log(`blocked requests: ${blocked.length}`);

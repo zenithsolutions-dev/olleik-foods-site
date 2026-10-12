@@ -63,7 +63,7 @@ export const catalogShot: WorldShot = {
   type: [{ text: "3 in the cart", box: "cartWide", dx: -300, dy: 70, from: VC.t2 + 12, to: VC.len + 4, size: 30 }],
 };
 
-const cartW = worldOf("cart", ["nav", "headline", "total", "checkout"]);
+export const cartW = worldOf("cart", ["nav", "headline", "total", "checkout"]);
 export const CT = { tap: b(4), len: b(5) + 2 };
 const ck0: Key = { f: 14, cx: 720, cy: 400, z: 1.15, ease: "expo", eye: "headline" }, ck1 = aim(cartW, "checkout", CT.tap - 8, 1.4, "snap", 430, -60);
 export const cartShot: WorldShot = {
@@ -73,7 +73,7 @@ export const cartShot: WorldShot = {
 };
 
 // typed note: text extent and the field's inner box, measured on the real captures (checkout-1 → checkout-2)
-const ckW = worldOf("checkout-0", ["headline", "summary", "delivery", "pickup", "notes", "submit"], { typed: { x: 417, y: 702, w: 174, h: 20 }, noteField: { x: 408, y: 695, w: 600, h: 54 } });
+export const ckW = worldOf("checkout-0", ["headline", "summary", "delivery", "pickup", "notes", "submit"], { typed: { x: 417, y: 702, w: 174, h: 20 }, noteField: { x: 408, y: 695, w: 600, h: 54 } });
 export const CK = { delivery: b(3), typeFrom: b(4), typeDur: b(2), submit: b(8), len: b(9) + 2 };
 const kk0 = aim(ckW, "delivery", CK.delivery - 8, 1.35, "snap", 440, -120), kk1 = aim(ckW, "notes", CK.typeFrom - 2, 1.35, "snap", 450, -40), kk2 = aim(ckW, "submit", CK.submit - 8, 1.38, "snap", 430, -140);
 export const ckShot: WorldShot = {
@@ -84,14 +84,14 @@ export const ckShot: WorldShot = {
   cursor: [{ f: 0, x: 1240, y: 900 }, ...tapAt(ckW, "delivery", CK.delivery, CK.delivery - 7), { f: CK.typeFrom - 2, x: 760, y: 738 }, { f: CK.typeFrom + CK.typeDur, x: 790, y: 742 }, ...tapAt(ckW, "submit", CK.submit, CK.submit - 8)],
 };
 
-const placedW = worldOf("order-placed", ["nav", "banner", "headline"]);
+export const placedW = worldOf("order-placed", ["nav", "banner", "headline"]);
 const pk0 = aim(placedW, "banner", 16, 1.45, "expo", 380), pk1 = aim(placedW, "status", b(3), 1.5, "snap", 430, -200);
 export const placedShot: WorldShot = {
   world: placedW, plate: "v3/order-placed",
   keys: [{ f: 0, cx: 720, cy: 405, z: 1.0 }, pk0, drift(pk0, b(2)), pk1, drift(pk1, b(5))],
 };
 
-const ordersW = worldOf("orders", ["nav", "headline", "first"]);
+export const ordersW = worldOf("orders", ["nav", "headline", "first"]);
 const ok0 = aim(ordersW, "first", 16, 1.2, "expo", 420, 0);
 export const ordersShot: WorldShot = {
   world: ordersW, plate: "v3/orders",
@@ -123,7 +123,7 @@ export const VISITOR_CH4: Manual = {
 };
 
 // ————————————————————————— Admin Episode 1: Orders —————————————————————————
-const dashW = worldOf("admin-dashboard", ["headline", "newOrders", "ordersNav"]);
+export const dashW = worldOf("admin-dashboard", ["headline", "newOrders", "ordersNav"]);
 const DB = { nav: b(4), len: b(5) + 2 };
 // the sidebar (256 px) is either whole in frame or fully out: a cut sliver of it reads as a stray chip
 const dk0 = aim(dashW, "newOrders", 14, 1.3, "expo", 448, 420), dk1 = aim(dashW, "ordersNav", DB.nav - 8, 1.3, "snap", 430, 426);
@@ -133,7 +133,7 @@ const dashShot: WorldShot = {
   cursor: [{ f: 0, x: 900, y: 760 }, { f: 30, x: 440, y: 330 }, ...tapAt(dashW, "ordersNav", DB.nav, DB.nav - 8)],
 };
 
-const listW = worldOf("admin-orders", ["headline", "tabNew", "firstRow"]);
+export const listW = worldOf("admin-orders", ["headline", "tabNew", "firstRow"]);
 const OL = { tabNew: b(2), row: b(4), len: b(5) + 2 };
 const lk0 = aim(listW, "tabNew", OL.tabNew - 8, 1.35, "expo", 420, 386), lk1 = aim(listW, "firstRow", OL.row - 8, 1.3, "snap", 430, 0);
 const listShot: WorldShot = {
@@ -142,7 +142,7 @@ const listShot: WorldShot = {
   cursor: [{ f: 0, x: 1100, y: 760 }, ...tapAt(listW, "tabNew", OL.tabNew, OL.tabNew - 8), ...tapAt(listW, "firstRow", OL.row, OL.row - 8)],
 };
 
-const orderW = worldOf("admin-order-new", ["headline", "items", "customer", "note", "actions"], {
+export const orderW = worldOf("admin-order-new", ["headline", "items", "customer", "note", "actions"], {
   actions: { x: 405, y: 146, w: 330, h: 62 }, badge: { x: 1185, y: 30, w: 121, h: 44 },
 });
 const OD = { confirm: b(6), prepared: b(9), complete: b(11), invoice: b(13), len: b(14) + 4 };

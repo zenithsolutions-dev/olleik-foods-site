@@ -104,16 +104,22 @@ def build(d):
         x, sr = sf.read(data["bed_file"])
         assert sr == SR
         at = int(data.get("bed_from", 0) * SPF)
+        x = x[int(data.get("bed_offset_s", 0) * SR):]  # start part-way into the bed (the 10 s loop continues the promo's music)
         mus = np.zeros((n, 2))
         m = min(len(x), n - at)
         mus[at : at + m] = x[:m]
-        mus = mus * gain_env(data.get("music_env"), n)[:, None] * duck_env(ev, n, data.get("duck_db", -5))[:, None]
+        env = data.get("music_env")
+        if env == "auto":  # silent until the bed starts (the hook's snap), full under the cut, out under the end card
+            bf, fr = data.get("bed_from", 0), data["frames"]
+            env = [[0, -90], [bf, -90], [bf + 4, 0], [fr - 61, 0], [fr - 44, -3], [fr - 2, -60]]
+        mus = mus * gain_env(env, n)[:, None] * duck_env(ev, n, data.get("duck_db", -5))[:, None]
         mus *= from_db((lufs(fx_bus) - data.get("music_under_lu", 7.0)) - lufs(mus))
         bus = bus + mus
     mix = np.stack([hp(bus[:, c], 30) for c in range(2)], 1)
-    fade = np.ones(n)
-    fade[-secs(0.4) :] = np.linspace(1, 0, secs(0.4)) ** 2
-    mix *= fade[:, None]
+    if not data.get("loop"):  # a loop must not dip at its seam
+        fade = np.ones(n)
+        fade[-secs(0.4) :] = np.linspace(1, 0, secs(0.4)) ** 2
+        mix *= fade[:, None]
     for _ in range(3):
         mix = limiter(mix * from_db(target - lufs(mix)), data.get("wav_tp", -2.1))
     write_wav(os.path.join(d, "sfx.wav"), limiter(fx_bus * from_db(min(0, target - lufs(fx_bus))), -1.8))

@@ -1,0 +1,164 @@
+{
+ "title": "Olleik Foods: customer guide",
+ "status": "Pending Review",
+ "voice": {
+  "engine": "Higgsfield seed_audio",
+  "voice_id": "3c9d6053-6334-592c-8997-4e325286af3f",
+  "voice_type": "preset",
+  "name": "Holden (owner's choice)"
+ },
+ "pronunciation": "\"Olleik\" is written \"Oh-lake\" in the spoken text only (the voice reads the plain spelling as \"Olik\"); on screen it stays \"Olleik\"",
+ "lines": [
+  {
+   "id": "v00",
+   "chapter": 0,
+   "text": "Welcome to Olleik Foods. This guide shows you how to open an account and place your first order.",
+   "speak": "Welcome to Oh-lake Foods. This guide shows you how to open an account and place your first order.",
+   "targetSeconds": 6,
+   "caption": "Welcome to the Olleik Foods customer guide"
+  },
+  {
+   "id": "v01",
+   "chapter": 1,
+   "text": "To open a wholesale account, choose Become a customer on the Olleik Foods website.",
+   "speak": "To open a wholesale account, choose Become a customer on the Oh-lake Foods website.",
+   "targetSeconds": 5,
+   "caption": "Choose Become a customer on the website"
+  },
+  {
+   "id": "v02",
+   "chapter": 1,
+   "text": "Fill in your business name, your contact details and your delivery address.",
+   "targetSeconds": 5,
+   "caption": "Fill in your business and contact details"
+  },
+  {
+   "id": "v03",
+   "chapter": 1,
+   "text": "Add a short note about your kitchen, then send the application.",
+   "targetSeconds": 4,
+   "caption": "Add a note, then send the application"
+  },
+  {
+   "id": "v04",
+   "chapter": 1,
+   "text": "The Olleik team reviews your application.",
+   "speak": "The Oh-lake team reviews your application.",
+   "targetSeconds": 3,
+   "caption": "The Olleik team reviews your application"
+  },
+  {
+   "id": "v05",
+   "chapter": 2,
+   "text": "Once you're approved, sign in with your email and password.",
+   "targetSeconds": 4,
+   "caption": "Once approved, sign in with your email"
+  },
+  {
+   "id": "v06",
+   "chapter": 2,
+   "text": "Your portal opens on the dashboard, with your catalog, your offers and your orders.",
+   "targetSeconds": 5,
+   "caption": "Your portal: catalog, offers and orders"
+  },
+  {
+   "id": "v07",
+   "chapter": 3,
+   "text": "Your catalog shows a photo of every product, with the price set for your account.",
+   "targetSeconds": 5,
+   "caption": "Every product with a photo and your price"
+  },
+  {
+   "id": "v08",
+   "chapter": 3,
+   "text": "Search by name, or filter by category, to find an item quickly.",
+   "targetSeconds": 4,
+   "caption": "Search by name or filter by category"
+  },
+  {
+   "id": "v09",
+   "chapter": 4,
+   "text": "Tap Add to put an item in your cart. Add as many as you need.",
+   "targetSeconds": 4,
+   "caption": "Tap Add to put items in your cart"
+  },
+  {
+   "id": "v10",
+   "chapter": 4,
+   "text": "Open the cart to check the quantities, then choose Checkout.",
+   "targetSeconds": 4,
+   "caption": "Check the cart, then choose Checkout"
+  },
+  {
+   "id": "v11",
+   "chapter": 4,
+   "text": "Choose delivery or pickup, and add a note for the team if you need to.",
+   "targetSeconds": 4,
+   "caption": "Delivery or pickup, plus a note"
+  },
+  {
+   "id": "v12",
+   "chapter": 4,
+   "text": "Submit the order. Payment stays on your usual account terms.",
+   "targetSeconds": 4,
+   "caption": "Submit: payment stays on your usual terms"
+  },
+  {
+   "id": "v13",
+   "chapter": 5,
+   "text": "Your order is received. The team confirms it next.",
+   "targetSeconds": 3,
+   "caption": "Received: the team confirms it next"
+  },
+  {
+   "id": "v14",
+   "chapter": 5,
+   "text": "Under My orders, each order shows its status: received, confirmed, ready, then completed.",
+   "targetSeconds": 6,
+   "caption": "Status: received, confirmed, ready, completed"
+  },
+  {
+   "id": "v15",
+   "chapter": 5,
+   "text": "Open an order to see its items, its total and your note.",
+   "targetSeconds": 4,
+   "caption": "Open an order: items, total and your note"
+  },
+  {
+   "id": "v16",
+   "chapter": 6,
+   "text": "Every order has an invoice. Print it, or save it as a PDF.",
+   "targetSeconds": 4,
+   "caption": "Every order has an invoice to print or save"
+  },
+  {
+   "id": "v17",
+   "chapter": 6,
+   "text": "Your statement lists the products and the orders for any period you choose.",
+   "targetSeconds": 5,
+   "caption": "A statement for any period you choose"
+  },
+  {
+   "id": "v18",
+   "chapter": 7,
+   "text": "Offers shows the promotions your Olleik rep has set up for you.",
+   "speak": "Offers shows the promotions your Oh-lake rep has set up for you.",
+   "targetSeconds": 4,
+   "caption": "Offers set up by your Olleik rep"
+  },
+  {
+   "id": "v19",
+   "chapter": 7,
+   "text": "Account holds your contacts, your delivery address and your payment terms.",
+   "targetSeconds": 4,
+   "caption": "Your contacts, address and payment terms"
+  },
+  {
+   "id": "v20",
+   "chapter": 8,
+   "text": "That's everything you need to place and follow your orders.",
+   "targetSeconds": 4,
+   "caption": "Everything you need to place and follow orders"
+  }
+ ]
+}

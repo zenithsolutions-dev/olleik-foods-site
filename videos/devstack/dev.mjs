@@ -22,6 +22,12 @@ Object.assign(env, {
   SUPABASE_SERVICE_ROLE_KEY: keys.serviceKey,
   ADMIN_EMAILS: DEMO_ADMIN,
   NEXT_TELEMETRY_DISABLED: "1",
+  // Fictional demo business details for the documents (brief V3.2 §10.1, Pending Review). Videos only: the
+  // real registered details must still be entered before handover.
+  BUSINESS_LEGAL_NAME: "Olleik Foods Ltd.",
+  BUSINESS_ADDRESS: "120 Market Street, Ottawa, ON K1A 0B1",
+  BUSINESS_PHONE: "(613) 555-0142",
+  BUSINESS_EMAIL: "orders@olleik-demo.test",
 });
 if (!env.NEXT_PUBLIC_SUPABASE_URL.startsWith("http://127.0.0.1:")) throw new Error("refusing to start: the database URL is not the local stand-in");
 
