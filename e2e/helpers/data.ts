@@ -108,6 +108,18 @@ export async function orderRow(id: string) {
   return (await select<Record<string, unknown>>(`orders?select=*&id=eq.${id}`))[0];
 }
 
+/**
+ * Put the shared demo catalog back to its seeded state after specs that bend it (stock levels, availability, an extra
+ * assignment). Specs call this in beforeEach/afterEach so one spec's leftovers never decide another spec's result.
+ */
+export async function restoreBaseline() {
+  const c = await customerByKey("copperleaf");
+  const p = await productBySku("MEAT-202");
+  await del("customer_product_pricing_meta", `customer_id=eq.${c.id}&product_id=eq.${p.id}`);
+  await del("customer_products", `customer_id=eq.${c.id}&product_id=eq.${p.id}`);
+  for (const sku of ["DRY-101", "DRY-102", "BEV-501", "BEV-502", "PRD-006"]) await setStock(sku, 80, 10);
+}
+
 /** Remove every offer on a customer, then add the given ones. */
 export async function setOffers(
   customerKey: string,

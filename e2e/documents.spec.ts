@@ -1,5 +1,5 @@
 import { test, expect, authFile, pageProblems } from "./helpers/fixtures";
-import { createOrder, customerByKey, setStock } from "./helpers/data";
+import { createOrder, customerByKey, restoreBaseline, setStock } from "./helpers/data";
 import { select } from "./helpers/db";
 import { spawn, type ChildProcess } from "node:child_process";
 import type { Page } from "@playwright/test";
@@ -11,6 +11,9 @@ const docText = (page: Page) => page.locator(".doc-sheet").innerText();
 
 test.describe("admin documents", () => {
   test.use({ storageState: authFile("admin") });
+  test.afterEach(async () => {
+    await restoreBaseline();
+  });
 
   test("A-16 invoice: lines and total are the order's frozen snapshot, and no cost or profit appears", async ({ page }) => {
     const o = await createOrder("copperleaf", [{ sku: "DRY-101", qty: 2 }, { sku: "PRD-001", qty: 3 }], { status: "completed" });

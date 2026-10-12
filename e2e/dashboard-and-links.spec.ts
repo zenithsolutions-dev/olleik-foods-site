@@ -7,13 +7,13 @@ import { createOrder } from "./helpers/data";
 test.describe("dashboard and analytics", () => {
   test.use({ storageState: authFile("admin") });
 
-  test("A-01 the new-orders tile equals the true count of new orders", async ({ page }) => {
+  test("A-01 the new-orders tile equals the true count of new orders", async ({ page, isMobile }) => {
     await createOrder("juniper", [{ sku: "BEV-501", qty: 1 }]);
     const n = (await select("orders?select=id&status=eq.new")).length;
     await page.goto("/admin");
     await expect(page.getByText(/new orders · right now/i)).toBeVisible();
     await expect(page.locator("main").getByText(new RegExp(`^${n}$`)).first()).toBeVisible();
-    await expect(page.getByRole("link", { name: new RegExp(`Orders\\s*${n} new`) })).toBeVisible(); // the nav badge agrees
+    if (!isMobile) await expect(page.getByRole("link", { name: new RegExp(`Orders\\s*${n} new`) })).toBeVisible(); // sidebar badge (phone: Menu button)
   });
 
   test("A-01 the period selector changes what is shown, and says so", async ({ page }) => {

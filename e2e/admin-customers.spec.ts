@@ -1,6 +1,6 @@
 import { test, expect, authFile, pageProblems } from "./helpers/fixtures";
 import { del, insert, keys, select, setPassword } from "./helpers/db";
-import { customerByKey } from "./helpers/data";
+import { customerByKey, restoreBaseline } from "./helpers/data";
 import type { Page } from "@playwright/test";
 
 // A-11..A-14: leads, converting a lead, manual customers, archive/restore, invites and access, visibility.
@@ -72,6 +72,10 @@ test.describe("leads", () => {
 });
 
 test.describe("customers", () => {
+  test.beforeEach(async () => {
+    await restoreBaseline();
+  });
+
   test("A-11 manual customer: required fields enforced, then created as pending with its terms", async ({ page }) => {
     const b = stamp();
     await page.goto("/admin/customers/new");

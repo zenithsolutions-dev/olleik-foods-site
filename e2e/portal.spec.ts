@@ -1,6 +1,6 @@
 import { test, expect, authFile, pageProblems } from "./helpers/fixtures";
 import { select, patch } from "./helpers/db";
-import { customerByKey, productBySku, setOffers, createOrder } from "./helpers/data";
+import { customerByKey, productBySku, setOffers, createOrder, restoreBaseline } from "./helpers/data";
 import type { Page } from "@playwright/test";
 
 // C-02..C-10: the customer portal. Copperleaf Kitchen (net-30) is the shopper.
@@ -28,6 +28,7 @@ async function seedCart(page: Page, lines: { sku: string; qty: number }[]) {
 const cartLine = (page: Page, name: string | RegExp) => page.getByTestId("cart-line").filter({ hasText: name });
 
 test.beforeEach(async () => {
+  await restoreBaseline();
   await setOffers("copperleaf", []); // tests that need offers add their own
 });
 

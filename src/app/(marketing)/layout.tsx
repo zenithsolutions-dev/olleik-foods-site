@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteMenu } from "./site-menu";
 
 export default function MarketingLayout({
   children,
@@ -35,7 +36,7 @@ function AnnouncementBar() {
 function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-background/85 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2.5">
           <span
             aria-hidden
@@ -57,13 +58,17 @@ function SiteHeader() {
           <Link href="/login" className="transition hover:text-brand">Sign in</Link>
         </nav>
 
+        <div className="flex items-center gap-2">
+        <SiteMenu />
         <Link
           href="/apply"
           className="group inline-flex items-center justify-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(200,122,42,0.6)] transition hover:bg-accent-deep"
         >
-          Become a customer
+          <span className="hidden sm:inline">Become a customer</span>
+          <span className="sm:hidden">Apply</span>
           <span className="transition group-hover:translate-x-0.5">→</span>
         </Link>
+        </div>
       </div>
     </header>
   );

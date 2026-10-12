@@ -1,6 +1,6 @@
 import { test, expect, authFile, pageProblems } from "./helpers/fixtures";
 import { select } from "./helpers/db";
-import { createOrder, customerByKey, orderRow, productBySku, setStock, stockOf } from "./helpers/data";
+import { createOrder, customerByKey, orderRow, productBySku, restoreBaseline, setStock, stockOf } from "./helpers/data";
 import type { Page } from "@playwright/test";
 
 // A-03..A-07: the admin order list, the lifecycle (new → confirmed → prepared → completed, cancel), stock on confirm
@@ -15,6 +15,10 @@ async function open(page: Page, id: string) {
   await expect(page.getByRole("heading", { name: /Order #/ })).toBeVisible();
 }
 const status = async (id: string) => (await orderRow(id)).status as string;
+
+test.afterEach(async () => {
+  await restoreBaseline(); // stock levels and the A-06 assignment must not leak into later specs
+});
 
 test.describe("order lifecycle", () => {
   test("A-04 new → confirmed → prepared → completed, each step recorded with its timestamp", async ({ page }) => {

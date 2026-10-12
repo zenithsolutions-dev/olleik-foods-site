@@ -1,11 +1,14 @@
 import { test, expect, authFile } from "./helpers/fixtures";
 import { del, select } from "./helpers/db";
-import { productBySku, setStock, stockOf } from "./helpers/data";
+import { productBySku, restoreBaseline, setStock, stockOf } from "./helpers/data";
 import { join } from "node:path";
 import type { Page } from "@playwright/test";
 
 // A-08 (products) and the pricing maths that sits behind the product form: markup on cost, half-up rounding to the cent.
 test.use({ storageState: authFile("admin") });
+test.afterEach(async () => {
+  await restoreBaseline();
+});
 
 const sku = () => `QA-${Date.now().toString(36).toUpperCase()}`;
 const money = (c: number) => `$${(c / 100).toFixed(2)}`;
