@@ -47,6 +47,11 @@ export function ProductPicker({
     return noneLabel && !q ? [{ id: "", name: noneLabel } as PickerProduct, ...hits] : hits;
   }, [products, query, noneLabel]);
 
+  // Move focus into the search box once the list is on screen (it is not mounted until `open` flips).
+  useEffect(() => {
+    if (open) search.current?.focus();
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const away = (e: MouseEvent) => {
@@ -61,7 +66,6 @@ export function ProductPicker({
     setQuery("");
     setActive(Math.max(0, rows.findIndex((r) => r.id === value)));
     setOpen(true);
-    queueMicrotask(() => search.current?.focus());
   }
 
   function pick(id: string) {
