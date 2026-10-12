@@ -2,7 +2,7 @@
 //   - tap states: the same page after each tap (the engine swaps only the changed region, in shot),
 //   - layer plates for parallax: the page with the cards hidden (background) — cards/chips/cursor are cut from the
 //     full capture by their measured boxes and float above it (see src/v3/README.md).
-// Product photos come from the real image_url field (devstack/photos.mjs, local demo stack only).
+// Product photos come from the real image_url field (devstack/seed.mjs loads product-photos/, local demo stack only).
 // Boxes are PAGE coordinates (captured at scrollY = 0, full page).
 //   node videos/capture/v3.mjs [step]
 import { adminSignIn, blocked, context, customerSignIn, demo, go, launch, settle, shot, stepper, typeInto } from "./lib.mjs";

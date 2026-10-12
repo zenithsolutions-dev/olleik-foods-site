@@ -3,8 +3,8 @@
 //   node devstack/seed.mjs --count   print record counts (for the before/after check in the report)
 // Every business, person, email (@olleik-demo.test, a reserved test domain), phone (555) and order here is invented.
 // Passwords for the demo logins are generated per run and kept in devstack/_keys.json (git-ignored), never printed.
-import { randomBytes, randomUUID } from "node:crypto";
-import { readFileSync, writeFileSync } from "node:fs";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
@@ -45,6 +45,7 @@ const cats = Object.fromEntries((await q("select id, name from categories")).row
 const more = [
   ["PRD-003", "Romaine Hearts", "case", "24 ct", 3850, "Produce"],
   ["PRD-004", "Lemons", "case", "115 ct", 4400, "Produce"],
+  ["PRD-007", "Red Bell Peppers", "case", "11 lb", 3200, "Produce"],
   ["PRD-005", "Fresh Basil", "ea", "1 lb", 1250, "Produce"],
   ["PRD-006", "Russet Potatoes", "bag", "50 lb", 2900, "Produce"],
   ["DRY-103", "Large Eggs, Grade A", "case", "15 dozen", 6200, "Dairy & Eggs"],
@@ -61,6 +62,7 @@ const more = [
   ["PKG-704", "Kraft Takeout Bags", "case", "250 ct", 4600, "Packaging & Disposables"],
 ];
 await q("delete from products where sku = any($1)", [more.map((m) => m[0])]);
+await q("delete from products where sku like 'QA-%'"); // rows an interrupted scripts/test-schema-preflight.mjs run can leave behind; they would shift the seeded random sequence
 for (const [sku, name, unit, size, price, cat] of more) {
   await q("insert into products (sku, name, unit, unit_size, list_price_cents, category_id, is_active, description) values ($1,$2,$3,$4,$5,$6,true,$7)", [sku, name, unit, size, price, cats[cat] ?? null, null]);
 }
@@ -70,6 +72,32 @@ for (const p of products) {
   await q("insert into product_costs (product_id, cost_cents) values ($1, $2) on conflict (product_id) do update set cost_cents = excluded.cost_cents", [p.id, Math.round(p.list_price_cents * (0.62 + rnd() * 0.12))]);
   const low = { "DRY-102": [9, 12], "BEV-501": [4, 10], "SEA-302": [0, 6], "PKG-703": [3, 8] }[p.sku];
   await q("insert into product_inventory (product_id, stock_qty, low_stock_threshold) values ($1,$2,$3) on conflict (product_id) do update set stock_qty = excluded.stock_qty, low_stock_threshold = excluded.low_stock_threshold", [p.id, low ? low[0] : 40 + Math.floor(rnd() * 160), low ? low[1] : 10]);
+}
+
+// ——— product photos (AI-generated demo set in /product-photos, see its LICENSES.md) ———
+// Copies each <SKU>.jpg into the local storage stand-in (same bucket and path shape the app's own upload uses:
+// product-images/products/<uuid>.jpg) and points products.image_url at it. The uuid is derived from the SKU, so a
+// re-seed rewrites the same files and gives the same URLs: idempotent. Local stand-in only: the URL check below
+// refuses anything else.
+{
+  if (!keys.url.startsWith("http://127.0.0.1:")) throw new Error("refusing: not the local stand-in");
+  const SRC = join(HERE, "..", "..", "product-photos");
+  const DST = join(HERE, "_storage", "product-images", "products");
+  mkdirSync(DST, { recursive: true });
+  const uuidOf = (sku) => {
+    const h = createHash("sha1").update(`olleik-demo-photo:${sku}`).digest("hex");
+    return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
+  };
+  let withPhoto = 0;
+  for (const p of products) {
+    const file = join(SRC, `${p.sku}.jpg`);
+    if (!existsSync(file)) continue;
+    const name = `${uuidOf(p.sku)}.jpg`;
+    copyFileSync(file, join(DST, name));
+    await q("update products set image_url = $1 where id = $2", [`${keys.url}/storage/v1/object/public/product-images/products/${name}`, p.id]);
+    withPhoto++;
+  }
+  console.log(`product photos: ${withPhoto}/${products.length} products have a photo`);
 }
 
 // ——— demo logins (local auth emulator) ———
