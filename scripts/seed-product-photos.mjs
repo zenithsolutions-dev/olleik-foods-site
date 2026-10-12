@@ -71,7 +71,8 @@ for (const ph of manifest.photos) {
     continue;
   }
   const verb = p.image_url ? "replace" : "upload ";
-  p.image_url ? tally.replace++ : tally.upload++;
+  if (p.image_url) tally.replace++;
+  else tally.upload++;
   console.log(`  ${verb}  ${ph.sku}  ${ph.file} -> ${BUCKET}/${path}`);
   if (!APPLY) continue;
 

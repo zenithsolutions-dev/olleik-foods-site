@@ -14,7 +14,6 @@ async function open(page: Page, id: string) {
   await page.goto(`/admin/orders/${id}`);
   await expect(page.getByRole("heading", { name: /Order #/ })).toBeVisible();
 }
-const chip = (page: Page) => page.locator("main span.rounded-full.uppercase").first();
 const status = async (id: string) => (await orderRow(id)).status as string;
 
 test.describe("order lifecycle", () => {
