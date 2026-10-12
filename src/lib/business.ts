@@ -31,12 +31,19 @@ export type BusinessIdentity = {
   taxNumber: string | null; // business tax number — unused while disabled
 };
 
+// Each field can be overridden by an env var (BUSINESS_LEGAL_NAME,
+// BUSINESS_ADDRESS, BUSINESS_PHONE, BUSINESS_EMAIL). Unset or blank → the
+// placeholder below, so environments without the vars behave exactly as
+// before. The videos' local demo launcher sets clearly fictional demo values.
+const env = (name: string, fallback: string) =>
+  process.env[name]?.trim() || fallback;
+
 const IDENTITY: BusinessIdentity = {
   displayName: "Olleik Foods",
-  legalName: "Olleik Foods — [LEGAL NAME TBC]",
-  address: "[STREET ADDRESS], Ottawa, ON [POSTAL CODE]",
-  phone: "[PHONE]",
-  email: "[EMAIL]",
+  legalName: env("BUSINESS_LEGAL_NAME", "Olleik Foods — [LEGAL NAME TBC]"),
+  address: env("BUSINESS_ADDRESS", "[STREET ADDRESS], Ottawa, ON [POSTAL CODE]"),
+  phone: env("BUSINESS_PHONE", "[PHONE]"),
+  email: env("BUSINESS_EMAIL", "[EMAIL]"),
   taxEnabled: false,
   taxRateBps: 0,
   taxNumber: null,

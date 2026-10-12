@@ -1,0 +1,201 @@
+{
+ "_note": "Part B usage videos: frame review of every 0.5 s QA frame of the encoded MP4 (out/qa-b/<name>/sheet-p*.jpg), 2026-10-12.",
+ "files": [
+  {
+   "name": "manual-visitor",
+   "file": "manual-visitor.mp4",
+   "title": "Visitor manual \"Marco's First Order\" (5 chapters)",
+   "target_lufs": -16
+  },
+  {
+   "name": "manual-ep1",
+   "file": "manual-ep1.mp4",
+   "title": "Admin Episode 1 · Orders (ends on the Invoice button)",
+   "target_lufs": -16
+  },
+  {
+   "name": "manual-ep2",
+   "file": "manual-ep2.mp4",
+   "title": "Admin Episode 2 · Customers and approvals",
+   "target_lufs": -16
+  },
+  {
+   "name": "manual-ep3",
+   "file": "manual-ep3.mp4",
+   "title": "Admin Episode 3 · Products and prices",
+   "target_lufs": -16
+  },
+  {
+   "name": "manual-ep4",
+   "file": "manual-ep4.mp4",
+   "title": "Admin Episode 4 · Margins and reports",
+   "target_lufs": -16
+  },
+  {
+   "name": "manual-ep5",
+   "file": "manual-ep5.mp4",
+   "title": "Admin Episode 5 · Invites and access",
+   "target_lufs": -16
+  }
+ ],
+ "verdicts": {
+  "manual-visitor": {
+   "overlays": {
+    "ok": true,
+    "note": "Taps switch to the real after-tap capture; typing reveals the real typed capture over the field's own background; pointer only, no halos."
+   },
+   "screens": {
+    "ok": true,
+    "note": "No composited screens; real full-page captures through the continuous camera."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "Captions and chapter labels in the lower band; held framings show whole cards and tables."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "Validated on every frame: document headers with unset business details, the public footer and the home page's sample stats never enter the frame (camera.ts forbid). The home page is not used."
+   },
+   "periods": {
+    "ok": true,
+    "note": "All captions, hook lines, chapter labels and end cards pass assertLine."
+   },
+   "fixed": [
+    "a typed field kept showing after the plate switched (held typing now ends exactly on the switch)",
+    "Portal, Offers and Account framings cut card edges (widened)",
+    "the render ran out of browser memory at concurrency 4 (rendered at 2)"
+   ]
+  },
+  "manual-ep1": {
+   "overlays": {
+    "ok": true,
+    "note": "Taps switch to the real after-tap capture; typing reveals the real typed capture over the field's own background; pointer only, no halos."
+   },
+   "screens": {
+    "ok": true,
+    "note": "No composited screens; real full-page captures through the continuous camera."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "The sidebar is whole in frame or fully out."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "Validated on every frame: document headers with unset business details, the public footer and the home page's sample stats never enter the frame (camera.ts forbid). Ends on the order's Invoice button; the invoice is never opened."
+   },
+   "periods": {
+    "ok": true,
+    "note": "All captions, hook lines, chapter labels and end cards pass assertLine."
+   },
+   "fixed": [
+    "the dashboard and New-tab framings showed a sliver of the sidebar (re-framed)"
+   ]
+  },
+  "manual-ep2": {
+   "overlays": {
+    "ok": true,
+    "note": "Taps switch to the real after-tap capture; typing reveals the real typed capture over the field's own background; pointer only, no halos."
+   },
+   "screens": {
+    "ok": true,
+    "note": "No composited screens; real full-page captures through the continuous camera."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "Lead row, customer cards and price table framed whole."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "Validated on every frame: document headers with unset business details, the public footer and the home page's sample stats never enter the frame (camera.ts forbid)."
+   },
+   "periods": {
+    "ok": true,
+    "note": "All captions, hook lines, chapter labels and end cards pass assertLine."
+   },
+   "fixed": [
+    "sidebar slivers on the leads, add-customer, customers and prices framings",
+    "the add-customer framing cut the page title"
+   ]
+  },
+  "manual-ep3": {
+   "overlays": {
+    "ok": true,
+    "note": "Taps switch to the real after-tap capture; typing reveals the real typed capture over the field's own background; pointer only, no halos."
+   },
+   "screens": {
+    "ok": true,
+    "note": "No composited screens; real full-page captures through the continuous camera."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "Product form and table framed whole."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "Validated on every frame: document headers with unset business details, the public footer and the home page's sample stats never enter the frame (camera.ts forbid)."
+   },
+   "periods": {
+    "ok": true,
+    "note": "All captions, hook lines, chapter labels and end cards pass assertLine."
+   },
+   "fixed": [
+    "the new product was a duplicate of an existing item: re-captured with a new one (Mini Sweet Peppers)",
+    "sidebar slivers on products and categories",
+    "the Add product button half cut at the right edge"
+   ]
+  },
+  "manual-ep4": {
+   "overlays": {
+    "ok": true,
+    "note": "Taps switch to the real after-tap capture; typing reveals the real typed capture over the field's own background; pointer only, no halos."
+   },
+   "screens": {
+    "ok": true,
+    "note": "No composited screens; real full-page captures through the continuous camera."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "The report preview starts below the sheet's header rule."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "Validated on every frame: document headers with unset business details, the public footer and the home page's sample stats never enter the frame (camera.ts forbid)."
+   },
+   "periods": {
+    "ok": true,
+    "note": "All captions, hook lines, chapter labels and end cards pass assertLine."
+   },
+   "fixed": [
+    "the report framing sliced a line of the sheet; now it begins under the header rule",
+    "the analytics framing cut the chart card",
+    "the margin-rules framing cut the next card"
+   ]
+  },
+  "manual-ep5": {
+   "overlays": {
+    "ok": true,
+    "note": "Taps switch to the real after-tap capture; typing reveals the real typed capture over the field's own background; pointer only, no halos."
+   },
+   "screens": {
+    "ok": true,
+    "note": "No composited screens; real full-page captures through the continuous camera."
+   },
+   "clipped": {
+    "ok": true,
+    "note": "Portal card and visibility card framed whole."
+   },
+   "placeholders": {
+    "ok": true,
+    "note": "Validated on every frame: document headers with unset business details, the public footer and the home page's sample stats never enter the frame (camera.ts forbid). The generated invite URL is never shown (the email path is used)."
+   },
+   "periods": {
+    "ok": true,
+    "note": "All captions, hook lines, chapter labels and end cards pass assertLine."
+   },
+   "fixed": [
+    "the invite-link framing cut the page title",
+    "the sidebar sliver on the visibility framing"
+   ]
+  }
+ }
+}

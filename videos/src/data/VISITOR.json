@@ -1,0 +1,26 @@
+{
+  "id": "VISITOR",
+  "title": "Getting Started with Olleik Foods",
+  "beats": [
+    {"id":"VI-01","kind":"intro","targetSeconds":2.7},
+    {"id":"VI-02","kind":"screen","shots":["visitor/home-hero"],"focus":["headline","lead"],"focusPad":40,"ring":"headline","caption":"Wholesale food supply for restaurants, cafés and small food businesses.","targetSeconds":5,"ringVertical":"openAccount"},
+    {"id":"VI-03","kind":"screen","shots":["visitor/catalog","visitor/catalog-cards"],"focus":["headline","intro"],"focusPad":40,"ring":"intro","step":1,"caption":"Browse what Olleik carries, category by category.","targetSeconds":5,"ringVertical":[]},
+    {"id":"VI-04","kind":"screen","shots":["visitor/category-products"],"focus":["heading"],"focusPad":60,"ring":"heading","caption":"Prices appear once you sign in, set for your account.","targetSeconds":4.5,"ringVertical":[]},
+    {"id":"VI-05","kind":"screen","shots":["visitor/apply-empty","visitor/apply-filled"],"focus":["form"],"focusPad":20,"step":2,"typing":[{"box":"businessName","text":"Riverbend Bistro"},{"box":"contactName","text":"Clara Morin"},{"box":"email","text":"riverbend@olleik-demo.test"}],"caption":"Apply for a wholesale account with a short form.","targetSeconds":6.5},
+    {"id":"VI-06","kind":"screen","shots":["visitor/apply-filled"],"focus":["notes","submit"],"focusPad":30,"ring":"submit","click":"submit","clickAt":1.6,"caption":"Tell the team what you need, then submit.","targetSeconds":4},
+    {"id":"VI-07","kind":"screen","shots":["visitor/apply-sent"],"focus":["headline"],"focusPad":80,"ring":"headline","caption":"Your application goes to the Olleik team for review.","targetSeconds":4},
+    {"id":"VI-08","kind":"card","card":{"title":"Once You're Approved","lines":["Sign in to your own customer portal","Your catalog, at your account's prices","Order from your phone or computer"]},"caption":"After approval, your account opens the customer portal.","targetSeconds":4},
+    {"id":"VI-09","kind":"screen","shots":["visitor/p-login"],"sideTitle":"Sign In","step":3,"ring":"card","typing":[{"box":"email","text":"copperleaf@olleik-demo.test"},{"box":"password","text":"demo-password","secret":true}],"click":"submit","caption":"Sign in with your email and password.","targetSeconds":5},
+    {"id":"VI-10","kind":"screen","shots":["visitor/p-portal"],"sideTitle":"Your Customer Portal","ring":["catalogCard","offersCard"],"caption":"Your portal shows your catalog and your current offers.","targetSeconds":4.5},
+    {"id":"VI-11","kind":"screen","shots":["visitor/p-catalog","visitor/p-catalog-card"],"sideTitle":"My Catalog","ring":"search","step":4,"caption":"Search or filter your catalog; prices are your account's prices.","targetSeconds":5},
+    {"id":"VI-12","kind":"screen","shots":["visitor/p-catalog-card","visitor/p-catalog-added"],"sideTitle":"My Catalog","ring":"addToCart","click":"addToCart","clickAt":1.4,"caption":"Add what you need to your cart.","targetSeconds":4},
+    {"id":"VI-13","kind":"screen","shots":["visitor/p-cart"],"sideTitle":"Your Cart","ring":"checkout","click":"checkout","clickAt":2.6,"step":5,"caption":"Check quantities, then go to checkout.","targetSeconds":4},
+    {"id":"VI-14","kind":"screen","shots":["visitor/p-checkout","visitor/p-checkout-filled"],"sideTitle":"Checkout","ring":["pickup","delivery"],"caption":"Choose pickup or delivery and add a note for the team.","targetSeconds":5},
+    {"id":"VI-15","kind":"screen","shots":["visitor/p-checkout-filled"],"sideTitle":"Checkout","ring":"submit","click":"submit","clickAt":1.5,"caption":"Submit the order; payment stays on your usual terms.","targetSeconds":4},
+    {"id":"VI-16","kind":"screen","shots":["visitor/p-placed"],"sideTitle":"Order Received","ring":"banner","caption":"Your order goes straight to the Olleik team to confirm.","targetSeconds":4.5},
+    {"id":"VI-17","kind":"screen","shots":["visitor/p-orders"],"sideTitle":"My Orders","ring":"first","step":6,"caption":"Follow every order: received, confirmed, ready, completed.","targetSeconds":5},
+    {"id":"VI-18","kind":"screen","shots":["visitor/p-offers"],"sideTitle":"Offers","ring":"offer","caption":"Offers your rep sets up for you appear here.","targetSeconds":4},
+    {"id":"VI-19","kind":"screen","shots":["visitor/statement"],"focus":["period","print"],"focusPad":40,"ring":"print","caption":"Print a statement for any period, or save it as a PDF.","targetSeconds":4.5},
+    {"id":"VI-20","kind":"outro","urls":["olleik-foods-site.vercel.app"],"cta":"Become a customer","targetSeconds":3.5}
+  ]
+}

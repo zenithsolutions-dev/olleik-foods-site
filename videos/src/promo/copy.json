@@ -1,0 +1,34 @@
+{
+  "status": "ALL COPY PENDING REVIEW (owner and client). Nothing here is approved.",
+  "brand": "Olleik Foods",
+  "tagline": "The supplier behind great kitchens.",
+  "kicker": "Wholesale food supply",
+  "region": "Ottawa region",
+  "cta": "Become a customer",
+  "ctaLine": "Open a wholesale account.",
+  "url": "olleik-foods-site.vercel.app",
+  "hooks": {
+    "H1": { "text": "Your catalog. Your prices.", "visual": "Ink-green field; 'Your catalog.' slams in heavy white, 'Your prices.' lands in amber serif italic; a line draws; 'Wholesale food supply · Olleik Foods' rises.", "render": true },
+    "H2": { "text": "Still ordering supplies by text?", "visual": "Three message bubbles pop in on a dark field (price list, quantities, delivery check), then the question slams across them.", "render": true, "bubbles": ["Price list attached (v3)", "Need 4 cases for Friday?", "Is it on the truck yet?"] },
+    "H3": { "text": "Every kitchen gets its own catalog.", "visual": "A real phone catalog with the YOUR PRICE badge, ringed; the line slams beside it.", "render": false },
+    "H4": { "text": "Wholesale ordering, from your phone.", "visual": "A phone glides in on the catalog, a tap on Add to cart.", "render": false },
+    "H5": { "text": "The supplier behind great kitchens.", "visual": "The site's own hero line, 'great' in amber italic, on warm paper.", "render": false },
+    "H6": { "text": "Know your price before you order.", "visual": "Zoom onto a real YOUR PRICE badge in the portal.", "render": false },
+    "H7": { "text": "Received. Confirmed. Ready. Completed.", "visual": "The portal's four real status chips pop in a row on the beat, a tick on each; 'Every order, followed to the end.'", "render": true },
+    "H8": { "text": "Apply once. Order anytime.", "visual": "Two-word slams; the application form and the phone catalog flash behind.", "render": false }
+  },
+  "problem": ["Price lists in your inbox.", "Orders in your texts.", "Calls to check the truck."],
+  "answer": "Or one place for all of it.",
+  "promises": [
+    { "n": 1, "icon": "box", "title": "Your catalog", "sub": "Only the products set up for your kitchen." },
+    { "n": 2, "icon": "tag", "title": "Your prices", "sub": "Your account's price on every item." },
+    { "n": 3, "icon": "truck", "title": "Your orders", "sub": "Placed online, followed to completed." }
+  ],
+  "steps": ["Apply online", "We set up your account", "Order anytime"],
+  "trust": "A real team confirms every order.",
+  "trio": "Your catalog. Your prices. Your orders.",
+  "angles": {
+    "new": { "name": "New accounts", "who": "Restaurants, cafés, bakeries, caterers and food trucks looking for a supplier", "goal": "Apply" },
+    "existing": { "name": "Approved customers", "who": "Customers who still order by phone or text", "goal": "Order in the portal" }
+  }
+}
