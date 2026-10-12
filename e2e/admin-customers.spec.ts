@@ -191,7 +191,7 @@ test.describe("invites and access", () => {
     await page.getByLabel(/Confirm/i).fill("Brand-new-pass-1");
     await page.getByRole("button", { name: /save|set|continue/i }).click();
     await page.waitForURL("**/portal?welcome=1", { timeout: 20_000 });
-    await expect(page.getByText(/Welcome back|Harbourline/).first()).toBeVisible();
+    await expect(page.locator("main").getByText(/Welcome back/)).toBeVisible();
     await ctx.close();
     // the new password works, the old one no longer does
     const ctx2 = await browser.newContext({ baseURL: "http://localhost:3100", storageState: { cookies: [], origins: [] } });

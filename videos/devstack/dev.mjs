@@ -26,15 +26,20 @@ Object.assign(env, {
   NEXT_TELEMETRY_DISABLED: "1",
   // Fictional demo business details for the documents (brief V3.2 §10.1, Pending Review). Videos only: the
   // real registered details must still be entered before handover.
-  BUSINESS_LEGAL_NAME: "Olleik Foods Ltd.",
-  BUSINESS_ADDRESS: "120 Market Street, Ottawa, ON K1A 0B1",
-  BUSINESS_PHONE: "(613) 555-0142",
-  BUSINESS_EMAIL: "orders@olleik-demo.test",
+  ...(process.env.DEVSTACK_PLACEHOLDERS === "1"
+    ? {} // QA: leave the BUSINESS_* variables unset so the placeholder state can be tested
+    : {
+        BUSINESS_LEGAL_NAME: "Olleik Foods Ltd.",
+        BUSINESS_ADDRESS: "120 Market Street, Ottawa, ON K1A 0B1",
+        BUSINESS_PHONE: "(613) 555-0142",
+        BUSINESS_EMAIL: "orders@olleik-demo.test",
+      }),
 });
 if (!env.NEXT_PUBLIC_SUPABASE_URL.startsWith("http://127.0.0.1:")) throw new Error("refusing to start: the database URL is not the local stand-in");
 
 const mode = process.argv[2] ?? "dev";
 if (!["dev", "build", "start"].includes(mode)) throw new Error(`unknown mode ${mode}`);
-const args = mode === "build" ? ["build"] : [mode, "-p", "3100"];
+const port = process.env.DEVSTACK_PORT ?? "3100"; // a second instance (e.g. the placeholder-details server on 3101) can run beside the first
+const args = mode === "build" ? ["build"] : [mode, "-p", port];
 const child = spawn(process.execPath, [join(ROOT, "node_modules", "next", "dist", "bin", "next"), ...args], { cwd: ROOT, env, stdio: "inherit" });
 child.on("exit", (c) => process.exit(c ?? 0));
