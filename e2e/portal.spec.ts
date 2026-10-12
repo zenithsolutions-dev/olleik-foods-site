@@ -1,7 +1,8 @@
 import { test, expect, authFile, pageProblems } from "./helpers/fixtures";
 import { select, patch } from "./helpers/db";
-import { customerByKey, productBySku, setOffers, createOrder, restoreBaseline } from "./helpers/data";
+import { customerByKey, productBySku, setOffers, createOrder, restoreBaseline, clearOrderRateWindow } from "./helpers/data";
 import type { Page } from "@playwright/test";
+import { randomUUID } from "node:crypto";
 
 // C-02..C-10: the customer portal. Copperleaf Kitchen (net-30) is the shopper.
 test.use({ storageState: authFile("copperleaf") });
@@ -19,7 +20,7 @@ async function assignedPrice(sku: string) {
 /** Put products in the browser cart exactly as the app stores it (localStorage), before the first navigation. */
 async function seedCart(page: Page, lines: { sku: string; qty: number }[]) {
   const prods = await Promise.all(lines.map((l) => productBySku(l.sku)));
-  const payload = { token: "7b1f3c52-7d0e-4c6e-9d57-0c3a8f6a1e11", lines: lines.map((l, i) => ({ productId: prods[i].id, qty: l.qty })) };
+  const payload = { token: randomUUID(), lines: lines.map((l, i) => ({ productId: prods[i].id, qty: l.qty })) };
   await page.addInitScript((p) => {
     if (!window.localStorage.getItem("olleik-cart-v1")) window.localStorage.setItem("olleik-cart-v1", JSON.stringify(p));
   }, payload);
@@ -29,6 +30,7 @@ const cartLine = (page: Page, name: string | RegExp) => page.getByTestId("cart-l
 
 test.beforeEach(async () => {
   await restoreBaseline();
+  await clearOrderRateWindow("copperleaf");
   await setOffers("copperleaf", []); // tests that need offers add their own
 });
 

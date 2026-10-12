@@ -143,3 +143,14 @@ export async function setOffers(
   }
   return c;
 }
+
+/**
+ * The app allows a customer 20 orders per rolling hour (MAX_ORDERS_PER_HOUR). The suite creates many orders for the same
+ * demo customer, so push this customer's last-hour orders back out of that window before a test that submits one.
+ */
+export async function clearOrderRateWindow(customerKey: string) {
+  const c = await customerByKey(customerKey);
+  const since = new Date(Date.now() - 3_600_000).toISOString();
+  const rows = await select<{ id: string }>(`orders?select=id&customer_id=eq.${c.id}&created_at=gte.${since}`);
+  for (const r of rows) await patch("orders", `id=eq.${r.id}`, { created_at: new Date(Date.now() - 3 * 3_600_000).toISOString() });
+}
