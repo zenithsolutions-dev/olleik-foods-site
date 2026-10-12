@@ -110,6 +110,7 @@ export function LeadsClient({
                 <div className="flex shrink-0 flex-col items-end gap-2">
                   <select
                     value={l.status}
+                    aria-label={`Status for ${l.businessName}`}
                     disabled={pending}
                     onChange={(e) =>
                       onStatusChange(l.id, e.target.value as LeadStatus)

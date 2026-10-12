@@ -29,7 +29,7 @@ export default async function globalSetup(config: FullConfig) {
     await page.getByLabel(/^email$/i).fill(demoAccounts[role].email);
     await page.getByLabel(/^password$/i).fill(demoAccounts[role].password);
     await page.getByRole("button", { name: /sign in/i }).click();
-    await page.waitForURL(`**${landing}**`, { timeout: 60_000 });
+    await page.waitForURL((u) => u.pathname === landing || u.pathname.startsWith(`${landing}/`), { timeout: 60_000 });
     await ctx.storageState({ path: join(STATE_DIR, `${role}.json`) });
     await ctx.close();
   }

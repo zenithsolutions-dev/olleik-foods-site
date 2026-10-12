@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 const r = JSON.parse(readFileSync(new URL("./.results/report.json", import.meta.url), "utf8"));
 const seen = new Map();
 const strip = (s) => s.replace(/\u001b\[[0-9;]*m/g, "");
-function walk(s, project) {
+function walk(s) {
   for (const sp of s.specs ?? [])
     for (const t of sp.tests)
       for (const res of t.results)

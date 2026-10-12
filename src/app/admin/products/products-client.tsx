@@ -286,6 +286,7 @@ export function ProductsClient({
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-soft" />
           <input
             type="text"
+            aria-label="Search products or SKUs"
             placeholder="Search products, SKUs…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -294,6 +295,7 @@ export function ProductsClient({
         </div>
         <select
           value={activeCat}
+          aria-label="Filter by category"
           onChange={(e) => setActiveCat(e.target.value)}
           className="rounded-full border border-[var(--border)] bg-surface px-4 py-2 text-sm"
         >

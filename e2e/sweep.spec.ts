@@ -87,6 +87,8 @@ for (const [role, group, paths] of [
         const res = await page.goto(p);
         expect(res?.status(), "http status").toBe(200);
         await page.waitForLoadState("networkidle");
+        // A redirect to a login page is also a 200: make sure we are on the page we asked for.
+        expect(new URL(page.url()).pathname, "ended up on a different page (redirected?)").toBe(p.split("?")[0]);
         expect.soft(await pageProblems(page)).toEqual([]);
       });
     }
