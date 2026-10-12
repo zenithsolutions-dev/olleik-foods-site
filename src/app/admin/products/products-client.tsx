@@ -1,5 +1,6 @@
 "use client";
 
+import { ProductThumb } from "@/components/product-thumb";
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Plus, Search, ImagePlus, AlertTriangle } from "lucide-react";
@@ -316,8 +317,8 @@ export function ProductsClient({
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-surface">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-[var(--border)] bg-surface">
+        <table className="w-full min-w-[860px] text-sm">
           <thead>
             <tr className="border-b border-[var(--border)] bg-brand-mist/40 text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
               <th className="px-4 py-3">SKU</th>
@@ -348,10 +349,15 @@ export function ProductsClient({
               <tr key={p.id} className="border-b border-[var(--border)] last:border-0 hover:bg-brand-mist/30">
                 <td className="px-4 py-3 font-mono text-xs text-muted">{p.sku}</td>
                 <td className="px-4 py-3">
-                  <p className="font-medium text-foreground">{p.name}</p>
-                  {p.description && (
-                    <p className="text-xs text-muted">{p.description}</p>
-                  )}
+                  <div className="flex items-center gap-3">
+                    <ProductThumb src={p.imageUrl} name={p.name} size="md" />
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground">{p.name}</p>
+                      {p.description && (
+                        <p className="text-xs text-muted">{p.description}</p>
+                      )}
+                    </div>
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-muted">{p.categoryId ? (catLookup[p.categoryId] ?? "—") : "—"}</td>
                 <td className="px-4 py-3 text-muted">

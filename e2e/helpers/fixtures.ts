@@ -80,6 +80,25 @@ export async function pageProblems(page: Page): Promise<string[]> {
         e.querySelector("img[alt]")?.getAttribute("alt");
       if (!name) out.push(`unnamed ${e.tagName.toLowerCase()}: ${e.outerHTML.slice(0, 100)}`);
     }
+    // Content cut off by an ancestor with overflow:hidden (the page itself does not scroll, so the overflow check
+    // above misses it): a table or control that is partly outside the viewport and not inside a scroll container.
+    const vw = de.clientWidth;
+    const cut: string[] = [];
+    for (const el of Array.from(document.querySelectorAll("table,th,td,button,input,select,a[href],label,h1,h2,h3"))) {
+      if ((el as HTMLElement).closest("[aria-hidden=true]")) continue;
+      const b = el.getBoundingClientRect();
+      if (b.width === 0 || b.height === 0 || b.right <= vw + 1) continue;
+      let a: HTMLElement | null = el.parentElement;
+      let verdict: "scroll" | "clipped" | "free" = "free";
+      while (a && a !== document.body) {
+        const ox = getComputedStyle(a).overflowX;
+        if (ox === "auto" || ox === "scroll") { verdict = "scroll"; break; }
+        if (ox === "hidden" || ox === "clip") { verdict = "clipped"; break; }
+        a = a.parentElement;
+      }
+      if (verdict === "clipped") cut.push(`${el.tagName.toLowerCase()} cut off by overflow:hidden: "${((el as HTMLElement).innerText || "").trim().slice(0, 40)}"`);
+    }
+    out.push(...cut.slice(0, 5));
     return out;
   });
 }

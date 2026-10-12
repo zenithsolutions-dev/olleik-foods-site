@@ -127,8 +127,8 @@ export function CategoriesClient({
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         {/* List */}
-        <div className="rounded-2xl border border-[var(--border)] bg-surface overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="min-w-0 overflow-x-auto rounded-2xl border border-[var(--border)] bg-surface">
+          <table className="w-full min-w-[520px] text-sm">
             <thead>
               <tr className="border-b border-[var(--border)] bg-brand-mist/40 text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
                 <th className="px-4 py-3">Name</th>
