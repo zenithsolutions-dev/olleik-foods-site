@@ -158,16 +158,16 @@ export default function CartPage() {
                       <button
                         type="button"
                         aria-label={`Decrease ${l.name}`}
-                        onClick={() => cart.setQty(l.productId, l.qty - 1)}
+                        onClick={() => cart.bump(l.productId, -1)}
                         className="grid h-8 w-8 place-items-center rounded-full hover:bg-brand-mist"
                       >
                         <Minus size={14} />
                       </button>
-                      <span className="w-8 text-center text-sm font-semibold">{l.qty}</span>
+                      <span className="w-8 text-center text-sm font-semibold">{cart.qtyOf(l.productId) || l.qty}</span>
                       <button
                         type="button"
                         aria-label={`Increase ${l.name}`}
-                        onClick={() => cart.setQty(l.productId, l.qty + 1)}
+                        onClick={() => cart.bump(l.productId, 1)}
                         className="grid h-8 w-8 place-items-center rounded-full hover:bg-brand-mist"
                       >
                         <Plus size={14} />

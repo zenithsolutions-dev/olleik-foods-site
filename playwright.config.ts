@@ -30,8 +30,11 @@ export default defineConfig({
       use: { viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 },
     },
   ],
+  // E2E_MODE=prod runs against `next start` (build first: node videos/devstack/dev.mjs build). Production mode is far
+  // lighter than the Turbopack dev server and is what the long functional suite should use; the default (dev) is
+  // what shows React hydration warnings in readable form.
   webServer: {
-    command: "node videos/devstack/dev.mjs",
+    command: process.env.E2E_MODE === "prod" ? "node videos/devstack/dev.mjs start" : "node videos/devstack/dev.mjs",
     url: "http://localhost:3100/",
     reuseExistingServer: true,
     timeout: 120_000,

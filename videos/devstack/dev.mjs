@@ -1,7 +1,9 @@
 // Runs the app's Next dev server against the LOCAL video database (devstack/stack.mjs), never the real project.
 // Every key present in .env.local is overridden through process env (Next never replaces a variable that is already
 // set), so no real URL or key can leak into this server. Stripe stays unset.
-//   node videos/devstack/dev.mjs   (from the project root; port 3100)
+//   node videos/devstack/dev.mjs           dev server on port 3100 (from the project root)
+//   node videos/devstack/dev.mjs build     production build with the local values inlined (NEXT_PUBLIC_* are baked in at build time)
+//   node videos/devstack/dev.mjs start     production server on port 3100 (run build first); lighter and steadier than dev for long test runs
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -31,5 +33,8 @@ Object.assign(env, {
 });
 if (!env.NEXT_PUBLIC_SUPABASE_URL.startsWith("http://127.0.0.1:")) throw new Error("refusing to start: the database URL is not the local stand-in");
 
-const child = spawn(process.execPath, [join(ROOT, "node_modules", "next", "dist", "bin", "next"), "dev", "-p", "3100"], { cwd: ROOT, env, stdio: "inherit" });
+const mode = process.argv[2] ?? "dev";
+if (!["dev", "build", "start"].includes(mode)) throw new Error(`unknown mode ${mode}`);
+const args = mode === "build" ? ["build"] : [mode, "-p", "3100"];
+const child = spawn(process.execPath, [join(ROOT, "node_modules", "next", "dist", "bin", "next"), ...args], { cwd: ROOT, env, stdio: "inherit" });
 child.on("exit", (c) => process.exit(c ?? 0));
