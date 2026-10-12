@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AdminProvider } from "@/lib/admin/store";
 import { RefreshLockProvider } from "@/lib/poll/use-live-refresh";
-import { AdminNav } from "./admin-nav";
+import { AdminNav, AdminMobileNav } from "./admin-nav";
 import { OrderAlertsProvider, OrderAlertsWidget } from "./order-alerts";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { fetchNewOrderCount } from "@/lib/admin/orders-data";
@@ -83,13 +83,27 @@ export default async function AdminLayout({
 
         {/* Main */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex items-center justify-between border-b border-[var(--border)] bg-surface px-8 py-4 md:hidden print:hidden">
+          <header className="relative flex items-center justify-between border-b border-[var(--border)] bg-surface px-6 py-3 md:hidden print:hidden">
             <Link href="/admin" className="font-display text-lg font-semibold text-brand-deep">
               Olleik Admin
             </Link>
-            <Link href="/" className="text-xs text-muted hover:text-brand">
-              ← Back to site
-            </Link>
+            <AdminMobileNav newOrderCount={newOrderCount}>
+              {adminEmail && (
+                <>
+                  <p className="truncate text-xs text-muted" title={adminEmail}>
+                    {adminEmail}
+                  </p>
+                  <form action={signOutAdmin} className="mt-2">
+                    <button type="submit" className="font-medium text-brand hover:text-accent">
+                      Sign out
+                    </button>
+                  </form>
+                </>
+              )}
+              <Link href="/" className="mt-3 inline-block text-brand hover:text-accent">
+                ← Back to site
+              </Link>
+            </AdminMobileNav>
           </header>
           {identityGaps.length > 0 && (
             <div
