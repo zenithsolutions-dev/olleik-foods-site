@@ -1,6 +1,6 @@
 import { chromium, type FullConfig } from "@playwright/test";
 import { execFileSync } from "node:child_process";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { keys } from "./helpers/db";
 
@@ -30,7 +30,13 @@ export default async function globalSetup(config: FullConfig) {
     await page.getByLabel(/^password$/i).fill(demoAccounts[role].password);
     await page.getByRole("button", { name: /sign in/i }).click();
     await page.waitForURL((u) => u.pathname === landing || u.pathname.startsWith(`${landing}/`), { timeout: 60_000 });
-    await ctx.storageState({ path: join(STATE_DIR, `${role}.json`) });
+    const file = join(STATE_DIR, `${role}.json`);
+    await ctx.storageState({ path: file });
+    // Keep the cookies only. The portal writes an (empty) cart into localStorage right after login; if that were saved
+    // here, every test would start with it and a test that seeds its own cart could race with it.
+    const st = JSON.parse(readFileSync(file, "utf8"));
+    st.origins = [];
+    writeFileSync(file, JSON.stringify(st));
     await ctx.close();
   }
   await browser.close();
