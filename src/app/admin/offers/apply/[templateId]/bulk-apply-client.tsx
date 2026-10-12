@@ -1,5 +1,6 @@
 "use client";
 
+import { formatBusinessTime } from "@/lib/dates";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Send, Users } from "lucide-react";
@@ -241,7 +242,7 @@ export function BulkApplyClient({
                   </span>
                   <span className="text-xs text-muted">
                     {c.lastOrderAt
-                      ? `last order ${new Date(c.lastOrderAt).toLocaleDateString("en-CA", { dateStyle: "medium" })}`
+                      ? `last order ${formatBusinessTime(c.lastOrderAt, { dateStyle: "medium" })}`
                       : "no order in 90 days"}
                   </span>
                 </label>

@@ -1,4 +1,5 @@
 import "server-only";
+import { isUuid } from "@/lib/uuid";
 import { getAdminClient } from "@/lib/supabase/admin";
 import {
   MAX_STATEMENT_ORDERS,
@@ -56,7 +57,7 @@ async function readStatement(
   includeCosts: boolean,
 ): Promise<CustomerStatementData<StatementOrderInput | InternalOrderInput>> {
   const admin = getAdminClient();
-  if (!admin) return { orders: [], truncated: false, migrationApplied: true };
+  if (!admin || !isUuid(customerId)) return { orders: [], truncated: false, migrationApplied: true };
 
   let q = admin
     .from("orders")

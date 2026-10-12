@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { AdminProvider } from "@/lib/admin/store";
 import { RefreshLockProvider } from "@/lib/poll/use-live-refresh";
-import { AdminNav } from "./admin-nav";
+import { AdminNav, AdminMobileNav } from "./admin-nav";
 import { OrderAlertsProvider, OrderAlertsWidget } from "./order-alerts";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { fetchNewOrderCount } from "@/lib/admin/orders-data";
 import { signOutAdmin } from "./actions";
+import { businessIdentityGaps } from "@/lib/business";
 
 export const metadata = {
   title: "Olleik Admin",
@@ -20,6 +21,7 @@ export default async function AdminLayout({
   // Live "N new" badge on the Orders nav item, refreshed on every admin page
   // render (admin pages are all force-dynamic).
   const newOrderCount = await fetchNewOrderCount();
+  const identityGaps = businessIdentityGaps();
 
   return (
     <AdminProvider>
@@ -81,14 +83,40 @@ export default async function AdminLayout({
 
         {/* Main */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex items-center justify-between border-b border-[var(--border)] bg-surface px-8 py-4 md:hidden print:hidden">
+          <header className="relative flex items-center justify-between border-b border-[var(--border)] bg-surface px-6 py-3 md:hidden print:hidden">
             <Link href="/admin" className="font-display text-lg font-semibold text-brand-deep">
               Olleik Admin
             </Link>
-            <Link href="/" className="text-xs text-muted hover:text-brand">
-              ← Back to site
-            </Link>
+            <AdminMobileNav newOrderCount={newOrderCount}>
+              {adminEmail && (
+                <>
+                  <p className="truncate text-xs text-muted" title={adminEmail}>
+                    {adminEmail}
+                  </p>
+                  <form action={signOutAdmin} className="mt-2">
+                    <button type="submit" className="font-medium text-brand hover:text-accent">
+                      Sign out
+                    </button>
+                  </form>
+                </>
+              )}
+              <Link href="/" className="mt-3 inline-block text-brand hover:text-accent">
+                ← Back to site
+              </Link>
+            </AdminMobileNav>
           </header>
+          {identityGaps.length > 0 && (
+            <div
+              role="status"
+              data-testid="identity-placeholder-banner"
+              className="border-b border-amber-300 bg-amber-50 px-6 py-3 text-sm text-amber-900 md:px-10 print:hidden"
+            >
+              <strong>Business details are still placeholders.</strong> Invoices, statements and reports
+              print &ldquo;[LEGAL NAME TBC]&rdquo;-style text until these are set in the environment:{" "}
+              <code className="font-mono text-xs">{identityGaps.join(", ")}</code>. Do not send documents to
+              customers before then.
+            </div>
+          )}
           <main className="flex-1 px-6 py-8 md:px-10 md:py-10">{children}</main>
         </div>
       </div>

@@ -33,7 +33,9 @@ import { BUCKET_LABELS, type BucketSize, type RevenueBucket } from "@/lib/admin/
 const AXIS_TICK = { fontSize: 11, fill: "var(--muted, #6b7280)" } as const;
 const money = (cents: number) => formatMoney(cents);
 const moneyAxis = (cents: number) =>
-  cents >= 100_000 ? `$${Math.round(cents / 100_000) / 10}k` : `$${Math.round(cents / 100)}`;
+  Math.abs(cents) >= 100_000
+    ? `${cents < 0 ? "-" : ""}$${Math.round(Math.abs(cents) / 100_000) / 10}k`
+    : `${cents < 0 ? "-" : ""}$${Math.round(Math.abs(cents) / 100)}`;
 
 function ChartCard({
   title,

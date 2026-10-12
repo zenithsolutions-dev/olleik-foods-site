@@ -39,7 +39,7 @@ export function DocumentShell({
   footerNote?: string;
 }) {
   return (
-    <div className="doc-sheet mx-auto my-6 max-w-3xl rounded-xl border border-[var(--border)] bg-white p-10 text-[13px] leading-relaxed text-black shadow-lg print:my-0">
+    <div className="doc-sheet mx-auto my-6 max-w-3xl overflow-x-auto rounded-xl border border-[var(--border)] bg-white p-4 text-[13px] leading-relaxed text-black shadow-lg sm:p-10 print:my-0 print:overflow-visible">
       {watermark && (
         <div className="doc-watermark" aria-hidden>
           <span>{watermark}</span>

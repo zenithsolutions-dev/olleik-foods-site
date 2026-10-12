@@ -1,5 +1,6 @@
 "use client";
 
+import { ProductThumb } from "@/components/product-thumb";
 import { useMemo, useState } from "react";
 import { Search, ChevronDown, ChevronRight } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
@@ -220,6 +221,7 @@ export function AssignClient({
           <div className="flex flex-wrap items-center gap-2 px-5 py-3">
             <select
               value={categoryId}
+              aria-label="Filter products by category"
               onChange={(e) => setCategoryId(e.target.value)}
               className="rounded-lg border border-[var(--border)] bg-background px-2.5 py-1.5 text-sm"
             >
@@ -236,6 +238,7 @@ export function AssignClient({
                 type="search"
                 value={productQuery}
                 onChange={(e) => setProductQuery(e.target.value)}
+                aria-label="Search products by name or SKU"
                 placeholder="Search name or SKU"
                 className="w-full rounded-lg border border-[var(--border)] bg-background py-1.5 pl-8 pr-2 text-sm"
               />
@@ -268,6 +271,7 @@ export function AssignClient({
                     onChange={() => toggleSet(selectedProducts, p.id, setSelectedProducts)}
                     className="accent-accent"
                   />
+                  <ProductThumb src={p.imageUrl} name={p.name} size="md" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground">{p.name}</p>
                     <p className="text-xs text-muted">
@@ -296,6 +300,7 @@ export function AssignClient({
                 type="search"
                 value={customerQuery}
                 onChange={(e) => setCustomerQuery(e.target.value)}
+                aria-label="Search customers by business or email"
                 placeholder="Search business or email"
                 className="w-full rounded-lg border border-[var(--border)] bg-background py-1.5 pl-8 pr-2 text-sm"
               />

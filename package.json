@@ -10,6 +10,7 @@
     "guard:portal": "node scripts/guard-portal.mjs",
     "preflight": "node scripts/test-schema-preflight.mjs",
     "test:visibility": "node scripts/test-visibility-rls.mjs",
+    "test:e2e": "playwright test",
     "test:orders": "node scripts/test-order-security.mjs",
     "test:inventory": "node --experimental-strip-types scripts/test-inventory.mjs",
     "test:dashboard": "node --experimental-strip-types scripts/test-dashboard.mjs",
@@ -17,6 +18,9 @@
     "test:documents": "node --experimental-strip-types scripts/test-documents.mjs",
     "test:statements": "node --experimental-strip-types scripts/test-statements.mjs",
     "test:offers": "node --experimental-strip-types scripts/test-offers.mjs",
+    "test:format-dates": "node --experimental-strip-types scripts/test-format-dates.mjs",
+    "test:money": "node --experimental-strip-types scripts/test-money.mjs",
+    "test:offers-format": "node --experimental-strip-types scripts/test-offers-format.mjs",
     "test:bulk-offers": "node --experimental-strip-types scripts/test-bulk-offers.mjs",
     "test:analytics": "node --experimental-strip-types scripts/test-analytics.mjs",
     "test:reports": "node --experimental-strip-types scripts/test-reports.mjs"
@@ -32,6 +36,7 @@
     "stripe": "^22.1.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

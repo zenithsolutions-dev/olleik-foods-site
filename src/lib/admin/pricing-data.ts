@@ -1,4 +1,5 @@
 import "server-only";
+import { isUuid } from "@/lib/uuid";
 import { getAdminClient } from "@/lib/supabase/admin";
 import type { PriceSource, PricingRule, PricingRuleScope } from "./types";
 
@@ -86,7 +87,7 @@ export async function fetchPricingMeta(
   customerId: string,
 ): Promise<Record<string, PricingMeta>> {
   const admin = getAdminClient();
-  if (!admin) return {};
+  if (!admin || !isUuid(customerId)) return {};
 
   const { data, error } = await admin
     .from("customer_product_pricing_meta")

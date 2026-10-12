@@ -1,4 +1,5 @@
 import "server-only";
+import { isUuid } from "@/lib/uuid";
 import { getAdminClient } from "@/lib/supabase/admin";
 import type {
   Customer,
@@ -191,6 +192,7 @@ export async function fetchAdminCustomer(
 ): Promise<{ detail: CustomerDetail | null; live: boolean }> {
   const admin = getAdminClient();
   if (!admin) return { detail: buildSeedDetail(id), live: false };
+  if (!isUuid(id)) return { detail: null, live: true };
 
   const { data: row, error } = await admin
     .from("customers")

@@ -1,5 +1,6 @@
 "use client";
 
+import { formatBusinessTime } from "@/lib/dates";
 import Link from "next/link";
 import { useAdmin, formatMoney } from "@/lib/admin/store";
 import type { Customer, Lead, LeadStatus, Product } from "@/lib/admin/types";
@@ -269,7 +270,7 @@ export function DashboardClient({
       </section>
 
       {/* ---------- Row 3: context & access ---------- */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-[var(--border)] bg-surface p-6">
           <h2 className="font-display text-lg font-semibold text-brand-deep">Active offers</h2>
           <p className="mt-1 text-xs text-muted">What your customers currently see.</p>
@@ -290,7 +291,7 @@ export function DashboardClient({
                   ) : o.endsAt ? (
                     <span className="shrink-0 text-xs text-muted">
                       until{" "}
-                      {new Date(o.endsAt).toLocaleDateString("en-CA", {
+                      {formatBusinessTime(o.endsAt, {
                         month: "short",
                         day: "numeric",
                       })}
