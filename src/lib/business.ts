@@ -52,3 +52,19 @@ const IDENTITY: BusinessIdentity = {
 export function getBusinessIdentity(): BusinessIdentity {
   return IDENTITY;
 }
+
+// Which identity fields still print as placeholders, by the env var that fills
+// them. Drives the owner-only banner in the admin layout so a document that
+// would go to a customer with "[LEGAL NAME TBC]" on it is never a surprise.
+const ENV_FOR_FIELD = {
+  legalName: "BUSINESS_LEGAL_NAME",
+  address: "BUSINESS_ADDRESS",
+  phone: "BUSINESS_PHONE",
+  email: "BUSINESS_EMAIL",
+} as const;
+
+export function businessIdentityGaps(): string[] {
+  return (Object.keys(ENV_FOR_FIELD) as (keyof typeof ENV_FOR_FIELD)[])
+    .filter((k) => !process.env[ENV_FOR_FIELD[k]]?.trim())
+    .map((k) => ENV_FOR_FIELD[k]);
+}

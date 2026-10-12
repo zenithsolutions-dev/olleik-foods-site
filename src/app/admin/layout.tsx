@@ -6,6 +6,7 @@ import { OrderAlertsProvider, OrderAlertsWidget } from "./order-alerts";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { fetchNewOrderCount } from "@/lib/admin/orders-data";
 import { signOutAdmin } from "./actions";
+import { businessIdentityGaps } from "@/lib/business";
 
 export const metadata = {
   title: "Olleik Admin",
@@ -20,6 +21,7 @@ export default async function AdminLayout({
   // Live "N new" badge on the Orders nav item, refreshed on every admin page
   // render (admin pages are all force-dynamic).
   const newOrderCount = await fetchNewOrderCount();
+  const identityGaps = businessIdentityGaps();
 
   return (
     <AdminProvider>
@@ -89,6 +91,18 @@ export default async function AdminLayout({
               ← Back to site
             </Link>
           </header>
+          {identityGaps.length > 0 && (
+            <div
+              role="status"
+              data-testid="identity-placeholder-banner"
+              className="border-b border-amber-300 bg-amber-50 px-6 py-3 text-sm text-amber-900 md:px-10 print:hidden"
+            >
+              <strong>Business details are still placeholders.</strong> Invoices, statements and reports
+              print &ldquo;[LEGAL NAME TBC]&rdquo;-style text until these are set in the environment:{" "}
+              <code className="font-mono text-xs">{identityGaps.join(", ")}</code>. Do not send documents to
+              customers before then.
+            </div>
+          )}
           <main className="flex-1 px-6 py-8 md:px-10 md:py-10">{children}</main>
         </div>
       </div>
