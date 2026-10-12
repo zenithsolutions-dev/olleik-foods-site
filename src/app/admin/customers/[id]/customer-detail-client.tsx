@@ -656,6 +656,7 @@ export function CustomerDetailClient({
             No products assigned yet. This customer can&apos;t see anything in their portal.
           </p>
         ) : (
+<div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--border)] bg-brand-mist/40 text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -735,6 +736,7 @@ export function CustomerDetailClient({
               </tr>
             </tfoot>
           </table>
+          </div>
         )}
       </section>
 

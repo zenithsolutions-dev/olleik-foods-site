@@ -270,7 +270,7 @@ export function DashboardClient({
       </section>
 
       {/* ---------- Row 3: context & access ---------- */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-[var(--border)] bg-surface p-6">
           <h2 className="font-display text-lg font-semibold text-brand-deep">Active offers</h2>
           <p className="mt-1 text-xs text-muted">What your customers currently see.</p>
