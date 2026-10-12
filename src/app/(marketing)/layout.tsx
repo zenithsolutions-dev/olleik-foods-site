@@ -98,6 +98,7 @@ function SiteFooter() {
               <input
                 type="email"
                 name="newsletter"
+                aria-label="Your email address"
                 placeholder="your@business.com"
                 className="flex-1 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/40 focus:border-accent focus:outline-none"
               />
