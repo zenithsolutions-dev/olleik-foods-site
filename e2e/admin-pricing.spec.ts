@@ -147,7 +147,7 @@ test("A-09 the product picker: type to search, arrow keys and Enter pick, Escape
   await page.keyboard.press("Enter");
   await expect(page.getByRole("listbox")).toBeVisible();
   await page.keyboard.type("salmon");
-  await expect(page.getByRole("option")).toHaveCount(1);
+  await expect(page.getByRole("listbox").getByRole("option")).toHaveCount(1);
   await page.keyboard.press("Escape");
   await expect(page.getByRole("listbox")).toHaveCount(0);
   await trigger.click();
