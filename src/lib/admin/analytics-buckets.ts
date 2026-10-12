@@ -72,12 +72,14 @@ function labelFor(bucketKey: string, bucket: BucketSize): string {
   if (bucket === "month") {
     const [y, m] = bucketKey.split("-").map(Number);
     return new Date(Date.UTC(y, m - 1, 15)).toLocaleDateString("en-CA", {
+      timeZone: "UTC",
       month: "short",
       year: "numeric",
     });
   }
   const [y, m, d] = bucketKey.split("-").map(Number);
   const day = new Date(Date.UTC(y, m - 1, d, 12)).toLocaleDateString("en-CA", {
+    timeZone: "UTC",
     month: "short",
     day: "numeric",
   });

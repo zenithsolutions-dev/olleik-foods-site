@@ -1,5 +1,6 @@
 import "server-only";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { topThumbs, type ThumbItem } from "@/lib/product-thumbs";
 import type { OfferDiscountKind, ProductUnit } from "@/lib/admin/types";
 import {
   effectivePriceCents,
@@ -285,12 +286,14 @@ export type PortalOrderSummary = {
   fulfillment: OrderFulfillment;
   totalCents: number;
   itemCount: number;
+  thumbs: ThumbItem[];
   createdAt: string;
 };
 
 export type PortalOrderLine = {
   productId: string;
   name: string;
+  imageUrl: string | null;
   sku: string;
   unit: string;
   unitSize: string;
@@ -322,7 +325,7 @@ export async function fetchMyOrders(range?: {
   const supabase = await createSupabaseServerClient();
   let q = supabase
     .from("orders")
-    .select("id, status, fulfillment, total_cents, created_at, order_items(product_id)");
+    .select("id, status, fulfillment, total_cents, created_at, order_items(name, line_total_cents, products(image_url))");
   if (range?.startISO) q = q.gte("created_at", range.startISO);
   if (range?.endISO) q = q.lt("created_at", range.endISO);
   const { data, error } = await q.order("created_at", { ascending: false }).limit(100);
@@ -337,7 +340,7 @@ export async function fetchMyOrders(range?: {
     fulfillment: OrderFulfillment;
     total_cents: number;
     created_at: string;
-    order_items: { product_id: string }[] | null;
+    order_items: { name: string; line_total_cents: number; products: { image_url: string | null } | null }[] | null;
   };
   return ((data as unknown as Row[]) ?? []).map((r) => ({
     id: r.id,
@@ -345,6 +348,9 @@ export async function fetchMyOrders(range?: {
     fulfillment: r.fulfillment,
     totalCents: r.total_cents,
     itemCount: r.order_items?.length ?? 0,
+    thumbs: topThumbs(
+      (r.order_items ?? []).map((i) => ({ name: i.name, imageUrl: i.products?.image_url ?? null, totalCents: i.line_total_cents })),
+    ),
     createdAt: r.created_at,
   }));
 }
@@ -354,7 +360,7 @@ export async function fetchMyOrder(id: string): Promise<PortalOrderDetail | null
   const { data, error } = await supabase
     .from("orders")
     .select(
-      "id, status, fulfillment, notes, payment_terms_snapshot, total_cents, created_at, order_items(product_id, name, sku, unit, unit_size, qty, base_price_cents, unit_price_cents, applied_offer_title, line_total_cents)",
+      "id, status, fulfillment, notes, payment_terms_snapshot, total_cents, created_at, order_items(product_id, name, sku, unit, unit_size, qty, base_price_cents, unit_price_cents, applied_offer_title, line_total_cents, products(image_url))",
     )
     .eq("id", id)
     .maybeSingle();
@@ -374,6 +380,7 @@ export async function fetchMyOrder(id: string): Promise<PortalOrderDetail | null
     unit_price_cents: number;
     applied_offer_title: string | null;
     line_total_cents: number;
+    products: { image_url: string | null } | null;
   };
   const row = data as unknown as {
     id: string;
@@ -397,6 +404,7 @@ export async function fetchMyOrder(id: string): Promise<PortalOrderDetail | null
       .map((i) => ({
         productId: i.product_id,
         name: i.name,
+        imageUrl: i.products?.image_url ?? null,
         sku: i.sku,
         unit: i.unit,
         unitSize: i.unit_size,

@@ -1,5 +1,7 @@
 "use client";
 
+import { ProductThumb } from "@/components/product-thumb";
+import { ProductPicker } from "@/components/product-picker";
 import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import type { Category, Customer, PricingRule, Product } from "@/lib/admin/types";
@@ -162,6 +164,7 @@ function ProductRulesCard({
           {rules.map((r) => (
             <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
               <div className="flex flex-wrap items-center gap-2">
+                <ProductThumb src={products.find((p) => p.id === r.productId)?.imageUrl} name={prodName(r.productId)} size="sm" />
                 <span className="text-sm font-medium text-foreground">{prodName(r.productId)}</span>
                 {editingId === r.id ? (
                   <span className="inline-flex items-center gap-1">
@@ -273,18 +276,12 @@ function ProductRulesCard({
       )}
 
       <div className="flex flex-wrap items-center gap-2 border-t border-[var(--border)] px-5 py-3">
-        <select
+        <ProductPicker
+          products={available}
           value={productId}
-          onChange={(e) => setProductId(e.target.value)}
-          className="rounded-lg border border-[var(--border)] bg-background px-2.5 py-1.5 text-sm"
-        >
-          <option value="">Choose a product…</option>
-          {available.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
+          onChange={setProductId}
+          ariaLabel="Product for the new margin rule"
+        />
         <input
           type="number"
           min="0"

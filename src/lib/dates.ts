@@ -132,8 +132,23 @@ function parseYmd(s: string): Ymd | null {
   return { y, m, d };
 }
 
+/**
+ * Format an instant for display in the BUSINESS time zone (America/Toronto), whatever the server's or the viewer's
+ * own zone is. Unzoned toLocale*String calls print the server's zone during SSR and the browser's zone after
+ * hydration: wrong for anyone outside Toronto and a React hydration mismatch. Use this everywhere an ISO instant is
+ * shown. `opts` are Intl.DateTimeFormat options (dateStyle, month, hour...).
+ */
+export function formatBusinessTime(
+  iso: string | number | Date,
+  opts: Intl.DateTimeFormatOptions = { dateStyle: "medium", timeStyle: "short" },
+): string {
+  return new Intl.DateTimeFormat("en-CA", { ...opts, timeZone: BUSINESS_TIME_ZONE }).format(new Date(iso));
+}
+
 function fmtDay(ymd: Ymd): string {
+  // The instant is noon UTC and is printed in UTC, so the calendar day can never shift with the process zone.
   return new Date(Date.UTC(ymd.y, ymd.m - 1, ymd.d, 12)).toLocaleDateString("en-CA", {
+    timeZone: "UTC",
     month: "short",
     day: "numeric",
     year: "numeric",

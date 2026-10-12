@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import type { ThumbItem } from "@/lib/product-thumbs";
 
 // One small product picture used everywhere a product appears in a list (cart,
 // checkout, order lines, pickers). A fixed-size box is reserved up front, so the
@@ -58,6 +59,45 @@ export function ProductThumb({
           style={{ fontSize: Math.round(px * 0.42) }}
         >
           {letter}
+        </span>
+      )}
+    </span>
+  );
+}
+
+// A compact overlapping row of the first few products on an order (order lists).
+// The row's width depends only on how many thumbnails it shows (never on whether
+// an image has loaded), and "+N" stands for the rest, so rows line up and never jump.
+export function ProductThumbStrip({
+  items,
+  total,
+  max = 3,
+}: {
+  items: ThumbItem[];
+  total: number;
+  max?: number;
+}) {
+  const shown = items.slice(0, max);
+  const more = Math.max(0, total - shown.length);
+  if (shown.length === 0) return null;
+  const px = THUMB_SIZES.sm;
+  return (
+    <span data-testid="thumb-strip" className="flex shrink-0 items-center">
+      {shown.map((it, i) => (
+        <ProductThumb
+          key={`${it.name}-${i}`}
+          src={it.imageUrl}
+          name={it.name}
+          size="sm"
+          className={`ring-2 ring-surface ${i > 0 ? "-ml-2" : ""}`}
+        />
+      ))}
+      {more > 0 && (
+        <span
+          style={{ width: px, height: px }}
+          className="-ml-2 grid shrink-0 place-items-center rounded-lg border border-[var(--border)] bg-surface text-[11px] font-semibold text-muted ring-2 ring-surface"
+        >
+          +{more}
         </span>
       )}
     </span>

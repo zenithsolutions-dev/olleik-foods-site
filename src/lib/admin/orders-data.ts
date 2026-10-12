@@ -1,5 +1,6 @@
 import "server-only";
 import { getAdminClient } from "@/lib/supabase/admin";
+import { topThumbs, type ThumbItem } from "@/lib/product-thumbs";
 import type { OrderFulfillment, OrderStatus } from "@/lib/portal/portal-data";
 
 // CP-3a admin order reads (service role — costs and profit are expected here,
@@ -15,6 +16,7 @@ export type AdminOrderSummary = {
   fulfillment: OrderFulfillment;
   totalCents: number;
   itemCount: number;
+  thumbs: ThumbItem[];
   createdAt: string;
 };
 
@@ -45,7 +47,7 @@ export async function fetchAdminOrders(range?: {
   let q = admin
     .from("orders")
     .select(
-      "id, customer_id, status, fulfillment, total_cents, created_at, customers(business_name), order_items(product_id)",
+      "id, customer_id, status, fulfillment, total_cents, created_at, customers(business_name), order_items(name, line_total_cents, products(image_url))",
     );
   if (range?.startISO) q = q.gte("created_at", range.startISO);
   if (range?.endISO) q = q.lt("created_at", range.endISO);
@@ -67,7 +69,7 @@ export async function fetchAdminOrders(range?: {
     total_cents: number;
     created_at: string;
     customers: { business_name: string } | null;
-    order_items: { product_id: string }[] | null;
+    order_items: { name: string; line_total_cents: number; products: { image_url: string | null } | null }[] | null;
   };
   const orders = ((data as unknown as Row[]) ?? []).map((r) => ({
     id: r.id,
@@ -77,6 +79,9 @@ export async function fetchAdminOrders(range?: {
     fulfillment: r.fulfillment,
     totalCents: r.total_cents,
     itemCount: r.order_items?.length ?? 0,
+    thumbs: topThumbs(
+      (r.order_items ?? []).map((i) => ({ name: i.name, imageUrl: i.products?.image_url ?? null, totalCents: i.line_total_cents })),
+    ),
     createdAt: r.created_at,
   }));
   const countsByStatus = { ...EMPTY_COUNTS };
@@ -99,6 +104,7 @@ export async function fetchNewOrderCount(): Promise<number> {
 export type AdminOrderLine = {
   productId: string;
   name: string;
+  imageUrl: string | null;
   sku: string;
   unit: string;
   unitSize: string;
@@ -151,7 +157,7 @@ export async function fetchAdminOrder(id: string): Promise<AdminOrderDetail | nu
     admin
       .from("orders")
       .select(
-        "id, status, fulfillment, notes, admin_note, payment_terms_snapshot, total_cents, created_at, confirmed_at, completed_at, cancelled_at, customers(id, business_name, contact_name, email, phone, status), order_items(product_id, name, sku, unit, unit_size, qty, base_price_cents, unit_price_cents, applied_offer_title, was_assigned, line_total_cents, products(is_active))",
+        "id, status, fulfillment, notes, admin_note, payment_terms_snapshot, total_cents, created_at, confirmed_at, completed_at, cancelled_at, customers(id, business_name, contact_name, email, phone, status), order_items(product_id, name, sku, unit, unit_size, qty, base_price_cents, unit_price_cents, applied_offer_title, was_assigned, line_total_cents, products(is_active, image_url))",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -183,7 +189,7 @@ export async function fetchAdminOrder(id: string): Promise<AdminOrderDetail | nu
     applied_offer_title: string | null;
     was_assigned: boolean;
     line_total_cents: number;
-    products: { is_active: boolean } | null;
+    products: { is_active: boolean; image_url: string | null } | null;
   };
   const r = row as unknown as {
     id: string;
@@ -243,6 +249,7 @@ export async function fetchAdminOrder(id: string): Promise<AdminOrderDetail | nu
     .map((i) => ({
       productId: i.product_id,
       name: i.name,
+      imageUrl: i.products?.image_url ?? null,
       sku: i.sku,
       unit: i.unit,
       unitSize: i.unit_size,

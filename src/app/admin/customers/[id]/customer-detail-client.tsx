@@ -1,5 +1,8 @@
 "use client";
 
+import { formatBusinessTime } from "@/lib/dates";
+import { ProductThumb } from "@/components/product-thumb";
+import { ProductPicker } from "@/components/product-picker";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
@@ -117,8 +120,14 @@ export function CustomerDetailClient({
   );
   // Offers may link only to a product this customer can see (decision #3).
   const assignedProductOptions = useMemo(
-    () => assigned.map((a) => ({ id: a.productId, name: a.name })),
-    [assigned],
+    () =>
+      assigned.map((a) => ({
+        id: a.productId,
+        name: a.name,
+        sku: a.sku,
+        imageUrl: productById[a.productId]?.imageUrl ?? null,
+      })),
+    [assigned, productById],
   );
   const templateNameById = useMemo(
     () => Object.fromEntries(offerTemplates.map((t) => [t.id, t.name])),
@@ -400,7 +409,7 @@ export function CustomerDetailClient({
       if (fx.affectedCount === 0) {
         setNotice(
           newOffer.startsAt && new Date(newOffer.startsAt) > now
-            ? `Applied "${name}" — scheduled: it starts ${new Date(newOffer.startsAt).toLocaleDateString("en-CA", { dateStyle: "medium" })} and changes no price until then.`
+            ? `Applied "${name}" — scheduled: it starts ${formatBusinessTime(newOffer.startsAt, { dateStyle: "medium" })} and changes no price until then.`
             : `Applied "${name}" — but it lowers NO price right now (existing prices are already at or below it). Nothing changed for the customer.`,
         );
       } else {
@@ -411,7 +420,7 @@ export function CustomerDetailClient({
               ? ` (e.g. ${fx.example.name} ${formatMoney(fx.example.beforeCents)} → ${formatMoney(fx.example.afterCents)})`
               : "") +
             (fx.endsAt
-              ? ` until ${new Date(fx.endsAt).toLocaleDateString("en-CA", { dateStyle: "medium" })}.`
+              ? ` until ${formatBusinessTime(fx.endsAt, { dateStyle: "medium" })}.`
               : " — no end date: it runs until you deactivate it."),
         );
       }
@@ -678,6 +687,7 @@ export function CustomerDetailClient({
                   row={a}
                   priced={offerPriceByProduct[a.productId]}
                   pricing={rowPricing[a.productId]}
+                  imageUrl={productById[a.productId]?.imageUrl ?? null}
                   categoryName={(a.categoryId ? catById[a.categoryId] : undefined) ?? "—"}
                   busy={busy}
                   selected={selected.has(a.productId)}
@@ -781,7 +791,7 @@ export function CustomerDetailClient({
                       : `${discounted.length} of ${assigned.length} assigned products are discounted right now.`}
                   </span>{" "}
                   {liveEnds.length > 0 &&
-                    `Soonest expiry: ${new Date(liveEnds[0]).toLocaleDateString("en-CA", { dateStyle: "medium" })}.`}{" "}
+                    `Soonest expiry: ${formatBusinessTime(liveEnds[0], { dateStyle: "medium" })}.`}{" "}
                   <Link href="/admin/offers?tab=running" className="font-medium text-brand hover:text-accent">
                     All running offers →
                   </Link>
@@ -1038,6 +1048,7 @@ function CustomerProductRow({
   row,
   priced,
   pricing,
+  imageUrl,
   categoryName,
   busy,
   selected,
@@ -1046,6 +1057,7 @@ function CustomerProductRow({
   onRemove,
 }: {
   row: AssignedProduct;
+  imageUrl: string | null;
   priced?: { finalCents: number; discounted: boolean; originalCents: number; appliedTitle: string | null };
   pricing?: { costCents: number | null; profitCents: number | null; sourceChip: string };
   categoryName: string;
@@ -1079,11 +1091,16 @@ function CustomerProductRow({
         />
       </td>
       <td className="px-6 py-3">
-        <p className="font-medium text-foreground">{row.name}</p>
-        <p className="text-xs text-muted">
-          {row.sku} · {row.unitSize}
-          {!row.isActive && <span className="ml-2 text-red-700">(inactive)</span>}
-        </p>
+        <div className="flex items-center gap-3">
+          <ProductThumb src={imageUrl} name={row.name} size="md" />
+          <div className="min-w-0">
+            <p className="font-medium text-foreground">{row.name}</p>
+            <p className="text-xs text-muted">
+              {row.sku} · {row.unitSize}
+              {!row.isActive && <span className="ml-2 text-red-700">(inactive)</span>}
+            </p>
+          </div>
+        </div>
       </td>
       <td className="px-6 py-3 text-muted">{categoryName}</td>
       <td className="px-4 py-3 text-right font-mono text-muted">
@@ -1365,7 +1382,7 @@ function OfferModal({
   onSave,
 }: {
   initial: Offer | null;
-  products: { id: string; name: string }[]; // the customer's ASSIGNED products
+  products: { id: string; name: string; sku?: string; imageUrl?: string | null }[]; // the customer's ASSIGNED products
   onClose: () => void;
   onSave: (values: OfferInput) => void | Promise<void>;
 }) {
@@ -1435,12 +1452,14 @@ function OfferModal({
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className={inputCls} />
           </Field>
           <Field label="Linked product (optional — this customer's assigned products)">
-            <select value={productId} onChange={(e) => setProductId(e.target.value)} className={inputCls}>
-              <option value="">— None (account-wide) —</option>
-              {products.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
+            <ProductPicker
+              products={products}
+              value={productId}
+              onChange={setProductId}
+              noneLabel="— None (account-wide) —"
+              ariaLabel="Linked product"
+              className="w-full"
+            />
           </Field>
           <DiscountFields
             kind={discountKind}
@@ -1624,6 +1643,7 @@ function AddProductsPicker({
                           onChange={() => toggle(p.id)}
                           className="accent-accent"
                         />
+                        <ProductThumb src={p.imageUrl} name={p.name} size="md" />
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium text-foreground">{p.name}</p>
                           <p className="text-xs text-muted">

@@ -1,5 +1,6 @@
 "use client";
 
+import { ProductThumb } from "@/components/product-thumb";
 import { useMemo, useState } from "react";
 import { Search, ChevronDown, ChevronRight } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
@@ -268,6 +269,7 @@ export function AssignClient({
                     onChange={() => toggleSet(selectedProducts, p.id, setSelectedProducts)}
                     className="accent-accent"
                   />
+                  <ProductThumb src={p.imageUrl} name={p.name} size="md" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground">{p.name}</p>
                     <p className="text-xs text-muted">

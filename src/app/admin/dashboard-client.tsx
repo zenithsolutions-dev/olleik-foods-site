@@ -1,5 +1,6 @@
 "use client";
 
+import { formatBusinessTime } from "@/lib/dates";
 import Link from "next/link";
 import { useAdmin, formatMoney } from "@/lib/admin/store";
 import type { Customer, Lead, LeadStatus, Product } from "@/lib/admin/types";
@@ -290,7 +291,7 @@ export function DashboardClient({
                   ) : o.endsAt ? (
                     <span className="shrink-0 text-xs text-muted">
                       until{" "}
-                      {new Date(o.endsAt).toLocaleDateString("en-CA", {
+                      {formatBusinessTime(o.endsAt, {
                         month: "short",
                         day: "numeric",
                       })}

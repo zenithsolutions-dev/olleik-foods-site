@@ -4,6 +4,7 @@
 // the shape of a real DB so swapping to Supabase later is mechanical —
 // each action becomes a row insert/update/delete instead of a state patch.
 
+import { formatBusinessTime } from "@/lib/dates";
 import {
   createContext,
   useCallback,
@@ -249,10 +250,5 @@ export function formatMoney(cents: number): string {
 }
 
 export function formatDate(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-CA", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  return formatBusinessTime(iso, { year: "numeric", month: "short", day: "numeric" });
 }

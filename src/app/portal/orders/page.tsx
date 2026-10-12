@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { formatBusinessTime } from "@/lib/dates";
+import { ProductThumbStrip } from "@/components/product-thumb";
 import { requireCustomer } from "@/lib/portal/require-customer";
 import { fetchMyOrders } from "@/lib/portal/portal-data";
 import { formatMoney } from "@/lib/portal/format";
@@ -74,18 +76,21 @@ export default async function PortalOrdersPage({
               href={`/portal/orders/${o.id}`}
               className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] px-5 py-4 transition last:border-b-0 hover:bg-brand-mist/30"
             >
+              <div className="flex items-center gap-3">
+                <ProductThumbStrip items={o.thumbs} total={o.itemCount} />
               <div>
                 <p className="font-mono text-sm font-semibold text-brand-deep">
                   #{o.id.slice(0, 8)}
                 </p>
                 <p className="text-xs text-muted">
-                  {new Date(o.createdAt).toLocaleDateString("en-CA", {
+                  {formatBusinessTime(o.createdAt, {
                     year: "numeric",
                     month: "short",
                     day: "numeric",
                   })}{" "}
                   · {o.itemCount} {o.itemCount === 1 ? "item" : "items"} · {o.fulfillment}
                 </p>
+              </div>
               </div>
               <div className="flex items-center gap-3">
                 <StatusChip status={o.status} />
