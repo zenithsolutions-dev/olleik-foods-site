@@ -1,0 +1,19 @@
+{
+ "_doc": "Manual review of FULL_SYSTEM.mp4: every 0.5 s QA frame viewed in dense sheets (out/qa-full/FULL_SYSTEM/review-NN.jpg). Our own static on-screen lines are listed for the OCR split.",
+ "our_static_lines": ["The whole system", "Visitor, customer and admin, one order at a time", "One system for customers and the team", "olleik-foods-site.vercel.app",
+  "Visitor · Phone", "Customer · Phone", "Admin · Desktop",
+  "The public site", "Applying for an account", "Approval and invitation", "Catalog and prices", "Offers", "Placing an order", "Fulfilment", "Invoices and statements", "Stock, margins and reports", "Managing the catalog", "Accounts and access"],
+ "manual": [
+  { "check": "No pasted overlays on the UI (no halos, patches, lifted cards; the thread travels and fades)", "result": "none found in 1,497 frames", "pass": true },
+  { "check": "Split screen aligned on every frame (panes, labels, caption band never overlap the UI)", "result": "aligned on every reviewed frame", "pass": true },
+  { "check": "Every pane shows the real current state (no state rewinds after a chapter card)", "result": "two rewinds found on the first render (5:00, 10:52) and fixed; re-reviewed", "pass": true },
+  { "check": "First frame not blank", "result": "first frame blank on the first render; fixed (title built in from frame 0)", "pass": true },
+  { "check": "Clipped text in OUR lines (captions, labels, cards)", "result": "none; longest caption fits the band", "pass": true }
+ ],
+ "notes": [
+  "The phone screens are the app's real phone layout. On the cart page and on the phone invoice and statement, the app squeezes the product name column (\"Atlan…\", one word per line); this is the app's own responsive layout, shown as it is, and reported as an app finding.",
+  "Fast camera moves between two targets are motion-blurred for a few frames (for example around 7:07); this is the camera's own blur, not a cut.",
+  "The bulk-offer result page (\"Batch applied\") is mostly empty, so the admin pane is sparse for about two seconds around 5:40.",
+  "Offer library → Running now crashes in the app when an amount-off or fixed-price offer is running (server calls a client function); the film uses a percent-off template so the page renders. App not changed; reported."
+ ]
+}

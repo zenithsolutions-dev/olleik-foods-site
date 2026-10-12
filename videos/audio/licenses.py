@@ -26,11 +26,14 @@ def higgsfield_section():
     led = json.load(open(os.path.join(os.path.dirname(LIB), "higgsfield", "ledger.json"), encoding="utf8"))
     out = [
         "",
-        "## Higgsfield generations (V3/V3.2, generated 2026-10-11 to 2026-10-12 on the owner's account; recorded before use)",
+        "## Higgsfield generations (V3, V3.2 and the full-system film, generated 2026-10-11 to 2026-10-12 on the owner's account; recorded before use)",
         "Narration (kind `narration`, `voice-test`): Higgsfield speech, model seed_audio, preset voice \"Holden\"",
         "(3c9d6053-6334-592c-8997-4e325286af3f), chosen by the owner; generated under the owner's per-project exception of",
-        "2026-10-12 to the playbook's \"never generate voice\" rule (logged in the video-factory PROPOSED_RULE_CHANGES.md). One WAV",
-        "per line in videos/narration/audio/ (text: narration/VISITOR.json, ADMIN.json); rejected takes in narration/audio/rejected/.",
+        "2026-10-12 to the playbook's \"never generate voice\" rule (logged in the video-factory PROPOSED_RULE_CHANGES.md), and again for the",
+        "full-system film in the owner's brief of 2026-10-12 (narration f00–f65 with b-lines, file names f*.wav). One WAV",
+        "per line in videos/narration/audio/ (text: narration/VISITOR.json, ADMIN.json, FULL.json); rejected takes and unused",
+        "alternates in narration/audio/rejected/ (each marked in the table). The full-system film's product photo upload uses",
+        "the existing Higgsfield product photo PRD-007 (red bell peppers), listed below under its original generation.",
         "Terms: Higgsfield Terms of Use §4.4 — Higgsfield claims no ownership of outputs and does not restrict their commercial",
         "use; outputs may not be used to train AI models (§5.1(iii), §5.2(iv)); no likeness/IP infringement (§5.1(ii)(b), §5.3).",
         "Evidence: licenses/higgsfield-terms-2026-10-11.txt. All people are original characters generated from text (no real",

@@ -57,7 +57,7 @@ async function audio(name, fnName, target = -14, modPath = "src/v3/shots.ts", fr
 }
 
 const ffLoud = (path) => {
-  const r = spawnSync("ffmpeg", ["-hide_banner", "-nostats", "-i", path, "-af", "ebur128=peak=true", "-f", "null", "-"], { encoding: "utf8" });
+  const r = spawnSync("ffmpeg", ["-hide_banner", "-nostats", "-i", path, "-af", "ebur128=peak=true", "-f", "null", "-"], { encoding: "utf8", maxBuffer: 512 * 1024 * 1024 }); // ebur128 logs every 100 ms: long films exceed the 1 MB default
   const sum = r.stderr.slice(r.stderr.lastIndexOf("Summary:"));
   return { I: Number(/I:\s+(-?[\d.]+) LUFS/.exec(sum)?.[1]), TP: Number(/Peak:\s+(-?[\d.]+) dBFS/.exec(sum)?.[1]) };
 };

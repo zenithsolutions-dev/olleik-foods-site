@@ -1,10 +1,12 @@
 """Contact-sheet pages for QA: 12 frames per page (4 x 3 at 640 x 360), each labelled with its file name.
-usage: python qa/sheet.py <out_prefix> <png/jpg files...>   → <out_prefix>-p1.jpg, -p2.jpg, …"""
+usage: python qa/sheet.py <out_prefix> <png/jpg files...> | @<list file>   → <out_prefix>-p1.jpg, -p2.jpg, …"""
 import sys
 
 from PIL import Image, ImageDraw
 
 out, files = sys.argv[1], sys.argv[2:]
+if len(files) == 1 and files[0].startswith("@"):  # @list.txt: one file per line (long films exceed the command-line limit)
+    files = open(files[0][1:], encoding="utf8").read().split()
 W, H, COLS, ROWS = 640, 360, 4, 3
 for p in range(0, len(files), COLS * ROWS):
     page = files[p: p + COLS * ROWS]

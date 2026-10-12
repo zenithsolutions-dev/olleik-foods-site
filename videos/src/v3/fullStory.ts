@@ -164,7 +164,7 @@ const blocks: Block[] = [
     { id: "f24", A: { ...a("a-cust7", "tools", { z: 1.4 }), taps: [{ box: "a-cust7.recompute", at: 110, to: "a-recompute" }], then: { at: 125, eye: "a-recompute.dialog", z: 1.4 } } },
   ] },
   { chapter: 5, title: "Offers", steps: [
-    { id: "f25", A: { ...a("a-cust7", "offersTop", { page: "a-cust7b", z: 1.35 }), taps: [{ box: "a-cust7.addOffer", at: 30, to: "a-offer0" }], typing: [{ cap: "a-offer1", field: "title", dur: 18, at: 84 }], then: { at: 40, eye: "a-offer0.dialog", z: 1.4 } } },
+    { id: "f25", C: c("c-cat7", "romaineCard", { page: "c-cat-romaine" }), A: { ...a("a-cust7", "offersTop", { page: "a-cust7b", z: 1.35 }), taps: [{ box: "a-cust7.addOffer", at: 30, to: "a-offer0" }], typing: [{ cap: "a-offer1", field: "title", dur: 18, at: 84 }], then: { at: 40, eye: "a-offer0.dialog", z: 1.4 } } },
     { id: "f26", A: { ...a("a-offer1", "dialog", { page: "a-cust7b", z: 1.4 }), taps: [{ box: "a-offer1.create", at: 40, to: "a-cust8", thread: { box: "c-offers1.list" } }], then: { at: 42, eye: "a-cust8.offersTop", z: 1.35 } }, C: [c("c-cat7", "romaineCard", { page: "c-cat-romaine" }), { ...c("c-offers1", "list"), start: 63 }] },
     { id: "f27", C: c("c-cat8", "salmonCard"), A: a("a-cust8", "salmonRow", { page: "a-cust7b", z: 1.5 }) },
     { id: "f29b", A: a("a-tpl0", "rows", { z: 1.4 }) },
@@ -212,7 +212,7 @@ const blocks: Block[] = [
     { id: "f54", A: a("a-doc-prod", "toggle", { z: 1.35, then: { at: 0.4, eye: "a-doc-prod.docHeader", z: 1.3 } }) },
   ] },
   { chapter: 10, title: "Managing the catalog", steps: [
-    { id: "f55", A: { ...a("a-np0", "name", { z: 1.4 }), typing: [{ cap: "a-np1", field: "sku", dur: 10 }, { cap: "a-np1", field: "name", dur: 14 }], then: { at: 0.5, eye: "a-np1.photo", z: 1.4 } } },
+    { id: "f55", C: c("c-cat10", "cupsCard"), A: { ...a("a-np0", "name", { z: 1.4 }), typing: [{ cap: "a-np1", field: "sku", dur: 10 }, { cap: "a-np1", field: "name", dur: 14 }], then: { at: 0.5, eye: "a-np1.photo", z: 1.4 } } },
     { id: "f56", cRole: "Visitor", C: c("c-produce0", "c-produce1.peppers", { page: "c-produce" }), A: { ...a("a-np1", "create", { z: 1.4, page: "a-np0" }), taps: [{ box: "a-np1.create", at: 40, to: "a-products3", thread: { box: "c-produce1.peppers", to: "c-produce1" } }], then: { at: 42, eye: "a-products3.peppers", z: 1.45 } } },
     { id: "f57", C: c("c-produce1", "basil", { page: "c-produce" }), A: { ...a("a-products3", "basil", { page: "a-np0", z: 1.45 }), taps: [{ box: "a-products3.basil", at: "early", dx: 524, to: "a-basil0" }, { box: "a-basil0.save", at: 110, to: "a-products4", thread: { box: "c-produce2.lemons", to: "c-produce2" } }], then: { at: 30, eye: "a-basil0.active", z: 1.4 } } },
     { id: "f58", cRole: "Customer", C: c("c-cat11", "creamCard"), A: a("a-products4", "basil", { page: "a-np0", z: 1.45 }) },
@@ -229,7 +229,7 @@ const blocks: Block[] = [
 ];
 
 const intro = { line: "f00", title: "The whole system", sub: "Visitor, customer and admin, one order at a time" };
-const end = { line: "f65", text: "From application to invoice, on both sides" };
+const end = { line: "f65", text: "One system for customers and the team" };
 
 export const FULL_FILM = buildFull("FULL-SYSTEM", intro, blocks, end);
 const FORBID: Record<string, string[]> = { "c-home": ["stats", "footer"], "c-contact": ["forbid", "footer"], "c-pending": ["forbid"], "c-reset0": ["forbid"], "c-reset1": ["forbid"] };

@@ -155,7 +155,8 @@ function Band({ m }: { m: Film }) {
 }
 
 function Title({ seg }: { seg: FSeg }) {
-  const f = useCurrentFrame();
+  // the film's first frame already shows the logo and the title (the build-in runs ahead of frame 0)
+  const f = useCurrentFrame() + 24;
   const s = spring({ frame: f, fps: 30, config: { damping: 14, stiffness: 150 } });
   const k = (d: number) => easeOut((f - d) / 12);
   return (

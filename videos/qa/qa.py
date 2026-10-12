@@ -64,7 +64,8 @@ for i, d in enumerate(diffs + [99]):
 longest = max(runs, key=lambda r: r[2]) if runs else [0, 0, 0]
 rep["motion"] = {"still_threshold": STILL, "beat_frames": BEAT, "longest_still_run_frames": longest[2], "longest_still_run_at_s": round(longest[0] / fps, 2),
                  "still_runs_over_one_beat": [r for r in runs if r[2] > BEAT], "pass": all(r[2] <= BEAT for r in runs)}
-subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), "sheet.py"), f"{out}/sheet"] + saved, check=True, capture_output=True)
+open(f"{out}/frames.txt", "w", encoding="utf8").write("\n".join(saved))
+subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), "sheet.py"), f"{out}/sheet", f"@{out}/frames.txt"], check=True, capture_output=True)
 
 # 3: OCR
 from rapidocr_onnxruntime import RapidOCR  # noqa: E402
