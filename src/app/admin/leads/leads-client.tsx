@@ -111,12 +111,14 @@ export function LeadsClient({
                   <select
                     value={l.status}
                     aria-label={`Status for ${l.businessName}`}
-                    disabled={pending}
+                    disabled={pending || l.status === "converted"}
                     onChange={(e) =>
                       onStatusChange(l.id, e.target.value as LeadStatus)
                     }
                     className="rounded-full border border-[var(--border)] bg-background px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                   >
+                    {/* A converted lead used to show "new" here (no matching option); it is now shown as what it is, locked. */}
+                    {l.status === "converted" && <option value="converted">converted</option>}
                     {STATUSES.map((s) => (
                       <option key={s} value={s}>
                         {s}

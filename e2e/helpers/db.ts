@@ -42,3 +42,14 @@ export const patch = (table: string, filter: string, body: object) =>
 export const insert = <T = Record<string, unknown>>(table: string, body: object | object[]) =>
   rest<T[]>(table, { method: "POST", body: JSON.stringify(body) });
 export const del = (table: string, filter: string) => rest(`${table}?${filter}`, { method: "DELETE" });
+
+/** Reset a demo login's password through the local auth emulator's admin API (service key). */
+export async function setPassword(email: string, password: string) {
+  const k = keys();
+  const h = { apikey: k.serviceKey, authorization: `Bearer ${k.serviceKey}`, "content-type": "application/json" };
+  const list = (await (await fetch(`${k.url}/auth/v1/admin/users?per_page=200`, { headers: h })).json()) as { users: { id: string; email: string }[] };
+  const u = list.users.find((x) => x.email.toLowerCase() === email.toLowerCase());
+  if (!u) throw new Error(`no auth user ${email}`);
+  const r = await fetch(`${k.url}/auth/v1/admin/users/${u.id}`, { method: "PUT", headers: h, body: JSON.stringify({ password }) });
+  if (!r.ok) throw new Error(`setPassword ${email}: ${r.status}`);
+}
