@@ -55,7 +55,7 @@ function SourcingStory() {
             </div>
             <div className="absolute -bottom-6 -right-4 hidden w-56 rotate-2 rounded-2xl border border-[var(--border-strong)] bg-surface p-4 shadow-xl md:block">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-accent-deep">
-                This morning's load
+                This morning&apos;s load
               </p>
               <p className="font-display mt-1.5 text-lg font-semibold leading-tight text-brand-deep">
                 42 cases of vine tomatoes
@@ -447,7 +447,7 @@ function Categories({ categories }: { categories: PublicCategory[] }) {
           </div>
           <p className="md:col-span-5 text-base leading-relaxed text-muted">
             Approved customers see their assigned catalog with negotiated
-            pricing once they sign in. Below is what's available across our
+            pricing once they sign in. Below is what&apos;s available across our
             full inventory.
           </p>
         </div>
@@ -595,7 +595,7 @@ function Testimonials() {
             Operators who <em className="italic text-accent">stayed</em>.
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-white/70">
-            We measure ourselves on how long customers stick with us. Here's
+            We measure ourselves on how long customers stick with us. Here&apos;s
             what a few of them have to say.
           </p>
         </div>
@@ -615,7 +615,7 @@ function Testimonials() {
                 <path d="M9 6c-3 0-5 2.5-5 6v6h6v-6H7c0-2.5 1-4 3-4V6zm9 0c-3 0-5 2.5-5 6v6h6v-6h-3c0-2.5 1-4 3-4V6z" />
               </svg>
               <blockquote className="font-display mt-5 flex-1 text-lg leading-relaxed text-white/90">
-                "{q.quote}"
+                &ldquo;{q.quote}&rdquo;
               </blockquote>
               <figcaption className="mt-7 flex items-center gap-3 border-t border-white/10 pt-5">
                 <span
@@ -654,14 +654,14 @@ function Comparison() {
       <div className="grid gap-10 md:grid-cols-12 md:items-end">
         <div className="md:col-span-7">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
-            Why we're different
+            Why we&apos;re different
           </p>
           <h2 className="font-display mt-4 text-4xl font-semibold leading-[1.05] tracking-tight text-brand-deep sm:text-5xl">
             Olleik vs. <em className="italic text-accent">traditional</em> distributors.
           </h2>
         </div>
         <p className="md:col-span-5 text-base leading-relaxed text-muted">
-          The big-box distributors weren't built for independent kitchens.
+          The big-box distributors weren&apos;t built for independent kitchens.
           We were.
         </p>
       </div>
