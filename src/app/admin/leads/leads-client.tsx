@@ -5,7 +5,11 @@ import { formatDate } from "@/lib/admin/store";
 import type { Lead, LeadStatus } from "@/lib/admin/types";
 import { updateLeadStatus, deleteLead } from "./actions";
 
+// Statuses the admin can set by hand. "converted" is set by the system when a
+// lead becomes a customer and is shown read-only (tab + badge), never offered
+// in the dropdown as a choice.
 const STATUSES: LeadStatus[] = ["new", "contacted", "approved", "rejected"];
+const ALL_STATUSES: LeadStatus[] = [...STATUSES, "converted"];
 
 export function LeadsClient({
   initialLeads,
@@ -28,7 +32,7 @@ export function LeadsClient({
 
   const counts: Record<LeadStatus | "all", number> = useMemo(() => {
     const m: Record<string, number> = { all: leads.length };
-    for (const s of STATUSES) m[s] = leads.filter((l) => l.status === s).length;
+    for (const s of ALL_STATUSES) m[s] = leads.filter((l) => l.status === s).length;
     return m as Record<LeadStatus | "all", number>;
   }, [leads]);
 
@@ -53,7 +57,7 @@ export function LeadsClient({
 
       {/* Filter tabs */}
       <div className="flex flex-wrap gap-1.5 rounded-full border border-[var(--border)] bg-surface p-1.5">
-        {(["all", ...STATUSES] as const).map((s) => (
+        {(["all", ...ALL_STATUSES] as const).map((s) => (
           <button
             key={s}
             type="button"
@@ -108,20 +112,31 @@ export function LeadsClient({
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-2">
-                  <select
-                    value={l.status}
-                    disabled={pending}
-                    onChange={(e) =>
-                      onStatusChange(l.id, e.target.value as LeadStatus)
-                    }
-                    className="rounded-full border border-[var(--border)] bg-background px-3 py-1.5 text-xs font-medium disabled:opacity-50"
-                  >
-                    {STATUSES.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
-                    ))}
-                  </select>
+                  {l.status === "converted" ? (
+                    // Converted = already a customer. Locked so a stray click
+                    // can't knock it back to "new" and hide the conversion.
+                    <span
+                      title="This application is already a customer account. Manage it from Customers."
+                      className="rounded-full border border-[var(--border)] bg-brand-mist/60 px-3 py-1.5 text-xs font-medium text-brand-deep"
+                    >
+                      converted · customer created
+                    </span>
+                  ) : (
+                    <select
+                      value={l.status}
+                      disabled={pending}
+                      onChange={(e) =>
+                        onStatusChange(l.id, e.target.value as LeadStatus)
+                      }
+                      className="rounded-full border border-[var(--border)] bg-background px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+                    >
+                      {STATUSES.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                   <button
                     type="button"
                     disabled={pending}
@@ -148,7 +163,9 @@ function StatusBadge({ status }: { status: LeadStatus }) {
         ? "bg-brand-mist text-brand-deep"
         : status === "approved"
           ? "bg-brand text-white"
-          : "bg-zinc-200 text-zinc-600";
+          : status === "converted"
+            ? "bg-brand-deep text-white"
+            : "bg-zinc-200 text-zinc-600";
   return (
     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${cls}`}>
       {status}

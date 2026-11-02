@@ -480,6 +480,16 @@ export function CustomerDetailClient({
         </div>
       </div>
 
+      {/* Account not active: the portal gate refuses this customer even with a
+          valid password, so say it loudly next to the invite controls. */}
+      {!isArchived && customer.status !== "active" && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <span className="font-semibold">Status is {customer.status}:</span> this customer cannot
+          enter the portal even after setting a password. Set Status to <span className="font-semibold">active</span>{" "}
+          in <span className="font-semibold">Edit account</span> to let them in.
+        </div>
+      )}
+
       {/* Portal invite */}
       {!isArchived && (
         <section className="rounded-2xl border border-[var(--border)] bg-surface p-5">
@@ -1013,9 +1023,11 @@ function MarginCard({
 
 function ActivationBadge({ activation }: { activation: Activation }) {
   const map = {
+    // Portal sign-in state, NOT the account status. "Signed in" (not "Active")
+    // so it can't be mistaken for status=active.
     none: { label: "Not invited", cls: "bg-zinc-100 text-zinc-500" },
     invited: { label: "Invited", cls: "bg-accent-soft text-accent-deep" },
-    active: { label: "Active", cls: "bg-brand text-white" },
+    active: { label: "Signed in", cls: "bg-brand text-white" },
   } as const;
   const { label, cls } = map[activation];
   return (
