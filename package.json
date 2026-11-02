@@ -19,7 +19,8 @@
     "test:offers": "node --experimental-strip-types scripts/test-offers.mjs",
     "test:bulk-offers": "node --experimental-strip-types scripts/test-bulk-offers.mjs",
     "test:analytics": "node --experimental-strip-types scripts/test-analytics.mjs",
-    "test:reports": "node --experimental-strip-types scripts/test-reports.mjs"
+    "test:reports": "node --experimental-strip-types scripts/test-reports.mjs",
+    "test:auth-callback": "node --experimental-strip-types scripts/test-auth-callback.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
