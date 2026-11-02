@@ -328,6 +328,7 @@ export function VisibilityCard({
           <input
             value={hideSearch}
             onChange={(e) => setHideSearch(e.target.value)}
+            aria-label="Search a product to hide"
             placeholder="Search a product to hide…"
             className="w-full rounded-full border border-[var(--border-strong)] bg-surface py-2 pl-9 pr-3 text-sm outline-none focus:border-brand"
           />

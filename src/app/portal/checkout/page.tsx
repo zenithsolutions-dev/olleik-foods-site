@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { formatMoney } from "@/lib/portal/format";
 import type { CartPricing } from "@/lib/orders/submit";
+import { ProductThumb } from "@/components/product-thumb";
 import { useCart } from "../cart-context";
 import { priceCart, submitOrder } from "../orders-actions";
 
@@ -111,21 +112,23 @@ export default function CheckoutPage() {
       ) : (
         <>
           <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-surface">
-            {pricing.lines.map((l) => (
+            {pricing.lines.map((l, idx) => (
               <div
                 key={l.productId}
-                className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-5 py-3 last:border-b-0"
+                data-testid="checkout-line"
+                className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3 last:border-b-0 sm:px-5"
               >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-foreground">
-                    {l.name} <span className="text-muted">× {l.qty}</span>
+                <ProductThumb src={l.imageUrl} name={l.name} size="md" eager={idx < 4} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium leading-snug text-foreground">
+                    {l.name} <span className="whitespace-nowrap text-muted">× {l.qty}</span>
                   </p>
                   <p className="text-xs text-muted">
                     {formatMoney(l.unitPriceCents)} each
                     {l.appliedOfferTitle ? ` · ${l.appliedOfferTitle}` : ""}
                   </p>
                 </div>
-                <p className="font-mono text-sm font-semibold text-brand-deep">
+                <p className="shrink-0 font-mono text-sm font-semibold text-brand-deep">
                   {formatMoney(l.lineTotalCents)}
                 </p>
               </div>

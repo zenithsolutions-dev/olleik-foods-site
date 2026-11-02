@@ -1,11 +1,12 @@
 import type { InvoiceModel } from "@/lib/documents/invoice-model";
 import { DocumentShell, DocTable, docCell, docCellRight } from "./document-shell";
+import { formatMoney } from "@/lib/money";
 
 // CP-6: the ONE invoice renderer — the admin order page and the customer
 // portal render the SAME component from the SAME cost-free model. Pure
 // presentational; figures arrive frozen from the order snapshot.
 
-const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+const money = formatMoney;
 
 export function InvoiceDocument({ model }: { model: InvoiceModel }) {
   return (

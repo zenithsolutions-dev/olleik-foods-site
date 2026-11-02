@@ -69,6 +69,7 @@ export default async function CategoryPage({
                   alt={chrome.imageAlt ?? data.name}
                   fill
                   sizes="(min-width: 1024px) 50vw, 100vw"
+                  loading="eager"
                   className="object-cover"
                 />
               ) : (

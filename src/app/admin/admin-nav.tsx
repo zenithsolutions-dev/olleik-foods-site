@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 import { useOrderAlerts } from "./order-alerts";
 
 const ITEMS: Array<{ href: string; label: string; icon: string }> = [
@@ -59,5 +61,50 @@ export function AdminNav({ newOrderCount = 0 }: { newOrderCount?: number }) {
         );
       })}
     </nav>
+  );
+}
+
+// Phone/tablet navigation (< md): the sidebar is hidden there, so without this the admin could only reach other
+// pages through links on the dashboard. A menu button in the top bar opens the same links. The panel is tied to the
+// path it was opened on, so following any link closes it without an effect.
+export function AdminMobileNav({
+  newOrderCount = 0,
+  children,
+}: {
+  newOrderCount?: number;
+  children?: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const liveCount = useOrderAlerts()?.newCount;
+  const count = liveCount ?? newOrderCount;
+  const [openAt, setOpenAt] = useState<string | null>(null);
+  const open = openAt === pathname;
+  return (
+    <div className="print:hidden">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="admin-mobile-menu"
+        onClick={() => setOpenAt(open ? null : pathname)}
+        className="relative inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] px-3.5 py-1.5 text-sm font-medium text-brand-deep"
+      >
+        {open ? <X size={15} aria-hidden /> : <Menu size={15} aria-hidden />}
+        Menu
+        {count > 0 && !open && (
+          <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+            {count} new
+          </span>
+        )}
+      </button>
+      {open && (
+        <div
+          id="admin-mobile-menu"
+          className="absolute inset-x-0 top-full z-40 max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-[var(--border)] bg-surface shadow-lg"
+        >
+          <AdminNav newOrderCount={newOrderCount} />
+          {children && <div className="border-t border-[var(--border)] px-6 py-4 text-sm">{children}</div>}
+        </div>
+      )}
+    </div>
   );
 }

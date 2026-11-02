@@ -45,6 +45,7 @@ export type PricedCartLine = {
   sku: string;
   unit: ProductUnit;
   unitSize: string;
+  imageUrl: string | null;
   qty: number;
   assigned: boolean;
   // CP-3b (D-O6): the boolean availability signal — never a quantity. An
@@ -95,6 +96,7 @@ type ProductRow = {
   sku: string;
   unit: ProductUnit;
   unit_size: string;
+  image_url: string | null;
   list_price_cents: number;
 };
 
@@ -135,7 +137,7 @@ export async function resolveCartPricing(lines: CartLineInput[]): Promise<CartPr
       // RLS: only products visible under the caller's CP-2 mode come back.
       supabase
         .from("products")
-        .select("id, name, sku, unit, unit_size, list_price_cents")
+        .select("id, name, sku, unit, unit_size, image_url, list_price_cents")
         .in("id", ids)
         .eq("is_active", true),
       supabase.from("customer_products").select("product_id, price_cents"),
@@ -211,6 +213,7 @@ export async function resolveCartPricing(lines: CartLineInput[]): Promise<CartPr
       sku: p.sku,
       unit: p.unit,
       unitSize: p.unit_size,
+      imageUrl: p.image_url,
       qty: l.qty,
       assigned,
       available: !unavailable.has(p.id),

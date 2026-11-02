@@ -39,7 +39,8 @@ export function PortalNav() {
             </li>
           );
         })}
-        <li className="ml-auto shrink-0">
+        {/* On phones the cart lives in the header (PortalCartLink): at the end of this scrolling row it was off-screen. */}
+        <li className="ml-auto hidden shrink-0 sm:block">
           <Link
             href="/portal/cart"
             className={`inline-flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-3 text-sm font-semibold transition sm:px-4 ${
@@ -59,5 +60,22 @@ export function PortalNav() {
         </li>
       </ul>
     </nav>
+  );
+}
+
+// Header cart button for phones (< sm). Same destination and live count as the Cart tab.
+export function PortalCartLink() {
+  const { count, ready } = useCart();
+  return (
+    <Link
+      href="/portal/cart"
+      className="relative inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] px-3 py-1.5 font-semibold text-brand-deep sm:hidden"
+    >
+      <ShoppingCart size={16} aria-hidden />
+      <span className="sr-only">Cart</span>
+      {ready && count > 0 && (
+        <span className="rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">{count}</span>
+      )}
+    </Link>
   );
 }

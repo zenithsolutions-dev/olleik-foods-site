@@ -62,6 +62,7 @@ export default async function PortalCatalogPage({
         <input
           type="search"
           name="q"
+          aria-label="Search products by name or SKU"
           defaultValue={q}
           placeholder="Search by name or SKU…"
           className="w-full max-w-xs rounded-full border border-[var(--border-strong)] bg-surface px-4 py-2 text-sm outline-none focus:border-brand"
@@ -69,6 +70,7 @@ export default async function PortalCatalogPage({
         {categoryOptions.length > 0 && (
           <select
             name="cat"
+            aria-label="Filter by category"
             defaultValue={cat}
             className="rounded-full border border-[var(--border-strong)] bg-surface px-3 py-2 text-sm outline-none focus:border-brand"
           >
@@ -102,7 +104,7 @@ export default async function PortalCatalogPage({
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((p) => (
+            {items.map((p, idx) => (
               <div
                 key={p.productId}
                 className="overflow-hidden rounded-2xl border border-[var(--border)] bg-surface"
@@ -114,6 +116,7 @@ export default async function PortalCatalogPage({
                       alt={p.name}
                       fill
                       sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+                      loading={idx < 3 ? "eager" : "lazy"}
                       className="object-cover"
                     />
                   ) : (

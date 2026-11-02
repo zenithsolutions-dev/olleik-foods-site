@@ -1,5 +1,6 @@
 import type { ReportModel, ReportSection } from "@/lib/documents/report-model";
 import { DocumentShell, DocTable, docCell, docCellRight } from "./document-shell";
+import { formatMoney } from "@/lib/money";
 
 // CP-8c: the ONE report renderer, composing CP-6's DocumentShell/DocTable —
 // no print CSS touched. The INTERNAL banner + watermark are driven by
@@ -10,7 +11,7 @@ import { DocumentShell, DocTable, docCell, docCellRight } from "./document-shell
 // Every section heading carries the period label (CP-5 rule). Black-and-white
 // legible throughout: severity and status are words, never colour alone.
 
-const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+const money = formatMoney;
 const day = (iso: string) =>
   new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: "America/Toronto" });
 

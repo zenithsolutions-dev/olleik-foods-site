@@ -45,7 +45,7 @@ export default async function CatalogPage() {
       <section className="mx-auto max-w-7xl px-6 pb-20">
         {categories.length > 0 && (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((c) => {
+            {categories.map((c, idx) => {
               const chrome = getCategoryChrome(c.slug);
               const blurb = chrome.blurb ?? c.description ?? undefined;
               return (
@@ -60,6 +60,7 @@ export default async function CatalogPage() {
                       alt={chrome.imageAlt ?? c.name}
                       fill
                       sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw"
+                      loading={idx < 3 ? "eager" : "lazy"}
                       className="object-cover transition duration-500 group-hover:scale-105"
                     />
                   ) : (

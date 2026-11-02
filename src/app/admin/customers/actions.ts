@@ -505,6 +505,10 @@ async function convertOne(
     email: string;
     phone: string;
     address: string;
+    // Only the single-convert review form supplies these; the bulk convert has no form and keeps the defaults.
+    paymentTerms?: PaymentTerms;
+    status?: CustomerStatus;
+    notes?: string;
   },
 ): Promise<ConvertOutcome> {
   // Already converted? skip (idempotent).
@@ -533,8 +537,9 @@ async function convertOne(
       email: payload.email.trim(),
       phone: payload.phone.trim(),
       address: payload.address.trim(),
-      status: "active",
-      payment_terms: "cod",
+      status: payload.status ?? "active",
+      payment_terms: payload.paymentTerms ?? "cod",
+      notes: payload.notes?.trim() || null,
       source_lead_id: leadId,
     })
     .select("id")
@@ -580,6 +585,10 @@ export async function convertLeadWithDetails(
     email: input.email,
     phone: input.phone,
     address: input.address,
+    // The review form's payment terms, status and notes used to be silently dropped (every converted lead became COD).
+    paymentTerms: input.paymentTerms,
+    status: input.status,
+    notes: input.notes,
   });
 }
 

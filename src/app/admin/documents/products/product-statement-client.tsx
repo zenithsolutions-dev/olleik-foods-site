@@ -7,6 +7,7 @@ import {
   type StatementProductInput,
 } from "@/lib/documents/statement-models";
 import { DocumentShell, DocTable, docCell, docCellRight } from "@/components/documents/document-shell";
+import { formatMoney } from "@/lib/money";
 
 // CP-6 full product statement. The INTERNAL cost toggle is deliberately
 // session-only React state: default OFF on EVERY page load, never persisted,
@@ -15,7 +16,7 @@ import { DocumentShell, DocTable, docCell, docCellRight } from "@/components/doc
 // prominent INTERNAL banner (top of page, bold black band — unmistakable in
 // black and white).
 
-const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+const money = formatMoney;
 
 export function ProductStatementClient({
   business,

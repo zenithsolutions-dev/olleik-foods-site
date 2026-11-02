@@ -127,8 +127,8 @@ export function CategoriesClient({
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         {/* List */}
-        <div className="rounded-2xl border border-[var(--border)] bg-surface overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="min-w-0 overflow-x-auto rounded-2xl border border-[var(--border)] bg-surface">
+          <table className="w-full min-w-[520px] text-sm">
             <thead>
               <tr className="border-b border-[var(--border)] bg-brand-mist/40 text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
                 <th className="px-4 py-3">Name</th>
@@ -160,6 +160,7 @@ export function CategoriesClient({
                         {!hasChildren(c.id) && (
                           <select
                             value={editParent}
+                            aria-label="Parent category"
                             onChange={(e) => setEditParent(e.target.value)}
                             className="w-full rounded-md border border-[var(--border)] bg-background px-2 py-1 text-xs"
                           >
@@ -242,6 +243,7 @@ export function CategoriesClient({
               <input
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
+                aria-label="Category name"
                 placeholder="Bread & Bakery"
                 className="mt-1 w-full rounded-lg border border-[var(--border)] bg-background px-3 py-2 text-sm"
               />
@@ -251,6 +253,7 @@ export function CategoriesClient({
               <input
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
+                aria-label="Category description (optional)"
                 placeholder="Buns, baguettes, focaccia…"
                 className="mt-1 w-full rounded-lg border border-[var(--border)] bg-background px-3 py-2 text-sm"
               />
@@ -259,6 +262,7 @@ export function CategoriesClient({
               <label className="text-[11px] font-medium uppercase tracking-wider text-muted">Parent category (optional)</label>
               <select
                 value={newParent}
+                aria-label="Parent category (optional)"
                 onChange={(e) => setNewParent(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-[var(--border)] bg-background px-3 py-2 text-sm"
               >

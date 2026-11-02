@@ -1,4 +1,4 @@
-import { formatMoney } from "./store";
+import { formatMoney } from "../portal/format.ts";
 import type { OfferDiscountKind } from "./types";
 
 // Human label for an offer/template discount. Value convention (per migration

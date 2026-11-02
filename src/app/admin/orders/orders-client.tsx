@@ -1,9 +1,11 @@
 "use client";
 
+import { formatBusinessTime } from "@/lib/dates";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Inbox } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
+import { ProductThumbStrip } from "@/components/product-thumb";
 import type { AdminOrderSummary } from "@/lib/admin/orders-data";
 import type { OrderStatus } from "@/lib/portal/portal-data";
 
@@ -102,6 +104,8 @@ export function OrdersClient({
                 o.status === "new" ? "bg-accent/5" : ""
               }`}
             >
+              <div className="flex min-w-0 items-center gap-3">
+                <ProductThumbStrip items={o.thumbs} total={o.itemCount} />
               <div className="min-w-0">
                 <p
                   className={`truncate text-sm text-foreground ${
@@ -112,7 +116,7 @@ export function OrdersClient({
                   <span className="ml-2 font-mono text-xs text-muted">#{o.id.slice(0, 8)}</span>
                 </p>
                 <p className="text-xs text-muted">
-                  {new Date(o.createdAt).toLocaleString("en-CA", {
+                  {formatBusinessTime(o.createdAt, {
                     month: "short",
                     day: "numeric",
                     hour: "numeric",
@@ -120,6 +124,7 @@ export function OrdersClient({
                   })}{" "}
                   · {o.itemCount} {o.itemCount === 1 ? "item" : "items"} · {o.fulfillment}
                 </p>
+              </div>
               </div>
               <div className="flex items-center gap-3">
                 <span

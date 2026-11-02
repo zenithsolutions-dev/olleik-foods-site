@@ -54,6 +54,7 @@ type CartContextValue = {
   qtyOf: (productId: string) => number;
   add: (productId: string, qty?: number) => void;
   setQty: (productId: string, qty: number) => void;
+  bump: (productId: string, delta: number) => void; // relative change; reaching 0 removes the line
   remove: (productId: string) => void;
   clearAfterSubmit: () => void; // empty + rotate the idempotency token
   ready: boolean; // false during SSR/first paint (before localStorage loads)
@@ -119,6 +120,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
+  // Relative change applied to the CURRENT cart state, so two quick taps on + or - are two changes. (Computing
+  // "current qty ± 1" from a value captured at render time lost taps while the server re-price was in flight.)
+  const bump = useCallback((productId: string, delta: number) => {
+    setState((s) => {
+      const existing = s.lines.find((l) => l.productId === productId);
+      if (!existing) return s;
+      const next = existing.qty + delta;
+      if (next < 1) return { ...s, lines: s.lines.filter((l) => l.productId !== productId) };
+      return {
+        ...s,
+        lines: s.lines.map((l) => (l.productId === productId ? { ...l, qty: Math.min(MAX_QTY, next) } : l)),
+      };
+    });
+  }, []);
+
   const remove = useCallback((productId: string) => {
     setState((s) => ({ ...s, lines: s.lines.filter((l) => l.productId !== productId) }));
   }, []);
@@ -135,11 +151,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       qtyOf: (id) => state.lines.find((l) => l.productId === id)?.qty ?? 0,
       add,
       setQty,
+      bump,
       remove,
       clearAfterSubmit,
       ready,
     }),
-    [state, add, setQty, remove, clearAfterSubmit, ready],
+    [state, add, setQty, bump, remove, clearAfterSubmit, ready],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

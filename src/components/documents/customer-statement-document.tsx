@@ -10,6 +10,7 @@ import type {
   StatementOrder,
 } from "@/lib/documents/customer-statement-model";
 import { DocumentShell, DocTable, docCell, docCellRight } from "./document-shell";
+import { formatMoney } from "@/lib/money";
 
 // CP-7: the ONE statement renderer. The admin's customer copy, the admin's
 // internal copy and the customer's own portal statement all render through
@@ -25,7 +26,7 @@ import { DocumentShell, DocTable, docCell, docCellRight } from "./document-shell
 // customer copy. Everything is legible in black and white — statuses, markers
 // and warnings are WORDS, never colour alone.
 
-const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+const money = formatMoney;
 const day = (iso: string) =>
   new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: "America/Toronto" });
 

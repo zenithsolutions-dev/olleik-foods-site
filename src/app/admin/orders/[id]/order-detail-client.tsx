@@ -1,5 +1,6 @@
 "use client";
 
+import { formatBusinessTime } from "@/lib/dates";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,6 +8,7 @@ import { ArrowLeft, Check, PackageCheck, Truck, X } from "lucide-react";
 import { formatMoney } from "@/lib/admin/store";
 import { useRefreshLockWhile } from "@/lib/poll/use-live-refresh";
 import type { AdminOrderDetail } from "@/lib/admin/orders-data";
+import { ProductThumb } from "@/components/product-thumb";
 import {
   cancelOrder,
   completeOrder,
@@ -121,7 +123,7 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
           </h1>
           <p className="text-xs text-muted">
             Placed{" "}
-            {new Date(order.createdAt).toLocaleString("en-CA", {
+            {formatBusinessTime(order.createdAt, {
               month: "short",
               day: "numeric",
               hour: "numeric",
@@ -338,6 +340,9 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
               return (
                 <tr key={l.productId} className="border-b border-[var(--border)] last:border-b-0">
                   <td className="px-5 py-3">
+                    <div className="flex items-start gap-3">
+                      <ProductThumb src={l.imageUrl} name={l.name} size="md" />
+                      <div className="min-w-0">
                     <p className="font-medium text-foreground">
                       {l.name}
                       {!l.productIsActive && (
@@ -375,6 +380,8 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
                           </span>
                         )}
                     </p>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-3 py-3 text-right font-mono">{l.qty}</td>
                   <td className="px-3 py-3 text-right font-mono">

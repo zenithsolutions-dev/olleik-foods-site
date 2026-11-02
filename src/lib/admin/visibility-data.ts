@@ -1,4 +1,5 @@
 import "server-only";
+import { isUuid } from "@/lib/uuid";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getAdminClient } from "@/lib/supabase/admin";
 import type { VisibilityMode } from "./types";
@@ -33,6 +34,7 @@ export async function fetchCustomerVisibility(
 ): Promise<CustomerVisibility> {
   const admin = getAdminClient();
   if (!admin) return { ...DEFAULT_VISIBILITY, migrationApplied: true }; // mock mode
+  if (!isUuid(customerId)) return { ...DEFAULT_VISIBILITY, migrationApplied: true };
 
   const { data: row, error } = await admin
     .from("customers")

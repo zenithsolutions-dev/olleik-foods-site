@@ -14,7 +14,7 @@ export function AddToCartButton({
   productId: string;
   disabled?: boolean; // CP-3b: unavailable product (is_available=false)
 }) {
-  const { qtyOf, add, setQty, ready } = useCart();
+  const { qtyOf, add, setQty, bump, ready } = useCart();
   const qty = qtyOf(productId);
 
   if (!ready) {
@@ -61,7 +61,7 @@ export function AddToCartButton({
       <button
         type="button"
         aria-label="Decrease quantity"
-        onClick={() => setQty(productId, qty - 1)}
+        onClick={() => bump(productId, -1)}
         className="grid h-7 w-7 place-items-center rounded-full text-brand-deep hover:bg-brand/15"
       >
         <Minus size={14} />
@@ -70,7 +70,7 @@ export function AddToCartButton({
       <button
         type="button"
         aria-label="Increase quantity"
-        onClick={() => setQty(productId, qty + 1)}
+        onClick={() => bump(productId, 1)}
         className="grid h-7 w-7 place-items-center rounded-full text-brand-deep hover:bg-brand/15"
       >
         <Plus size={14} />

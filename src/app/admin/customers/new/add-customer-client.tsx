@@ -164,8 +164,8 @@ export function AddCustomerClient({ leads, live }: { leads: Lead[]; live: boolea
               page, or add a customer manually.
             </p>
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-surface">
-              <table className="w-full text-sm">
+            <div className="overflow-x-auto rounded-2xl border border-[var(--border)] bg-surface">
+              <table className="w-full min-w-[560px] text-sm">
                 <thead>
                   <tr className="border-b border-[var(--border)] bg-brand-mist/40 text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
                     <th className="px-4 py-3 w-8" />
@@ -181,6 +181,7 @@ export function AddCustomerClient({ leads, live }: { leads: Lead[]; live: boolea
                       <td className="px-4 py-3">
                         <input
                           type="checkbox"
+                          aria-label={`Select ${l.businessName}`}
                           checked={selected.has(l.id)}
                           onChange={() => toggle(l.id)}
                           className="accent-accent"

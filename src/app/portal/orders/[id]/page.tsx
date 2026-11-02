@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { formatBusinessTime } from "@/lib/dates";
+import { ProductThumb } from "@/components/product-thumb";
 import { requireCustomer } from "@/lib/portal/require-customer";
 import { fetchMyOrder } from "@/lib/portal/portal-data";
 import { formatMoney } from "@/lib/portal/format";
@@ -61,7 +63,7 @@ export default async function PortalOrderDetailPage({
             </Link>
           </h1>
           <p className="text-xs text-muted">
-            {new Date(order.createdAt).toLocaleString("en-CA", {
+            {formatBusinessTime(order.createdAt, {
               year: "numeric",
               month: "short",
               day: "numeric",
@@ -78,18 +80,20 @@ export default async function PortalOrderDetailPage({
         {order.lines.map((l) => (
           <div
             key={l.productId}
-            className="flex items-center justify-between gap-3 border-b border-[var(--border)] px-5 py-3 last:border-b-0"
+            data-testid="order-line"
+            className="flex items-center gap-3 border-b border-[var(--border)] px-4 py-3 last:border-b-0 sm:px-5"
           >
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-foreground">
-                {l.name} <span className="text-muted">× {l.qty}</span>
+            <ProductThumb src={l.imageUrl} name={l.name} size="md" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium leading-snug text-foreground">
+                {l.name} <span className="whitespace-nowrap text-muted">× {l.qty}</span>
               </p>
               <p className="text-xs text-muted">
                 {l.sku} · {formatMoney(l.unitPriceCents)} each
                 {l.appliedOfferTitle ? ` · ${l.appliedOfferTitle}` : ""}
               </p>
             </div>
-            <p className="font-mono text-sm font-semibold text-brand-deep">
+            <p className="shrink-0 font-mono text-sm font-semibold text-brand-deep">
               {formatMoney(l.lineTotalCents)}
             </p>
           </div>

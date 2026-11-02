@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireCustomer } from "@/lib/portal/require-customer";
-import { PortalNav } from "./portal-nav";
+import { PortalNav, PortalCartLink } from "./portal-nav";
 import { CartProvider } from "./cart-context";
 import { signOutPortal } from "./actions";
 
@@ -37,6 +37,7 @@ export default async function PortalLayout({
             </div>
           </Link>
           <div className="flex items-center gap-4 text-sm">
+            <PortalCartLink />
             <span className="hidden text-muted sm:inline" title={customer.email}>
               {customer.businessName}
             </span>
