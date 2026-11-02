@@ -8,10 +8,10 @@
       "port": 3000
     },
     {
-      "name": "olleik-video-demo",
+      "name": "olleik-qa-admin",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["videos/devstack/dev.mjs"],
-      "port": 3100
+      "runtimeArgs": ["scripts/qa-dev-server.mjs"],
+      "port": 3210
     }
   ]
 }
