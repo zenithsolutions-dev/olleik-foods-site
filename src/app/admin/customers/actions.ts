@@ -177,6 +177,15 @@ export async function createCustomer(input: CustomerInput): Promise<ActionResult
 
   const { error } = await admin.from("customers").insert(toCustomerRow(input));
   if (error) {
+    // 23505 = unique violation; the only unique key on customers is the active
+    // email, so say so instead of a generic failure.
+    if (error.code === "23505") {
+      return {
+        ok: false,
+        message:
+          "A customer with this email already exists. Open them from the Customers list instead of adding a second account.",
+      };
+    }
     console.error("[admin] create customer failed:", error.message);
     return { ok: false, message: "Could not create the customer. Please try again." };
   }
