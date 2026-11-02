@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getAdminClient } from "@/lib/supabase/admin";
+import { duplicateMessageFor } from "@/lib/duplicates/load-accounts";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { guardAction } from "@/lib/admin/action-guard";
 import { indexRules, resolveWithIndex, type RuleIndex } from "@/lib/admin/pricing-engine";
@@ -174,6 +175,13 @@ export async function createCustomer(input: CustomerInput): Promise<ActionResult
 
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
+
+  const duplicate = await duplicateMessageFor(
+    admin,
+    { email: input.email, phone: input.phone, businessName: input.businessName },
+    { includeOpenLeads: false },
+  );
+  if (duplicate) return { ok: false, message: duplicate };
 
   const { error } = await admin.from("customers").insert(toCustomerRow(input));
   if (error) {
@@ -532,6 +540,15 @@ async function convertOne(
   if (existingId) {
     return linkLeadToExistingCustomer(leadId, existingId);
   }
+
+  // Same phone or business name as an existing account under a different
+  // email: stop, so the admin can decide instead of creating a second account.
+  const duplicate = await duplicateMessageFor(
+    admin,
+    { email: payload.email, phone: payload.phone, businessName: payload.businessName },
+    { includeOpenLeads: false },
+  );
+  if (duplicate) return { leadId, result: "skipped", message: duplicate };
 
   // Create the customer (active), with provenance, then stamp the lead.
   const { data: created, error: insErr } = await admin
