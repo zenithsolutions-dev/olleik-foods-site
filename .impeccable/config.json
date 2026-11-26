@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "arial",
+        "createdAt": "2026-11-26T21:47:12.129Z",
+        "reason": "agent decided: Arial is only used in transactional email HTML (src/lib/email/templates.ts, settings/actions.ts test email); email clients do not load web fonts reliably, so a system font is the correct choice there"
+      }
+    ]
+  }
+}

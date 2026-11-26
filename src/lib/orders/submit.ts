@@ -1,4 +1,6 @@
 import "server-only";
+import { after } from "next/server";
+import { notifyNewOrder } from "@/lib/email/notify";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getAdminClient } from "@/lib/supabase/admin";
 import {
@@ -362,5 +364,7 @@ export async function submitOrderForCustomer(
     return { ok: false, code: "error", message: "Could not submit your order. Please try again." };
   }
 
+  // After the response: a slow or failing email must never delay or fail the customer's order.
+  after(() => notifyNewOrder(orderId as string));
   return { ok: true, orderId: orderId as string };
 }

@@ -23,6 +23,11 @@ Object.assign(env, {
   ADMIN_EMAILS: `${DEMO_ADMIN},staff@olleik-demo.test`,
   OWNER_EMAILS: DEMO_ADMIN, // staff@ is an admin who must not see cost, profit or margins
   NEXT_TELEMETRY_DISABLED: "1",
+  // Email goes to the stack's local test inbox (GET http://127.0.0.1:54321/email-sandbox/emails), never out.
+  EMAIL_API_URL: `${keys.url}/email-sandbox`,
+  EMAIL_API_KEY: "local-sandbox",
+  NEXT_PUBLIC_SITE_URL: "http://localhost:3100",
+  CRON_SECRET: "local-cron-secret",
   // Fictional demo business details for the documents (brief V3.2 §10.1, Pending Review). Videos only: the
   // real registered details must still be entered before handover.
   BUSINESS_LEGAL_NAME: "Olleik Foods Ltd.",
