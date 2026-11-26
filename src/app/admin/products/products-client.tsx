@@ -42,7 +42,9 @@ export function ProductsClient({
   stock,
   inventoryEnabled,
   initialLowStockOnly,
+  showCosts,
 }: {
+  showCosts: boolean; // false for non-owner admins: no cost/profit/margin UI
   products: Product[];
   categories: Category[];
   costs: Record<string, number>; // productId -> cost_cents (admin-only data)
@@ -137,7 +139,7 @@ export function ProductsClient({
       productId = result.id;
     }
     // Cost lives in the admin-only product_costs table (never on products).
-    if (productId && costCents !== (editing ? (costs[editing.id] ?? null) : null)) {
+    if (showCosts && productId && costCents !== (editing ? (costs[editing.id] ?? null) : null)) {
       const costResult = await setProductCost(productId, costCents);
       if (!costResult.ok) {
         setSaving(false);
@@ -239,7 +241,7 @@ export function ProductsClient({
       {/* Missing-cost banner: without a cost, margin rules can't price a product
           and its profit can't be calculated. Disappears once every active
           product has a cost. */}
-      {missingCostCount > 0 && (
+      {showCosts && missingCostCount > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-900">
           <span>
             <span className="font-semibold">
@@ -322,9 +324,9 @@ export function ProductsClient({
               <th className="px-4 py-3">Product</th>
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Unit</th>
-              <th className="px-4 py-3 text-right">Cost</th>
+              {showCosts && <th className="px-4 py-3 text-right">Cost</th>}
               <th className="px-4 py-3 text-right">List price</th>
-              <th className="px-4 py-3 text-right">Profit @ list</th>
+              {showCosts && <th className="px-4 py-3 text-right">Profit @ list</th>}
               <th className="px-4 py-3 text-right">Stock</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3" />
@@ -333,7 +335,7 @@ export function ProductsClient({
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={10} className="px-4 py-10 text-center text-muted">
+                <td colSpan={showCosts ? 10 : 8}className="px-4 py-10 text-center text-muted">
                   No products match.
                 </td>
               </tr>
@@ -355,10 +357,13 @@ export function ProductsClient({
                 <td className="px-4 py-3 text-muted">
                   {p.unitSize} <span className="text-muted-soft">/ {p.unit}</span>
                 </td>
+                {showCosts && (
                 <td className="px-4 py-3 text-right font-mono text-muted" title={cost == null ? "No cost set — edit the product to add one" : undefined}>
                   {cost != null ? formatMoney(cost) : "—"}
                 </td>
+                )}
                 <td className="px-4 py-3 text-right font-mono">{formatMoney(p.listPriceCents)}</td>
+                {showCosts && (
                 <td
                   className={`px-4 py-3 text-right font-mono ${
                     profitAtList == null
@@ -370,6 +375,7 @@ export function ProductsClient({
                 >
                   {profitAtList != null ? formatMoney(profitAtList) : "—"}
                 </td>
+                )}
                 {/* CP-3b: tracked stock (admin-only; customers only ever see
                     the is_available boolean). "—" = not tracked. CP-3c: stock
                     is SIGNED — negative renders as "Oversold by N" (units
@@ -437,6 +443,7 @@ export function ProductsClient({
       {(creating || editing) && (
         <ProductFormModal
           initial={editing}
+          showCosts={showCosts}
           initialCostCents={editing ? (costs[editing.id] ?? null) : null}
           initialStock={editing ? (stock[editing.id] ?? null) : null}
           inventoryEnabled={inventoryEnabled}
@@ -471,7 +478,9 @@ function ProductFormModal({
   onClose,
   onSave,
   onDeactivate,
+  showCosts,
 }: {
+  showCosts: boolean;
   initial: Product | null;
   initialCostCents: number | null;
   initialStock: ProductStock | null;
@@ -720,6 +729,7 @@ function ProductFormModal({
           </Field>
           {/* CP-1: cost & sale side by side, margin helper in between. All
               percentages are MARKUP ON COST (matches the pricing engine). */}
+          {showCosts && (
           <Field label="Purchase cost ($ — admin only)">
             <input
               type="number"
@@ -731,6 +741,7 @@ function ProductFormModal({
               className={inputCls}
             />
           </Field>
+          )}
           <Field label="Sale price ($ — shown to customers)">
             <input
               type="number"
@@ -742,6 +753,7 @@ function ProductFormModal({
               className={inputCls}
             />
           </Field>
+          {showCosts && (
           <div className="sm:col-span-2 rounded-lg border border-[var(--border)] bg-background px-3 py-2.5">
             {costCentsLive != null ? (
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -773,6 +785,7 @@ function ProductFormModal({
               </p>
             )}
           </div>
+          )}
           {/* CP-3e stock: TWO explicit operations. Receiving a shipment ADDS
               (settling any deficit); a physical recount REPLACES. The admin
               never has to guess which one they're doing — each shows a live

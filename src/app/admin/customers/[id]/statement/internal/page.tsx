@@ -7,6 +7,7 @@ import { CustomerStatementDocument } from "@/components/documents/customer-state
 import { PrintToolbar } from "@/components/documents/print-toolbar";
 import { DateRangeFilter } from "@/components/date-range-filter";
 import { rangeQueryString, resolveDateRange, type RangeSearchParams } from "@/lib/dates";
+import { requireOwner } from "@/lib/admin/require-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export default async function InternalCustomerStatementPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<RangeSearchParams>;
 }) {
+  await requireOwner(); // cost and profit per line
   const [{ id }, sp] = await Promise.all([params, searchParams]);
   const hasRangeInput = Boolean(sp.range || sp.from || sp.to);
   const range = resolveDateRange(hasRangeInput ? sp : { range: "this-month" });

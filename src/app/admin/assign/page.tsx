@@ -4,6 +4,7 @@ import { fetchAdminCategories } from "@/lib/admin/categories-data";
 import { fetchAdminCustomers } from "@/lib/admin/customers-data";
 import { fetchPricingRules, fetchProductCosts } from "@/lib/admin/pricing-data";
 import { getAdminClient } from "@/lib/supabase/admin";
+import { requireOwner } from "@/lib/admin/require-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ export const dynamic = "force-dynamic";
 // design (requirement: the admin always sees cost + profit).
 
 export default async function AssignPage() {
+  await requireOwner(); // this screen previews prices from cost and margin
   const [{ products }, { categories }, { customers }, { costs }, { rules }] = await Promise.all([
     fetchAdminProducts(),
     fetchAdminCategories(),

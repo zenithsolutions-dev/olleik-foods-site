@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { fetchAdminOrder } from "@/lib/admin/orders-data";
 import { OrderDetailClient } from "./order-detail-client";
+import { getAdminAccess } from "@/lib/admin/require-admin";
+import { orderWithoutCosts } from "@/lib/admin/cost-visibility";
 
 export const dynamic = "force-dynamic";
 // Confirmation triggers waterfall-priced assignments (D6-class work happens
@@ -13,6 +15,7 @@ export default async function AdminOrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const { isOwner } = await getAdminAccess();
   const order = await fetchAdminOrder(id);
 
   if (!order) {
@@ -28,5 +31,5 @@ export default async function AdminOrderDetailPage({
     );
   }
 
-  return <OrderDetailClient order={order} />;
+  return <OrderDetailClient order={isOwner ? order : orderWithoutCosts(order)} showCosts={isOwner} />;
 }

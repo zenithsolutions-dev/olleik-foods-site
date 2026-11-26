@@ -11,6 +11,8 @@ import {
 import { resolveDateRange, type RangeSearchParams } from "@/lib/dates";
 import { DateRangeFilter } from "@/components/date-range-filter";
 import { AnalyticsClient } from "./analytics-client";
+import { getAdminAccess } from "@/lib/admin/require-admin";
+import { salesWithoutCosts } from "@/lib/admin/cost-visibility";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +33,7 @@ export default async function AnalyticsPage({
   searchParams: Promise<RangeSearchParams & { quiet?: string }>;
 }) {
   const sp = await searchParams;
+  const { isOwner } = await getAdminAccess();
   const hasRangeInput = Boolean(sp.range || sp.from || sp.to);
   const range = resolveDateRange(hasRangeInput ? sp : { range: "this-month" });
   const quiet: InactiveThreshold = (INACTIVE_THRESHOLDS as readonly number[]).includes(
@@ -95,7 +98,8 @@ export default async function AnalyticsPage({
       periodNotice={range.notice}
       quiet={quiet}
       quietQuery={{ range: sp.range, from: sp.from, to: sp.to }}
-      productSales={productSales.rows}
+      productSales={isOwner ? productSales.rows : salesWithoutCosts(productSales.rows)}
+      showCosts={isOwner}
       analyticsSource={productSales.source}
       truncated={productSales.truncated || customerSales.truncated}
       customerSales={customerSales.rows.filter((r) => r.status === "active")}

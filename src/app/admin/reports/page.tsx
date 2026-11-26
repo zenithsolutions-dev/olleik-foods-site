@@ -16,6 +16,8 @@ import {
   type ReportSectionKey,
 } from "@/lib/documents/report-model";
 import { ReportsClient } from "./reports-client";
+import { getAdminAccess } from "@/lib/admin/require-admin";
+import { salesWithoutCosts } from "@/lib/admin/cost-visibility";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +37,7 @@ export default async function ReportsPage({
   searchParams: Promise<RangeSearchParams & { preset?: string; sections?: string }>;
 }) {
   const sp = await searchParams;
+  const { isOwner } = await getAdminAccess();
 
   // Preset resolution (URL-borne): the preset supplies range + tick defaults;
   // explicit ?sections= / ?range= override it (adjust-before-printing).
@@ -91,7 +94,7 @@ export default async function ReportsPage({
         totalCents: o.totalCents,
       })),
     ),
-    productSales: productSales.rows,
+    productSales: isOwner ? productSales.rows : salesWithoutCosts(productSales.rows),
     slowMovers: buildSlowMovers(
       products.map((p) => ({
         productId: p.id,
@@ -120,7 +123,8 @@ export default async function ReportsPage({
     <ReportsClient
       business={await getBusinessIdentity()}
       inputs={inputs}
-      initialTicked={ticked}
+      initialTicked={isOwner ? ticked : ticked.filter((s) => s !== "profit")}
+      showCosts={isOwner}
       activePreset={preset}
       periodLabel={range.label}
       periodNotice={range.notice}

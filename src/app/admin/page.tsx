@@ -10,6 +10,8 @@ import { fetchProductSales, fetchCustomerSales } from "@/lib/admin/analytics-dat
 import { rankProducts, rankCustomers, splitByActivity } from "@/lib/admin/analytics-math";
 import { resolveDateRange, type RangeSearchParams } from "@/lib/dates";
 import { DateRangeFilter } from "@/components/date-range-filter";
+import { getAdminAccess } from "@/lib/admin/require-admin";
+import { salesWithoutCosts, statsWithoutProfit } from "@/lib/admin/cost-visibility";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +23,7 @@ export default async function AdminDashboardPage({
   // CP-5: the dashboard's default period is TODAY (nothing changes for anyone
   // who never touches the filter); the URL can re-scope every period card.
   const sp = await searchParams;
+  const { isOwner } = await getAdminAccess();
   const hasRangeInput = Boolean(sp.range || sp.from || sp.to);
   const range = resolveDateRange(hasRangeInput ? sp : { range: "today" });
 
@@ -55,7 +58,7 @@ export default async function AdminDashboardPage({
   // CP-8b: the period-scoped top-3s — the SAME figures /admin/analytics ranks
   // (same reads, same pure ranking), truncated to 3. Full tables stay one
   // click away, not on the dashboard.
-  const topProducts = rankProducts(productSales.rows, "revenue").slice(0, 3);
+  const topProducts = rankProducts(isOwner ? productSales.rows : salesWithoutCosts(productSales.rows), "revenue").slice(0, 3);
   const topCustomers = rankCustomers(
     customerSales.rows.filter((r) => r.status === "active"),
     "revenue",
@@ -112,9 +115,10 @@ export default async function AdminDashboardPage({
         customers={customers}
         live={live}
         lowStock={lowStock.items}
-        stats={stats}
+        stats={isOwner ? stats : statsWithoutProfit(stats)}
+        showCosts={isOwner}
         pendingNow={pendingNow}
-        missingCostCount={missingCostCount}
+        missingCostCount={isOwner ? missingCostCount : 0}
         pendingActivationCount={pendingActivationCount}
         topProducts={topProducts}
         topCustomers={topCustomers}

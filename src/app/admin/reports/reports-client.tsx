@@ -34,7 +34,9 @@ export function ReportsClient({
   periodNotice,
   analyticsSource,
   rangeFilter,
+  showCosts,
 }: {
+  showCosts: boolean; // false for non-owner admins: no profit section
   business: InvoiceBusiness;
   inputs: ReportInputs;
   initialTicked: ReportSectionKey[];
@@ -57,14 +59,15 @@ export function ReportsClient({
   const model = useMemo(
     () =>
       buildReportModel({
-        ticked: [...ticked],
+        // A preset/URL may carry "profit"; non-owners never build it.
+        ticked: [...ticked].filter((k) => showCosts || k !== "profit"),
         inputs,
         business,
         periodLabel,
         periodNotice,
         generatedAt: new Date(),
       }),
-    [ticked, inputs, business, periodLabel, periodNotice],
+    [ticked, inputs, business, periodLabel, periodNotice, showCosts],
   );
 
   const presetHref = (p: ReportPreset) => {
@@ -131,7 +134,7 @@ export function ReportsClient({
           <section className="rounded-2xl border border-[var(--border)] bg-surface p-4">
             <h2 className="text-xs font-bold uppercase tracking-wider text-muted">Sections</h2>
             <div className="mt-2 space-y-1.5">
-              {REPORT_SECTIONS.map((key) => (
+              {REPORT_SECTIONS.filter((key) => showCosts || key !== "profit").map((key) => (
                 <label
                   key={key}
                   className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm hover:bg-brand-mist/20"
@@ -154,7 +157,7 @@ export function ReportsClient({
                 </label>
               ))}
             </div>
-            {model.internal && (
+            {showCosts && model.internal && (
               <p className="mt-3 rounded-lg border-2 border-black bg-neutral-900 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-white">
                 Internal report — includes cost &amp; profit. Banner and watermark are automatic
                 and cannot be removed while the section is in.

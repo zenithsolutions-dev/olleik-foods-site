@@ -4,7 +4,7 @@ import { RefreshLockProvider } from "@/lib/poll/use-live-refresh";
 import { AdminNav } from "./admin-nav";
 import { AdminMobileMenu } from "./admin-mobile-menu";
 import { OrderAlertsProvider, OrderAlertsWidget } from "./order-alerts";
-import { requireAdmin } from "@/lib/admin/require-admin";
+import { getAdminAccess } from "@/lib/admin/require-admin";
 import { fetchNewOrderCount } from "@/lib/admin/orders-data";
 import { signOutAdmin } from "./actions";
 import { getBusinessIdentity } from "@/lib/business";
@@ -18,7 +18,7 @@ export default async function AdminLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   // Authoritative gate — redirects non-admins when Supabase is configured;
   // returns null (no-op) in mock mode before Supabase is provisioned.
-  const adminEmail = await requireAdmin();
+  const { email: adminEmail, isOwner } = await getAdminAccess();
   // Live "N new" badge on the Orders nav item, refreshed on every admin page
   // render (admin pages are all force-dynamic).
   const newOrderCount = await fetchNewOrderCount();
@@ -52,7 +52,7 @@ export default async function AdminLayout({
             </Link>
           </div>
 
-          <AdminNav newOrderCount={newOrderCount} />
+          <AdminNav newOrderCount={newOrderCount} isOwner={isOwner} />
 
           {/* CP-3d: enable/mute + degraded state — always visible, never in a
               menu (owner requirement). */}
@@ -90,7 +90,7 @@ export default async function AdminLayout({
                 {business.displayName} Admin
               </Link>
               <AdminMobileMenu>
-                <AdminNav newOrderCount={newOrderCount} />
+                <AdminNav newOrderCount={newOrderCount} isOwner={isOwner} />
                 <div className="border-t border-[var(--border)] px-6 py-4 text-sm text-muted">
                   {adminEmail && (
                     <>

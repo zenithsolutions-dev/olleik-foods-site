@@ -20,7 +20,8 @@ Object.assign(env, {
   NEXT_PUBLIC_SUPABASE_URL: keys.url,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: keys.anonKey,
   SUPABASE_SERVICE_ROLE_KEY: keys.serviceKey,
-  ADMIN_EMAILS: DEMO_ADMIN,
+  ADMIN_EMAILS: `${DEMO_ADMIN},staff@olleik-demo.test`,
+  OWNER_EMAILS: DEMO_ADMIN, // staff@ is an admin who must not see cost, profit or margins
   NEXT_TELEMETRY_DISABLED: "1",
   // Fictional demo business details for the documents (brief V3.2 §10.1, Pending Review). Videos only: the
   // real registered details must still be entered before handover.

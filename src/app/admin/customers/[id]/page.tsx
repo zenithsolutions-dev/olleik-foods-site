@@ -14,6 +14,8 @@ import {
   fetchPricingMeta,
 } from "@/lib/admin/pricing-data";
 import { fetchCustomerVisibility } from "@/lib/admin/visibility-data";
+import { getAdminAccess } from "@/lib/admin/require-admin";
+import { metaWithoutMargins } from "@/lib/admin/cost-visibility";
 
 export const dynamic = "force-dynamic";
 // D6: cost/rule saves from this page trigger autopilot price sweeps.
@@ -27,6 +29,7 @@ export default async function CustomerDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const { isOwner } = await getAdminAccess();
   const [
     { detail, live },
     { products },
@@ -80,9 +83,10 @@ export default async function CustomerDetailPage({
       activation={activation}
       copySources={copySources}
       offerTemplates={templates}
-      costs={costs}
-      pricingRules={rules}
-      pricingMeta={pricingMeta}
+      costs={isOwner ? costs : {}}
+      pricingRules={isOwner ? rules : []}
+      pricingMeta={isOwner ? pricingMeta : metaWithoutMargins(pricingMeta)}
+      showCosts={isOwner}
       visibility={visibility}
       live={live}
     />

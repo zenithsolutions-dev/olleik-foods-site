@@ -20,13 +20,21 @@ const ITEMS: Array<{ href: string; label: string; icon: string }> = [
 // newOrderCount: fetched server-side by the layout (per admin page render).
 // CP-3d: once the 15s poller has run, its LIVE count supersedes the
 // server-rendered one, so the badge stays current on every admin page.
-export function AdminNav({ newOrderCount = 0 }: { newOrderCount?: number }) {
+const OWNER_ONLY = ["/admin/assign", "/admin/pricing"];
+
+export function AdminNav({
+  newOrderCount = 0,
+  isOwner = true,
+}: {
+  newOrderCount?: number;
+  isOwner?: boolean;
+}) {
   const pathname = usePathname();
   const liveCount = useOrderAlerts()?.newCount;
   const count = liveCount ?? newOrderCount;
   return (
     <nav className="flex flex-col gap-0.5 px-3 py-4">
-      {ITEMS.map((it) => {
+      {ITEMS.filter((it) => isOwner || !OWNER_ONLY.includes(it.href)).map((it) => {
         const active =
           pathname === it.href ||
           (it.href !== "/admin" && pathname.startsWith(it.href));

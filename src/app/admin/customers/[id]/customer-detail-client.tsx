@@ -73,7 +73,9 @@ export function CustomerDetailClient({
   pricingMeta,
   visibility,
   live,
+  showCosts,
 }: {
+  showCosts: boolean; // false for non-owner admins: no cost/profit/margin UI
   detail: CustomerDetail;
   allProducts: Product[];
   categories: Category[];
@@ -250,11 +252,10 @@ export function CustomerDetailClient({
       "Product",
       "SKU",
       "Category",
-      "Cost",
+      ...(showCosts ? ["Cost"] : []),
       "List price",
       "Customer price",
-      "Price source",
-      "Profit",
+      ...(showCosts ? ["Price source", "Profit"] : []),
       "After offer",
     ];
     const lines = assigned.map((a) => {
@@ -265,11 +266,15 @@ export function CustomerDetailClient({
         esc(a.name),
         esc(a.sku),
         esc((a.categoryId ? catById[a.categoryId] : undefined) ?? ""),
-        esc(rp?.costCents != null ? (rp.costCents / 100).toFixed(2) : ""),
+        ...(showCosts ? [esc(rp?.costCents != null ? (rp.costCents / 100).toFixed(2) : "")] : []),
         esc((a.listPriceCents / 100).toFixed(2)),
         esc((effective / 100).toFixed(2)),
-        esc(rp?.sourceChip ?? ""),
-        esc(rp?.profitCents != null ? (rp.profitCents / 100).toFixed(2) : ""),
+        ...(showCosts
+          ? [
+              esc(rp?.sourceChip ?? ""),
+              esc(rp?.profitCents != null ? (rp.profitCents / 100).toFixed(2) : ""),
+            ]
+          : []),
         esc(op?.discounted ? (op.finalCents / 100).toFixed(2) : ""),
       ].join(",");
     });
@@ -459,6 +464,7 @@ export function CustomerDetailClient({
             >
               <FileText size={14} /> Customer copy
             </Link>
+            {showCosts && (
             <Link
               href={`/admin/customers/${customer.id}/statement/internal`}
               className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-surface px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent hover:text-accent-deep"
@@ -466,6 +472,7 @@ export function CustomerDetailClient({
             >
               <Lock size={14} /> My copy
             </Link>
+            )}
             <button
               type="button"
               onClick={() => {
@@ -533,6 +540,7 @@ export function CustomerDetailClient({
           Pricing &amp; visibility
         </h2>
         <div className="mt-2 space-y-4">
+          {showCosts && (
           <MarginCard
             customerName={customer.businessName}
             rule={customerMarginRule}
@@ -544,6 +552,7 @@ export function CustomerDetailClient({
             }
             onToggle={(rule) => run(() => togglePricingRule(rule.id, !rule.isActive))}
           />
+          )}
           {!isArchived && (
             <VisibilityCard
               customerId={customer.id}
@@ -608,6 +617,7 @@ export function CustomerDetailClient({
             >
               Export CSV
             </button>
+            {showCosts && (
             <button
               type="button"
               onClick={() => setRecomputeOpen(true)}
@@ -615,6 +625,7 @@ export function CustomerDetailClient({
             >
               <RotateCcw size={14} /> Recompute prices
             </button>
+            )}
             <button
               type="button"
               onClick={() => setCopyOpen(true)}
@@ -664,10 +675,10 @@ export function CustomerDetailClient({
                 </th>
                 <th className="px-6 py-3">Product</th>
                 <th className="px-6 py-3">Category</th>
-                <th className="px-4 py-3 text-right">Cost</th>
+                {showCosts && <th className="px-4 py-3 text-right">Cost</th>}
                 <th className="px-4 py-3 text-right">List</th>
                 <th className="px-4 py-3 text-right">Customer price</th>
-                <th className="px-4 py-3 text-right">Profit</th>
+                {showCosts && <th className="px-4 py-3 text-right">Profit</th>}
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -680,6 +691,7 @@ export function CustomerDetailClient({
                   pricing={rowPricing[a.productId]}
                   categoryName={(a.categoryId ? catById[a.categoryId] : undefined) ?? "—"}
                   busy={busy}
+                  showCosts={showCosts}
                   selected={selected.has(a.productId)}
                   onToggleSelect={() => toggleSelected(a.productId)}
                   onSet={(cents) =>
@@ -695,11 +707,12 @@ export function CustomerDetailClient({
               <tr className="border-t-2 border-[var(--border-strong)] bg-brand-mist/30 font-semibold">
                 <td className="px-6 py-3" colSpan={3}>
                   Totals ({assigned.length} products
-                  {totals.withCost < assigned.length
+                  {showCosts && totals.withCost < assigned.length
                     ? `, ${assigned.length - totals.withCost} without cost`
                     : ""}
                   )
                 </td>
+                {showCosts && (
                 <td className="px-4 py-3 text-right font-mono">
                   {formatMoney(totals.cost)}
                   {totals.withCost < assigned.length && (
@@ -708,8 +721,10 @@ export function CustomerDetailClient({
                     </span>
                   )}
                 </td>
+                )}
                 <td className="px-4 py-3" />
                 <td className="px-4 py-3 text-right font-mono">{formatMoney(totals.sale)}</td>
+                {showCosts && (
                 <td
                   className={`px-4 py-3 text-right font-mono ${totals.profit >= 0 ? "text-emerald-700" : "text-red-700"}`}
                 >
@@ -721,6 +736,7 @@ export function CustomerDetailClient({
                     </span>
                   )}
                 </td>
+                )}
                 <td className="px-4 py-3" />
               </tr>
             </tfoot>
@@ -895,7 +911,7 @@ export function CustomerDetailClient({
         />
       )}
 
-      {recomputeOpen && (
+      {showCosts && recomputeOpen && (
         <RecomputeModal
           customerId={customer.id}
           customerName={customer.businessName}
@@ -1044,7 +1060,9 @@ function CustomerProductRow({
   onToggleSelect,
   onSet,
   onRemove,
+  showCosts,
 }: {
+  showCosts: boolean;
   row: AssignedProduct;
   priced?: { finalCents: number; discounted: boolean; originalCents: number; appliedTitle: string | null };
   pricing?: { costCents: number | null; profitCents: number | null; sourceChip: string };
@@ -1086,9 +1104,11 @@ function CustomerProductRow({
         </p>
       </td>
       <td className="px-6 py-3 text-muted">{categoryName}</td>
+      {showCosts && (
       <td className="px-4 py-3 text-right font-mono text-muted">
         {pricing?.costCents != null ? formatMoney(pricing.costCents) : "—"}
       </td>
+      )}
       <td className="px-4 py-3 text-right font-mono text-muted">{formatMoney(row.listPriceCents)}</td>
       <td className="px-4 py-3 text-right">
         {editing ? (
@@ -1154,6 +1174,7 @@ function CustomerProductRow({
           </button>
         )}
       </td>
+      {showCosts && (
       <td className="px-4 py-3 text-right">
         {pricing?.profitCents == null ? (
           <span
@@ -1187,6 +1208,7 @@ function CustomerProductRow({
           </div>
         )}
       </td>
+      )}
       <td className="px-4 py-3 text-right">
         <button
           type="button"

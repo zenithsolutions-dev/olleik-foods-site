@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getAdminClient } from "@/lib/supabase/admin";
-import { requireAdmin } from "@/lib/admin/require-admin";
+import { requireOwner } from "@/lib/admin/require-admin";
 import { validMarginPercent } from "@/lib/admin/pricing-engine";
 import { guardAction } from "@/lib/admin/action-guard";
 import {
@@ -65,7 +65,7 @@ export async function setProductCost(
   productId: string,
   costCents: number | null,
 ): Promise<ActionResult> {
-  await requireAdmin();
+  await requireOwner();
   return guardAction("setProductCost", async () => {
   if (!UUID_RE.test(productId)) return { ok: false, message: "Invalid product." };
   if (costCents != null && (!Number.isInteger(costCents) || costCents < 0)) {
@@ -151,7 +151,7 @@ function scopeForRule(rule: {
 }
 
 export async function upsertPricingRule(input: PricingRuleInput): Promise<ActionResult> {
-  await requireAdmin();
+  await requireOwner();
   return guardAction("upsertPricingRule", async () => {
   const invalid = validateRuleInput(input);
   if (invalid) return { ok: false, message: invalid };
@@ -216,7 +216,7 @@ export async function upsertPricingRule(input: PricingRuleInput): Promise<Action
 }
 
 export async function togglePricingRule(id: string, isActive: boolean): Promise<ActionResult> {
-  await requireAdmin();
+  await requireOwner();
   return guardAction("togglePricingRule", async () => {
   if (!UUID_RE.test(id)) return { ok: false, message: "Invalid rule." };
   const admin = getAdminClient();
@@ -240,7 +240,7 @@ export async function togglePricingRule(id: string, isActive: boolean): Promise<
 }
 
 export async function deletePricingRule(id: string): Promise<ActionResult> {
-  await requireAdmin();
+  await requireOwner();
   return guardAction("deletePricingRule", async () => {
   if (!UUID_RE.test(id)) return { ok: false, message: "Invalid rule." };
   const admin = getAdminClient();
@@ -285,7 +285,7 @@ export async function previewRecompute(
   scope: RecomputeScope,
   includeManual: boolean,
 ): Promise<RecomputePreview> {
-  await requireAdmin();
+  await requireOwner();
   return guardAction("previewRecompute", async () => {
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
@@ -330,7 +330,7 @@ export async function applyRecompute(
   includeManual: boolean,
   expectedChanges: number,
 ): Promise<{ ok: true; updated: number; warning?: string } | { ok: false; message: string }> {
-  await requireAdmin();
+  await requireOwner();
   return guardAction("applyRecompute", async () => {
   const admin = getAdminClient();
   if (!admin) return { ok: false, message: "Supabase is not configured." };
