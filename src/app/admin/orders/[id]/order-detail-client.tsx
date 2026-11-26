@@ -413,6 +413,12 @@ export function OrderDetailClient({
                         }`}
                       >
                         {profit != null ? formatMoney(profit) : "no cost"}
+                        {/* Same basis as the order total below: profit as a % of cost. */}
+                        {profit != null && l.costCents != null && l.costCents > 0 && (
+                          <span className="ml-1 text-[10px] font-medium">
+                            ({((profit / (l.qty * l.costCents)) * 100).toFixed(1)}%)
+                          </span>
+                        )}
                       </td>
                     </>
                   )}

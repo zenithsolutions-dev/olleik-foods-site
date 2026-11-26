@@ -74,8 +74,18 @@ export function CustomerDetailClient({
   visibility,
   live,
   showCosts,
+  earned,
 }: {
   showCosts: boolean; // false for non-owner admins: no cost/profit/margin UI
+  // Profit actually earned from this customer's accepted orders (owner only; null for everyone else).
+  earned: {
+    orderCount: number;
+    revenueCents: number;
+    profitCents: number | null;
+    marginPct: number | null;
+    linesWithoutCost: number;
+    isTruncated: boolean;
+  } | null;
   detail: CustomerDetail;
   allProducts: Product[];
   categories: Category[];
@@ -540,6 +550,38 @@ export function CustomerDetailClient({
           Pricing &amp; visibility
         </h2>
         <div className="mt-2 space-y-4">
+          {showCosts && earned && (
+            <div className="rounded-2xl border border-[var(--border)] bg-surface p-5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Profit from this customer · all accepted orders
+              </p>
+              <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1">
+                <p
+                  className={`font-display text-2xl font-semibold ${
+                    earned.profitCents != null && earned.profitCents < 0 ? "text-red-700" : "text-brand-deep"
+                  }`}
+                >
+                  {earned.profitCents != null ? formatMoney(earned.profitCents) : "—"}
+                  {earned.marginPct != null && (
+                    <span className="ml-2 text-sm font-medium text-muted">
+                      {earned.marginPct.toFixed(1)}% of sales
+                    </span>
+                  )}
+                </p>
+                <p className="text-sm text-muted">
+                  {formatMoney(earned.revenueCents)} sales · {earned.orderCount} order
+                  {earned.orderCount === 1 ? "" : "s"}
+                </p>
+              </div>
+              {(earned.linesWithoutCost > 0 || earned.isTruncated) && (
+                <p className="mt-2 text-xs font-medium text-amber-700">
+                  {earned.linesWithoutCost > 0 &&
+                    `${earned.linesWithoutCost} order line${earned.linesWithoutCost === 1 ? " has" : "s have"} no recorded cost, so this profit is partial. `}
+                  {earned.isTruncated && "Only the most recent orders are included."}
+                </p>
+              )}
+            </div>
+          )}
           {showCosts && (
           <MarginCard
             customerName={customer.businessName}

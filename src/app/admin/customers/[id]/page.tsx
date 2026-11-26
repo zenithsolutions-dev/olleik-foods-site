@@ -14,6 +14,9 @@ import {
   fetchPricingMeta,
 } from "@/lib/admin/pricing-data";
 import { fetchCustomerVisibility } from "@/lib/admin/visibility-data";
+import { fetchCustomerStatementOrdersWithCosts } from "@/lib/admin/statement-data";
+import { buildInternalStatement } from "@/lib/documents/customer-statement-model";
+import { getBusinessIdentity } from "@/lib/business";
 import { getAdminAccess } from "@/lib/admin/require-admin";
 import { metaWithoutMargins } from "@/lib/admin/cost-visibility";
 
@@ -75,8 +78,34 @@ export default async function CustomerDetailPage({
     );
   }
 
+  // Profit actually earned from this customer: the internal statement's own totals over all time, so the
+  // card and the printed statement can never disagree. Owners only; nothing is fetched for anyone else.
+  let earned = null;
+  if (isOwner) {
+    const data = await fetchCustomerStatementOrdersWithCosts(id);
+    const c = detail.customer;
+    const model = buildInternalStatement({
+      orders: data.orders,
+      business: await getBusinessIdentity(),
+      statementFor: { businessName: c.businessName, contactName: c.contactName, email: c.email, phone: c.phone, address: c.address },
+      periodLabel: "All time",
+      generatedAt: new Date(),
+      truncated: data.truncated,
+      canWiden: false,
+    });
+    earned = {
+      orderCount: model.orderCount,
+      revenueCents: model.totalCents,
+      profitCents: model.totalProfitCents,
+      marginPct: model.marginPct,
+      linesWithoutCost: model.linesWithoutCost,
+      isTruncated: data.truncated,
+    };
+  }
+
   return (
     <CustomerDetailClient
+      earned={earned}
       detail={detail}
       allProducts={products}
       categories={categories}
