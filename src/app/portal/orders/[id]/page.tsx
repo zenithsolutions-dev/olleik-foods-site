@@ -109,7 +109,7 @@ export default async function PortalOrderDetailPage({
       )}
 
       <p className="text-xs text-muted-soft">
-        Orders can&apos;t be edited after submission. Need a change? Call your Olleik rep.
+        Orders can&apos;t be edited after submission. Need a change? Call your sales rep.
       </p>
     </div>
   );

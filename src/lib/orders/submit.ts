@@ -273,7 +273,7 @@ export async function submitOrderForCustomer(
     return {
       ok: false,
       code: "rate-limited",
-      message: "You've reached the hourly order limit. Please try again later or call your Olleik rep.",
+      message: "You've reached the hourly order limit. Please try again later or call your sales rep.",
     };
   }
 

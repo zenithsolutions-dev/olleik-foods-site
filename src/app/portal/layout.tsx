@@ -3,9 +3,10 @@ import { requireCustomer } from "@/lib/portal/require-customer";
 import { PortalNav } from "./portal-nav";
 import { CartProvider } from "./cart-context";
 import { signOutPortal } from "./actions";
+import { getBusinessIdentity } from "@/lib/business";
 
 export const metadata = {
-  title: "Your account — Olleik Foods",
+  title: "Your account",
 };
 
 // Authoritative gate for the whole portal: requireCustomer() redirects anyone
@@ -14,6 +15,7 @@ export default async function PortalLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const customer = await requireCustomer();
+  const business = await getBusinessIdentity();
 
   return (
     <CartProvider>
@@ -25,11 +27,11 @@ export default async function PortalLayout({
               aria-hidden
               className="grid h-9 w-9 place-items-center rounded-md bg-brand text-white font-display text-base font-semibold"
             >
-              O
+              {(business.displayName.match(/\p{L}|\p{N}/u)?.[0] ?? "").toUpperCase()}
             </span>
             <div>
               <p className="font-display text-base font-semibold leading-tight text-brand-deep">
-                Olleik <span className="text-accent">Foods</span>
+                {business.displayName}
               </p>
               <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted">
                 Customer portal

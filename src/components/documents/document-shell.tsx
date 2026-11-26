@@ -1,3 +1,4 @@
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 // The minimal identity shape a document needs — satisfied by both the full
 // BusinessIdentity config and the invoice model's embedded business block.
 export type DocBusiness = {
@@ -74,7 +75,7 @@ export function DocumentShell({
       <div className="pt-5">{children}</div>
 
       <footer className="mt-8 border-t border-neutral-300 pt-3 text-[10px] text-neutral-600">
-        {footerNote ?? `${business.displayName} — generated ${new Date().toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short", timeZone: "America/Toronto" })}`}
+        {footerNote ?? `${business.displayName} — generated ${new Date().toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short", timeZone: BUSINESS_TIME_ZONE })}`}
       </footer>
     </div>
   );

@@ -51,7 +51,7 @@ export default async function InternalCustomerStatementPage({
   const c = detail.customer;
   const model = buildInternalStatement({
     orders: data.orders,
-    business: getBusinessIdentity(),
+    business: await getBusinessIdentity(),
     statementFor: {
       businessName: c.businessName,
       contactName: c.contactName,

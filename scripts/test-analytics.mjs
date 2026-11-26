@@ -304,6 +304,7 @@ try {
     // ---- 0015 buckets (auto-detects; loud skip pre-migration) ----
     const brpc = await svc.rpc("analytics_revenue_buckets", {
       p_start: windowStart, p_end: windowEnd, p_bucket: "day",
+      p_time_zone: process.env.NEXT_PUBLIC_BUSINESS_TIME_ZONE || "America/Toronto", // 0017: same zone the app passes
     });
     if (brpc.error && (brpc.error.code === "42883" || brpc.error.code === "PGRST202")) {
       console.log("\n⚠ 0015 bucket checks SKIPPED: migration 0015 not applied yet.");

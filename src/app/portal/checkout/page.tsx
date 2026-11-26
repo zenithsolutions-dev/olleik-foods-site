@@ -145,7 +145,7 @@ export default function CheckoutPage() {
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
               {(
                 [
-                  ["pickup", "Pickup", "You collect from the Olleik warehouse."],
+                  ["pickup", "Pickup", "You collect from our warehouse."],
                   ["delivery", "Delivery", "We deliver on your usual route."],
                 ] as const
               ).map(([value, title, blurb]) => (

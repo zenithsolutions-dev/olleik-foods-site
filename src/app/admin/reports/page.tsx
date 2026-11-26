@@ -118,7 +118,7 @@ export default async function ReportsPage({
 
   return (
     <ReportsClient
-      business={getBusinessIdentity()}
+      business={await getBusinessIdentity()}
       inputs={inputs}
       initialTicked={ticked}
       activePreset={preset}

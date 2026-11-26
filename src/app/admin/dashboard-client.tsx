@@ -7,6 +7,7 @@ import type { LowStockItem } from "@/lib/admin/inventory-data";
 import type { DashboardStats } from "@/lib/admin/dashboard-data";
 import type { ProductRankRow } from "@/lib/admin/analytics-math";
 import type { CustomerSalesRow } from "@/lib/admin/analytics-data";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-4 command center (approved spec): the merchant opens /admin each morning
 // and understands the day at a glance. Priority order:
@@ -146,7 +147,7 @@ export function DashboardClient({
                 : ""}
             </>
           )}
-          <span className="text-muted-soft"> · business days in America/Toronto</span>
+          <span className="text-muted-soft"> · business days in {BUSINESS_TIME_ZONE}</span>
         </p>
 
         {/* CP-8b: period-scoped top-3s — the same figures /admin/analytics
@@ -269,7 +270,7 @@ export function DashboardClient({
       </section>
 
       {/* ---------- Row 3: context & access ---------- */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-[var(--border)] bg-surface p-6">
           <h2 className="font-display text-lg font-semibold text-brand-deep">Active offers</h2>
           <p className="mt-1 text-xs text-muted">What your customers currently see.</p>

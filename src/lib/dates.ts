@@ -13,7 +13,9 @@
 // `notice` (approved D-R5 amendment: never silently rewrite input); invalid
 // input falls back to All time WITH a notice saying what is actually shown.
 
-export const BUSINESS_TIME_ZONE = "America/Toronto";
+// Per deployment: NEXT_PUBLIC_BUSINESS_TIME_ZONE (an IANA zone). An env var, not a database setting, because
+// client components and the pure date maths read it synchronously.
+export const BUSINESS_TIME_ZONE = process.env.NEXT_PUBLIC_BUSINESS_TIME_ZONE || "America/Toronto";
 /** @deprecated alias kept for CP-4 call sites; same value. */
 export const DASHBOARD_TIME_ZONE = BUSINESS_TIME_ZONE;
 

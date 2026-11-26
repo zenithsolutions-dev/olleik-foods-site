@@ -36,7 +36,7 @@ export default async function PortalStatementPage({
 
   const model = buildCustomerStatement({
     orders: data.orders,
-    business: getBusinessIdentity(),
+    business: await getBusinessIdentity(),
     statementFor: {
       businessName: customer.businessName,
       contactName: customer.contactName,

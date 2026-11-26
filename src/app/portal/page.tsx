@@ -52,7 +52,7 @@ export default async function PortalDashboardPage({
       </div>
 
       <p className="rounded-xl border border-[var(--border)] bg-brand-mist/40 p-4 text-sm text-muted">
-        Need a product you don&apos;t see, or have a question about pricing? Contact your Olleik
+        Need a product you don&apos;t see, or have a question about pricing? Contact your sales
         rep and we&apos;ll get it added to your account.
       </p>
     </div>

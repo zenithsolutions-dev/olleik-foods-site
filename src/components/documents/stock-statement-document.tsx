@@ -1,6 +1,7 @@
 import type { BusinessIdentity } from "@/lib/business";
 import type { StockStatementModel } from "@/lib/documents/statement-models";
 import { DocumentShell, DocTable, docCell } from "./document-shell";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-6: renderer for the "as of now" stock statements (low stock /
 // unavailable). Severity is TEXT (OVERSOLD BY N / OUT OF STOCK / LOW) — fully
@@ -17,7 +18,7 @@ export function StockStatementDocument({
     <DocumentShell
       business={business}
       title={model.title}
-      subtitle={`As of ${new Date(model.asOfISO).toLocaleString("en-CA", { dateStyle: "long", timeStyle: "short", timeZone: "America/Toronto" })}`}
+      subtitle={`As of ${new Date(model.asOfISO).toLocaleString("en-CA", { dateStyle: "long", timeStyle: "short", timeZone: BUSINESS_TIME_ZONE })}`}
     >
       {model.lines.length === 0 ? (
         <p className="border border-neutral-400 p-6 text-center text-[12px]">

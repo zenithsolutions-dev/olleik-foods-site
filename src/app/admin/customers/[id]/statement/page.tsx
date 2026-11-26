@@ -54,7 +54,7 @@ export default async function CustomerStatementPage({
   const c = detail.customer;
   const model = buildCustomerStatement({
     orders: data.orders,
-    business: getBusinessIdentity(),
+    business: await getBusinessIdentity(),
     statementFor: {
       businessName: c.businessName,
       contactName: c.contactName,

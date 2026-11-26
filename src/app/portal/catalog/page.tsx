@@ -97,7 +97,7 @@ export default async function PortalCatalogPage({
         <p className="rounded-2xl border border-dashed border-[var(--border)] bg-surface p-10 text-center text-sm text-muted">
           {filtered
             ? "No products match your search. Try different words or clear the filters."
-            : "No products are set up for your account yet. Contact your Olleik rep to build your catalog."}
+            : "No products are set up for your account yet. Contact your sales rep to build your catalog."}
         </p>
       ) : (
         <>

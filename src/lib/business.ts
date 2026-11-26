@@ -1,29 +1,20 @@
 // ============================================================================
-// BUSINESS IDENTITY — ⚠️ PLACEHOLDERS ONLY, FILL IN BEFORE CLIENT HANDOVER ⚠️
+// BUSINESS IDENTITY — the ONE accessor for who the business is.
 // ============================================================================
-// Every bracketed value below is DELIBERATELY fake-looking (approved D-C2):
-// it must be impossible to mistake a test print for a real document.
-//
-// PRE-HANDOVER CHECKLIST — replace ALL of these with the client's real details:
-//   [ ] legalName   — the registered business name
-//   [ ] address     — full street address incl. postal code
-//   [ ] phone       — the business phone number
-//   [ ] email       — the business email
-//   [ ] (when tax is enabled, CP-6 tax delta) taxNumber + taxRateBps +
-//       taxEnabled: true, plus the orders.tax_cents snapshot migration —
-//       see the CP-6 spec's "tax deferred, not absent" section.
-//
-// This module is the ONE accessor for business identity. When tax settings
-// arrive it either grows here or graduates to a settings table + UI — either
-// way every document keeps reading through getBusinessIdentity() and nothing
-// in the document layer needs rework.
+// Values come from the single `business_settings` row (migration 0016, edited on the admin Settings page).
+// A blank field falls back to its env var (BUSINESS_DISPLAY_NAME, BUSINESS_LEGAL_NAME, BUSINESS_ADDRESS,
+// BUSINESS_PHONE, BUSINESS_EMAIL), then to a bracketed placeholder that cannot be mistaken for a real value.
+// No business name lives in the code: the system is resold to other wholesalers.
+import { createClient } from "@supabase/supabase-js";
+import { cache } from "react";
 
 export type BusinessIdentity = {
-  displayName: string; // shown big on documents
+  displayName: string; // shown big on documents and in headers
   legalName: string;
   address: string;
   phone: string;
   email: string;
+  whatsappNumber: string | null; // digits only, ready for https://wa.me/<number>
   // --- tax: DORMANT (approved ruling — deferred, not absent). While
   // taxEnabled is false no document renders any tax line or tax number.
   taxEnabled: boolean;
@@ -31,24 +22,79 @@ export type BusinessIdentity = {
   taxNumber: string | null; // business tax number — unused while disabled
 };
 
-// Each field can be overridden by an env var (BUSINESS_LEGAL_NAME,
-// BUSINESS_ADDRESS, BUSINESS_PHONE, BUSINESS_EMAIL). Unset or blank → the
-// placeholder below, so environments without the vars behave exactly as
-// before. The videos' local demo launcher sets clearly fictional demo values.
-const env = (name: string, fallback: string) =>
-  process.env[name]?.trim() || fallback;
-
-const IDENTITY: BusinessIdentity = {
-  displayName: "Olleik Foods",
-  legalName: env("BUSINESS_LEGAL_NAME", "Olleik Foods — [LEGAL NAME TBC]"),
-  address: env("BUSINESS_ADDRESS", "[STREET ADDRESS], Ottawa, ON [POSTAL CODE]"),
-  phone: env("BUSINESS_PHONE", "[PHONE]"),
-  email: env("BUSINESS_EMAIL", "[EMAIL]"),
-  taxEnabled: false,
-  taxRateBps: 0,
-  taxNumber: null,
+export type BusinessSettingsRow = {
+  display_name: string | null;
+  legal_name: string | null;
+  address: string | null;
+  phone: string | null;
+  email: string | null;
+  whatsapp_number: string | null;
 };
 
-export function getBusinessIdentity(): BusinessIdentity {
-  return IDENTITY;
+export function identityFromRow(
+  row: BusinessSettingsRow | null,
+  env: Record<string, string | undefined> = process.env,
+): BusinessIdentity {
+  const pick = (value: string | null | undefined, envName: string, placeholder: string) =>
+    value?.trim() || env[envName]?.trim() || placeholder;
+  return {
+    displayName: pick(row?.display_name, "BUSINESS_DISPLAY_NAME", "[BUSINESS NAME]"),
+    legalName: pick(row?.legal_name, "BUSINESS_LEGAL_NAME", "[LEGAL NAME]"),
+    address: pick(row?.address, "BUSINESS_ADDRESS", "[ADDRESS]"),
+    phone: pick(row?.phone, "BUSINESS_PHONE", "[PHONE]"),
+    email: pick(row?.email, "BUSINESS_EMAIL", "[EMAIL]"),
+    whatsappNumber: row?.whatsapp_number?.replace(/\D/g, "") || null,
+    taxEnabled: false,
+    taxRateBps: 0,
+    taxNumber: null,
+  };
 }
+
+// Validates the admin Settings form. Blank optional fields are stored as null so the fallbacks above apply.
+const LIMITS: Record<keyof BusinessSettingsRow, number> = {
+  display_name: 80,
+  legal_name: 120,
+  address: 300,
+  phone: 40,
+  email: 254,
+  whatsapp_number: 40,
+};
+
+export function parseBusinessSettings(
+  input: Partial<Record<keyof BusinessSettingsRow, string>>,
+): { ok: true; row: BusinessSettingsRow } | { ok: false; error: string } {
+  const clean = (key: keyof BusinessSettingsRow) => input[key]?.trim() || null;
+  const row: BusinessSettingsRow = {
+    display_name: clean("display_name"),
+    legal_name: clean("legal_name"),
+    address: clean("address"),
+    phone: clean("phone"),
+    email: clean("email")?.toLowerCase() ?? null,
+    whatsapp_number: clean("whatsapp_number"),
+  };
+  if (!row.display_name) return { ok: false, error: "Business name is required." };
+  for (const key of Object.keys(LIMITS) as Array<keyof BusinessSettingsRow>) {
+    if ((row[key]?.length ?? 0) > LIMITS[key]) return { ok: false, error: `${key.replace("_", " ")} is too long.` };
+  }
+  if (row.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) return { ok: false, error: "Email address is not valid." };
+  const digits = row.whatsapp_number?.replace(/\D/g, "") ?? "";
+  // wa.me needs the full international number: 8 to 15 digits including the country code.
+  if (row.whatsapp_number && (digits.length < 8 || digits.length > 15)) {
+    return { ok: false, error: "WhatsApp number must include the country code, e.g. +1 613 555 0142." };
+  }
+  return { ok: true, row };
+}
+
+// One read per request. The row is public (RLS: select for everyone), so the anon key is enough and portal
+// code may call this. Supabase not configured (demo mode) or a failed read → env / placeholders.
+export const getBusinessIdentity = cache(async (): Promise<BusinessIdentity> => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anon) return identityFromRow(null);
+  const { data, error } = await createClient(url, anon, { auth: { persistSession: false } })
+    .from("business_settings")
+    .select("display_name, legal_name, address, phone, email, whatsapp_number")
+    .maybeSingle();
+  if (error) console.error("[business] settings read failed:", error.message);
+  return identityFromRow(data ?? null);
+});

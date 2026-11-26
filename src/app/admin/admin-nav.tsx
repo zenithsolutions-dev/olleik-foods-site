@@ -14,6 +14,7 @@ const ITEMS: Array<{ href: string; label: string; icon: string }> = [
   { href: "/admin/pricing", label: "Pricing", icon: "◮" },
   { href: "/admin/offers", label: "Offer library", icon: "◆" },
   { href: "/admin/leads", label: "Leads", icon: "◐" },
+  { href: "/admin/settings", label: "Settings", icon: "◍" },
 ];
 
 // newOrderCount: fetched server-side by the layout (per admin page render).
@@ -33,7 +34,7 @@ export function AdminNav({ newOrderCount = 0 }: { newOrderCount?: number }) {
           <Link
             key={it.href}
             href={it.href}
-            className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm transition ${
+            className={`flex items-center gap-3 rounded-md px-3 py-3 text-sm transition md:py-2 ${
               active
                 ? "bg-brand text-white"
                 : "text-foreground/75 hover:bg-brand-mist hover:text-brand-deep"

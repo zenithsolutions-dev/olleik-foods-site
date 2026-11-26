@@ -53,7 +53,7 @@ export default async function ProductStatementPage({
         <DateRangeFilter basePath="/admin/documents/products" range={range} />
       </div>
       <ProductStatementClient
-        business={getBusinessIdentity()}
+        business={await getBusinessIdentity()}
         products={inputs}
         periodLabel={range.preset === "all" ? "All time" : range.label}
       />

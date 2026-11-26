@@ -3,6 +3,7 @@ import { getAdminClient } from "@/lib/supabase/admin";
 import { REVENUE_STATUSES } from "./dashboard-math";
 import { bucketKeyFor, bucketOrdersFallback } from "./analytics-buckets";
 import type { CustomerSales, ProductSales } from "./analytics-math";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-8b analytics reads (ADMIN ONLY — service role; the RPCs themselves are
 // EXECUTE-revoked from authenticated/anon, D-O0).
@@ -231,6 +232,7 @@ export async function fetchRevenueBuckets(
     p_start: range.startISO,
     p_end: range.endISO,
     p_bucket: bucket,
+    p_time_zone: BUSINESS_TIME_ZONE,
   });
   if (!error) {
     type Row = { bucket_start: string; revenue_cents: number; orders_count: number };

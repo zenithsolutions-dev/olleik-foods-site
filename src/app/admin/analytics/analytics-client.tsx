@@ -19,6 +19,7 @@ import type { BucketSize, RevenueBucket } from "@/lib/admin/analytics-buckets";
 import { BestSellersChart, RevenueTrendChart } from "./analytics-charts";
 import { DegradedHint, useLiveRefresh } from "@/lib/poll/use-live-refresh";
 import { pollAdminDashboardSignature } from "../live-actions";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-8b analytics UI. Every section's heading carries the period label (CP-5
 // rule) — a screenshot is never ambiguous about what it covers. Sorting is
@@ -26,7 +27,7 @@ import { pollAdminDashboardSignature } from "../live-actions";
 // module, so what the tests rank is what the screen shows.
 
 const fmtDay = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: "America/Toronto" });
+  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: BUSINESS_TIME_ZONE });
 
 function SortHeader({
   label,

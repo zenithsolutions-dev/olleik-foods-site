@@ -37,7 +37,7 @@ export default async function OutOfStockStatementPage() {
   return (
     <div>
       <PrintToolbar backHref="/admin/products" backLabel="Back to products" />
-      <StockStatementDocument business={getBusinessIdentity()} model={model} />
+      <StockStatementDocument business={await getBusinessIdentity()} model={model} />
     </div>
   );
 }

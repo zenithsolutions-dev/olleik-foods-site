@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Undo2 } from "lucide-react";
 import { undoConfirmationText, type BatchSummary } from "@/lib/admin/bulk-offers";
 import { undoOfferBatch } from "./actions";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-8a-2 "Applied batches": one-click undo, treated as MORE important than
 // the apply. The confirmation is unmistakable about scope by construction —
@@ -14,7 +15,7 @@ import { undoOfferBatch } from "./actions";
 // structurally impossible.
 
 const fmtDay = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: "America/Toronto" });
+  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: BUSINESS_TIME_ZONE });
 
 export function BatchesPanel({ batches }: { batches: BatchSummary[] }) {
   const router = useRouter();

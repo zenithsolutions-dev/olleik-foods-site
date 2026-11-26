@@ -2,13 +2,15 @@ import Link from "next/link";
 import { AdminProvider } from "@/lib/admin/store";
 import { RefreshLockProvider } from "@/lib/poll/use-live-refresh";
 import { AdminNav } from "./admin-nav";
+import { AdminMobileMenu } from "./admin-mobile-menu";
 import { OrderAlertsProvider, OrderAlertsWidget } from "./order-alerts";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { fetchNewOrderCount } from "@/lib/admin/orders-data";
 import { signOutAdmin } from "./actions";
+import { getBusinessIdentity } from "@/lib/business";
 
 export const metadata = {
-  title: "Olleik Admin",
+  title: "Admin",
 };
 
 export default async function AdminLayout({
@@ -20,6 +22,7 @@ export default async function AdminLayout({
   // Live "N new" badge on the Orders nav item, refreshed on every admin page
   // render (admin pages are all force-dynamic).
   const newOrderCount = await fetchNewOrderCount();
+  const business = await getBusinessIdentity();
 
   return (
     <AdminProvider>
@@ -36,11 +39,11 @@ export default async function AdminLayout({
                 aria-hidden
                 className="grid h-9 w-9 place-items-center rounded-md bg-brand text-white font-display text-base font-semibold"
               >
-                O
+                {(business.displayName.match(/\p{L}|\p{N}/u)?.[0] ?? "").toUpperCase()}
               </span>
               <div>
                 <p className="font-display text-base font-semibold leading-tight text-brand-deep">
-                  Olleik <span className="text-accent">Foods</span>
+                  {business.displayName}
                 </p>
                 <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-muted">
                   Admin
@@ -81,15 +84,34 @@ export default async function AdminLayout({
 
         {/* Main */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex items-center justify-between border-b border-[var(--border)] bg-surface px-8 py-4 md:hidden print:hidden">
-            <Link href="/admin" className="font-display text-lg font-semibold text-brand-deep">
-              Olleik Admin
-            </Link>
-            <Link href="/" className="text-xs text-muted hover:text-brand">
-              ← Back to site
-            </Link>
+          <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-surface md:hidden print:hidden">
+            <div className="relative flex items-center justify-between gap-3 px-4 py-2.5">
+              <Link href="/admin" className="font-display min-w-0 truncate text-lg font-semibold text-brand-deep">
+                {business.displayName} Admin
+              </Link>
+              <AdminMobileMenu>
+                <AdminNav newOrderCount={newOrderCount} />
+                <div className="border-t border-[var(--border)] px-6 py-4 text-sm text-muted">
+                  {adminEmail && (
+                    <>
+                      <p className="truncate text-foreground/70">{adminEmail}</p>
+                      <form action={signOutAdmin}>
+                        <button type="submit" className="py-3 font-medium text-brand hover:text-accent">
+                          Sign out
+                        </button>
+                      </form>
+                    </>
+                  )}
+                  <Link href="/" className="inline-block py-3 text-brand hover:text-accent">
+                    ← Back to site
+                  </Link>
+                </div>
+              </AdminMobileMenu>
+            </div>
+            {/* Order alerts stay visible on phones too (never inside the menu). */}
+            <OrderAlertsWidget />
           </header>
-          <main className="flex-1 px-6 py-8 md:px-10 md:py-10">{children}</main>
+          <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10">{children}</main>
         </div>
       </div>
       </OrderAlertsProvider>
