@@ -13,6 +13,7 @@ const ITEMS: Array<{ href: string; label: string; icon: string }> = [
   { href: "/admin/assign", label: "Assign products", icon: "◫" },
   { href: "/admin/pricing", label: "Pricing", icon: "◮" },
   { href: "/admin/offers", label: "Offer library", icon: "◆" },
+  { href: "/admin/specials", label: "Specials", icon: "✦" },
   { href: "/admin/leads", label: "Leads", icon: "◐" },
   { href: "/admin/settings", label: "Settings", icon: "◍" },
 ];

@@ -89,16 +89,18 @@ export default function CartPage() {
 
       {unavailable.length > 0 && (
         <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          {unavailable.length === 1
-            ? `“${unavailable[0].name}” is currently unavailable`
-            : `${unavailable.length} items are currently unavailable`}{" "}
-          and can&apos;t be ordered right now.{" "}
+          {/* A line with a notice is orderable at a smaller quantity: say that, not "unavailable". */}
+          {unavailable.length === 1 && unavailable[0].notice
+            ? `“${unavailable[0].name}”: ${unavailable[0].notice.toLowerCase()}. Lower the quantity, or`
+            : unavailable.length === 1
+              ? `“${unavailable[0].name}” is currently unavailable and can't be ordered right now.`
+              : `${unavailable.length} items can't be ordered as they are.`}{" "}
           <button
             type="button"
             className="font-semibold underline"
             onClick={() => unavailable.forEach((l) => cart.remove(l.productId))}
           >
-            Remove {unavailable.length === 1 ? "it" : "them"}
+            {unavailable.length === 1 ? (unavailable[0].notice ? "remove it" : "Remove it") : "Remove them"}
           </button>
         </div>
       )}
@@ -127,7 +129,7 @@ export default function CartPage() {
                     {l.name}
                     {!l.available && (
                       <span className="ml-2 rounded-full bg-zinc-200 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-zinc-600">
-                        Unavailable
+                        {l.notice ?? "Unavailable"}
                       </span>
                     )}
                   </p>
@@ -140,7 +142,9 @@ export default function CartPage() {
                     </span>
                     {l.appliedOfferTitle && (
                       <span className="ml-1.5 text-emerald-700">
-                        {l.appliedOfferTitle} (was {formatMoney(l.basePriceCents)})
+                        {l.appliedOfferTitle}
+                        {/* No "was" when there is no higher price of theirs to compare with. */}
+                        {l.basePriceCents > l.unitPriceCents && ` (was ${formatMoney(l.basePriceCents)})`}
                       </span>
                     )}
                     {l.assigned && !l.appliedOfferTitle && (

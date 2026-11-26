@@ -28,6 +28,9 @@ const FORBIDDEN = [
   // path (or the bare directory) is a violation.
   /from\s+["'][^"']*lib\/orders\/(?!submit["'])[^"']*["']/,
   /from\s+["'][^"']*lib\/orders["']/,
+  // Specials (0019): lib/specials-data reads with the service role. Portal code uses
+  // lib/portal/specials-data (the customer's own session) instead.
+  /from\s+["'][^"']*lib\/specials-data["']/,
 ];
 
 function walk(dir) {

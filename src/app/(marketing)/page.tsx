@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getCategoryChrome } from "@/lib/catalog";
+import { HomeSpecials } from "@/components/specials/home-specials";
 import {
   fetchPublicCatalog,
   visibleCategories,
@@ -18,6 +19,7 @@ export default async function Home() {
   return (
     <>
       <Hero />
+      <HomeSpecials />
       <LogoCloud />
       <WhyUs />
       <SourcingStory />
