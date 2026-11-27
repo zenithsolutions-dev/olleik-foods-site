@@ -74,9 +74,23 @@ const CHROME: Record<string, CategoryChrome> = {
     imageAlt: "Three cups of latte art viewed from above",
     gradient: DEFAULT_GRADIENT,
   },
+  seafood: {
+    blurb: "Fresh and frozen fish and shellfish, cut to order.",
+    image: "/categories/seafood.jpg",
+    imageAlt: "A fresh Atlantic salmon fillet",
+    gradient: DEFAULT_GRADIENT,
+  },
+  frozen: {
+    blurb: "Frozen bakery, proteins, and ready-to-cook staples.",
+    image: "/categories/frozen.jpg",
+    imageAlt: "Brioche burger buns",
+    gradient: DEFAULT_GRADIENT,
+  },
   "packaging-disposables": {
     blurb: "Disposables, take-out packaging, sanitation, and PPE.",
-    gradient: "from-brand-mist via-brand-soft to-accent-soft/60",
+    image: "/categories/packaging-disposables.jpg",
+    imageAlt: "Paper hot cups and take-out packaging",
+    gradient: DEFAULT_GRADIENT,
   },
 };
 
