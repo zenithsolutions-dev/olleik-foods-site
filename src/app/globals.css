@@ -64,6 +64,109 @@ body {
 .fade-up-delay-2 { animation: fadeUp 0.8s 0.16s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .fade-up-delay-3 { animation: fadeUp 0.8s 0.24s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
+/* ============================================================================
+   MOTION + INTERACTION LAYER. Colors come from the existing palette; only
+   transform / opacity / shadow / color move. Everything is disabled or reduced
+   under prefers-reduced-motion at the bottom of this block.
+   ========================================================================= */
+
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 150ms;
+  --dur-base: 260ms;
+}
+
+html { scroll-behavior: smooth; }
+
+::selection { background: var(--accent-soft); color: var(--brand-deep); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Warm, thin scrollbars instead of the default grey ones. */
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+  border: 2px solid var(--background);
+}
+
+/* Numbers line up in tables and totals. */
+table { font-variant-numeric: tabular-nums; }
+
+/* Every link and button eases between states with one shared curve. */
+a, button, summary, input, select, textarea {
+  transition-timing-function: var(--ease-out);
+  transition-duration: var(--dur-base);
+}
+
+/* Press feedback: controls sink slightly while held. */
+button:not(:disabled):active,
+a[class*="rounded-full"]:active,
+a[class*="rounded-xl"]:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: var(--dur-fast);
+}
+
+/* Primary (accent) buttons rise on hover and deepen their shadow. */
+:is(a, button).bg-accent:not(:disabled):hover { transform: translateY(-1px); }
+
+/* Cards that act as links or tiles: lift, deeper soft shadow, stronger edge. */
+.lift {
+  transition: transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+.lift:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-strong);
+  box-shadow: 0 18px 34px -18px rgba(14, 44, 32, 0.35);
+}
+.lift img { transition: transform 600ms var(--ease-out); }
+.lift:hover img { transform: scale(1.04); }
+
+/* Table rows light up under the pointer so long lists are easy to follow. */
+tbody tr { transition: background-color var(--dur-fast) var(--ease-out); }
+tbody tr:hover { background-color: var(--brand-mist); }
+
+/* Quick, quiet arrival for app screens (admin and portal): no waiting. */
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.screen-in { animation: screenIn 320ms var(--ease-out) both; }
+
+/* Public-site sections ease in as they scroll into view. Content is fully
+   visible by default; browsers without scroll timelines just show it. */
+@supports (animation-timeline: view()) {
+  @keyframes revealIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: none; }
+  }
+  .reveal {
+    animation: revealIn linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+  .lift:hover, :is(a, button).bg-accent:hover { transform: none; }
+  .lift:hover img { transform: none; }
+  .reveal { animation: none; opacity: 1; transform: none; }
+}
+
 .grain {
   position: relative;
 }

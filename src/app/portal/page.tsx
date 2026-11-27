@@ -59,7 +59,7 @@ export default async function PortalDashboardPage({
       <div className="grid gap-4 sm:grid-cols-2">
         <Link
           href="/portal/catalog"
-          className="rounded-2xl border border-[var(--border)] bg-surface p-6 transition hover:border-[var(--border-strong)] hover:shadow-lg"
+          className="lift rounded-2xl border border-[var(--border)] bg-surface p-6"
         >
           <p className="text-xs font-medium uppercase tracking-wider text-muted">My catalog</p>
           <p className="font-display mt-2 text-3xl font-semibold text-brand-deep">{productCount}</p>
@@ -67,7 +67,7 @@ export default async function PortalDashboardPage({
         </Link>
         <Link
           href="/portal/offers"
-          className="rounded-2xl border border-[var(--border)] bg-surface p-6 transition hover:border-[var(--border-strong)] hover:shadow-lg"
+          className="lift rounded-2xl border border-[var(--border)] bg-surface p-6"
         >
           <p className="text-xs font-medium uppercase tracking-wider text-muted">Active offers</p>
           <p className="font-display mt-2 text-3xl font-semibold text-brand-deep">{offers.length}</p>

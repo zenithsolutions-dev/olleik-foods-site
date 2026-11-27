@@ -111,7 +111,7 @@ export default async function AdminLayout({
             {/* Order alerts stay visible on phones too (never inside the menu). */}
             <OrderAlertsWidget />
           </header>
-          <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10">{children}</main>
+          <main className="screen-in min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10">{children}</main>
         </div>
       </div>
       </OrderAlertsProvider>

@@ -24,7 +24,7 @@ export function SpecialCard({
   const title = <span className={special.isSoldOut ? "text-muted" : "text-brand-deep"}>{special.title}</span>;
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-surface shadow-sm">
+    <article className="lift flex h-full flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-surface shadow-sm">
       {/* No picture, no picture area: an empty block would only push the offer down the screen. */}
       {special.imageUrl && (
         <div className="aspect-[16/10] bg-brand-mist">

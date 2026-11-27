@@ -51,7 +51,7 @@ export default async function PortalLayout({
         </div>
         <PortalNav />
       </header>
-      <main className="mx-auto max-w-6xl px-6 py-8 md:py-10">{children}</main>
+      <main className="screen-in mx-auto max-w-6xl px-6 py-8 md:py-10">{children}</main>
     </div>
     </CartProvider>
   );

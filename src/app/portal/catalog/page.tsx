@@ -105,7 +105,7 @@ export default async function PortalCatalogPage({
             {items.map((p) => (
               <div
                 key={p.productId}
-                className="overflow-hidden rounded-2xl border border-[var(--border)] bg-surface"
+                className="lift overflow-hidden rounded-2xl border border-[var(--border)] bg-surface"
               >
                 <div className="relative aspect-[4/3] w-full bg-brand-mist">
                   {p.imageUrl ? (
