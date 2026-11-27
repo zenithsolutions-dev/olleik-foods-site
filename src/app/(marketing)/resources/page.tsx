@@ -32,13 +32,13 @@ export default function ResourcesPage() {
       </section>
 
       {/* Article list */}
-      <section className="mx-auto max-w-5xl px-6 pb-24">
+      <section className="reveal mx-auto max-w-5xl px-6 pb-24">
         <div className="grid gap-5">
           {articles.map((a) => (
             <Link
               key={a.slug}
               href={`/resources/${a.slug}`}
-              className="group rounded-3xl border border-[var(--border)] bg-surface p-7 transition hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_30px_60px_-30px_rgba(20,53,39,0.25)] md:p-8"
+              className="group rounded-3xl border border-[var(--border)] bg-surface p-7 lift md:p-8"
             >
               <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.13em]">
                 <span className="rounded-full bg-accent-soft px-3 py-1 text-accent-deep">

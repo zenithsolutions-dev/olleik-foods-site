@@ -103,7 +103,7 @@ export function CustomersClient({
         {filtered.map((c) => (
           <div
             key={c.id}
-            className="relative rounded-2xl border border-[var(--border)] bg-surface p-5 transition hover:border-[var(--border-strong)] hover:shadow-lg"
+            className="relative rounded-2xl border border-[var(--border)] bg-surface p-5 lift"
           >
             <Link href={`/admin/customers/${c.id}`} className="block">
               <div className="flex items-start justify-between gap-3">

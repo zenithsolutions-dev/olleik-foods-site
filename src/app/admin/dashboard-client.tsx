@@ -468,7 +468,7 @@ function AttentionCard({
   return (
     <Link
       href={href}
-      className="rounded-2xl border border-amber-200 bg-amber-50/40 p-5 transition hover:border-amber-400"
+      className="rounded-2xl border border-amber-200 bg-amber-50/40 p-5 transition hover:border-amber-400 hover:shadow-sm"
     >
       <p className="text-xs font-medium uppercase tracking-wider text-amber-900">{label}</p>
       <p className="font-display mt-2 text-3xl font-semibold tracking-tight text-amber-900">

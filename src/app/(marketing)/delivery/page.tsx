@@ -69,7 +69,7 @@ export default function DeliveryPage() {
       </section>
 
       {/* How delivery works */}
-      <section className="mx-auto max-w-7xl px-6 py-12 md:py-16">
+      <section className="reveal mx-auto max-w-7xl px-6 py-12 md:py-16">
         <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
             How it works
@@ -100,7 +100,7 @@ export default function DeliveryPage() {
       </section>
 
       {/* Features */}
-      <section className="bg-brand-mist/40 py-20 md:py-24">
+      <section className="reveal bg-brand-mist/40 py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid gap-4 md:grid-cols-2">
             {features.map((f) => (
@@ -127,7 +127,7 @@ export default function DeliveryPage() {
       </section>
 
       {/* Coverage / CTA */}
-      <section className="px-6 py-20 md:py-24">
+      <section className="reveal px-6 py-20 md:py-24">
         <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-brand-deep px-8 py-14 text-white shadow-[0_40px_80px_-30px_rgba(20,53,39,0.55)] md:px-16 md:py-16">
           <div className="absolute inset-0 grain" aria-hidden />
           <div className="relative grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">
