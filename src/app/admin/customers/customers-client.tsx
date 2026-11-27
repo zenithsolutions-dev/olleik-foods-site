@@ -191,8 +191,11 @@ export function CustomerFormModal({
   const [email, setEmail] = useState(initial?.email ?? "");
   const [phone, setPhone] = useState(initial?.phone ?? "");
   const [address, setAddress] = useState(initial?.address ?? "");
+  // New customers default to ACTIVE, matching lead conversion. "pending" used
+  // to be the default here, which let an admin invite a manually added
+  // customer who then set a password and was bounced with "not active yet".
   const [status, setStatus] = useState<CustomerStatus>(
-    initial && initial.status !== "archived" ? initial.status : "pending",
+    initial && initial.status !== "archived" ? initial.status : "active",
   );
   const [paymentTerms, setPaymentTerms] = useState<PaymentTerms>(
     initial?.paymentTerms ?? "card-on-file",

@@ -1,6 +1,7 @@
 "use server";
 
 import { getAdminClient } from "@/lib/supabase/admin";
+import { duplicateMessageFor } from "@/lib/duplicates/load-accounts";
 
 export type ApplyState = {
   status: "idle" | "ok" | "error";
@@ -35,6 +36,15 @@ export async function submitApplication(
 
   const admin = getAdminClient();
   if (admin) {
+    // Block a second application or account for the same email, phone or
+    // business name. Checked against customers and open applications.
+    const duplicate = await duplicateMessageFor(
+      admin,
+      { email: data.email, phone: data.phone, businessName: data.businessName },
+      { includeOpenLeads: true },
+    );
+    if (duplicate) return { status: "error", message: duplicate };
+
     const { error } = await admin.from("leads").insert({
       business_name: data.businessName,
       contact_name: data.contactName,
