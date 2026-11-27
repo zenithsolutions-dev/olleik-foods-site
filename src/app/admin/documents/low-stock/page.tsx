@@ -16,7 +16,7 @@ export default async function LowStockStatementPage() {
   return (
     <div>
       <PrintToolbar backHref="/admin/products?stock=low" backLabel="Back to products" />
-      <StockStatementDocument business={getBusinessIdentity()} model={model} />
+      <StockStatementDocument business={await getBusinessIdentity()} model={model} />
     </div>
   );
 }

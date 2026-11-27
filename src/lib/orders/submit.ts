@@ -1,4 +1,6 @@
 import "server-only";
+import { after } from "next/server";
+import { notifyNewOrder } from "@/lib/email/notify";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getAdminClient } from "@/lib/supabase/admin";
 import {
@@ -7,6 +9,7 @@ import {
   offerAppliesToProduct,
 } from "@/lib/pricing";
 import type { OfferDiscountKind, ProductUnit } from "@/lib/admin/types";
+import { pickSpecialForLine, type SpecialRow } from "@/lib/specials";
 
 // CP-3a PRIVILEGED ORDERS ZONE (approved D-O0). This module is the ONLY place
 // portal-triggered code may touch the service-role client, and portal files may
@@ -45,6 +48,7 @@ export type PricedCartLine = {
   sku: string;
   unit: ProductUnit;
   unitSize: string;
+  imageUrl: string | null;
   qty: number;
   assigned: boolean;
   // CP-3b (D-O6): the boolean availability signal — never a quantity. An
@@ -54,6 +58,10 @@ export type PricedCartLine = {
   unitPriceCents: number; // charged (post-offer; offers apply to assigned only, D-O2)
   appliedOfferTitle: string | null;
   lineTotalCents: number;
+  // Public specials (0019): the special this line is priced by, if any. `notice` explains a line that
+  // cannot be ordered as it stands (e.g. more than is left at the special price).
+  specialId: string | null;
+  notice: string | null;
 };
 
 export type CartPricing = {
@@ -96,6 +104,7 @@ type ProductRow = {
   unit: ProductUnit;
   unit_size: string;
   list_price_cents: number;
+  image_url: string | null;
 };
 
 type OfferRow = {
@@ -135,7 +144,7 @@ export async function resolveCartPricing(lines: CartLineInput[]): Promise<CartPr
       // RLS: only products visible under the caller's CP-2 mode come back.
       supabase
         .from("products")
-        .select("id, name, sku, unit, unit_size, list_price_cents")
+        .select("id, name, sku, unit, unit_size, list_price_cents, image_url")
         .in("id", ids)
         .eq("is_active", true),
       supabase.from("customer_products").select("product_id, price_cents"),
@@ -182,6 +191,38 @@ export async function resolveCartPricing(lines: CartLineInput[]): Promise<CartPr
   }));
   const now = new Date();
 
+  // Public specials (0019) for the products in this cart. Read with the service role on purpose: a special
+  // is open to EVERY customer, including for a product that is not in their own catalog — so its product
+  // row may be invisible to the session client above. `visible` remembers which products the customer can
+  // buy at their normal price; a product known only through a special can be bought ONLY at the special.
+  const visible = new Set(products.keys());
+  const specialsByProduct = new Map<string, SpecialRow>();
+  const admin = getAdminClient();
+  if (admin) {
+    const { data: specialRows, error: specialErr } = await admin
+      .from("specials")
+      .select("*")
+      .in("product_id", ids)
+      .eq("is_published", true);
+    // Before migration 0019 the table does not exist: no specials, ordering works as before.
+    if (specialErr && specialErr.code !== "42P01" && specialErr.code !== "PGRST205")
+      console.error("[orders] specials read failed:", specialErr.message);
+    for (const s of (specialRows as SpecialRow[]) ?? []) specialsByProduct.set(s.product_id, s);
+
+    const hiddenIds = [...specialsByProduct.keys()].filter((id) => !visible.has(id));
+    if (hiddenIds.length > 0) {
+      const { data: hiddenRows } = await admin
+        .from("products")
+        .select("id, name, sku, unit, unit_size, list_price_cents, is_available, image_url")
+        .in("id", hiddenIds)
+        .eq("is_active", true);
+      for (const p of (hiddenRows as (ProductRow & { is_available: boolean })[]) ?? []) {
+        products.set(p.id, p);
+        if (!p.is_available) unavailable.add(p.id);
+      }
+    }
+  }
+
   const priced: PricedCartLine[] = [];
   const missing: string[] = [];
   for (const l of lines) {
@@ -205,19 +246,49 @@ export async function resolveCartPricing(lines: CartLineInput[]): Promise<CartPr
           }))
       : [];
     const res = applyOffersToPrice(base, applicable);
+    const special = specialsByProduct.get(p.id) ?? null;
+    const pick = pickSpecialForLine({
+      special,
+      qty: l.qty,
+      normalUnitPriceCents: visible.has(p.id) ? res.finalCents : null,
+      now,
+    });
+    if (pick.kind === "unavailable") {
+      missing.push(l.productId);
+      continue;
+    }
+    // "short" still shows the special price, so the customer sees what they would pay for a smaller quantity.
+    const unitPriceCents =
+      pick.kind === "special"
+        ? pick.unitPriceCents
+        : pick.kind === "short" && special
+          ? special.special_price_cents
+          : res.finalCents;
+    const viaSpecial = pick.kind === "special" || pick.kind === "short";
     priced.push({
       productId: p.id,
       name: p.name,
       sku: p.sku,
       unit: p.unit,
       unitSize: p.unit_size,
+      imageUrl: p.image_url,
       qty: l.qty,
       assigned,
-      available: !unavailable.has(p.id),
-      basePriceCents: base,
-      unitPriceCents: res.finalCents,
-      appliedOfferTitle: res.appliedOffer?.title ?? null,
-      lineTotalCents: l.qty * res.finalCents,
+      available: !unavailable.has(p.id) && pick.kind !== "short",
+      // A product this customer can only buy through the special has no "normal" price for them: its list
+      // price belongs to a catalog they cannot see, so it must not leave the server (it would be shown as
+      // "was $…" and stored on their order line).
+      basePriceCents: visible.has(p.id) ? base : unitPriceCents,
+      unitPriceCents,
+      appliedOfferTitle: viaSpecial ? `Special: ${pick.title}` : (res.appliedOffer?.title ?? null),
+      lineTotalCents: l.qty * unitPriceCents,
+      specialId: pick.kind === "special" ? pick.specialId : null,
+      notice:
+        pick.kind === "short"
+          ? pick.remaining > 0
+            ? `Only ${pick.remaining} left at the special price`
+            : "This special is sold out"
+          : null,
     });
   }
 
@@ -273,7 +344,7 @@ export async function submitOrderForCustomer(
     return {
       ok: false,
       code: "rate-limited",
-      message: "You've reached the hourly order limit. Please try again later or call your Olleik rep.",
+      message: "You've reached the hourly order limit. Please try again later or call your sales rep.",
     };
   }
 
@@ -301,9 +372,11 @@ export async function submitOrderForCustomer(
     return {
       ok: false,
       code: "unavailable",
-      message: `Currently unavailable: ${unavailableLines
-        .map((l) => l.name)
-        .join(", ")}. Remove ${unavailableLines.length === 1 ? "it" : "them"} and try again.`,
+      message: unavailableLines.some((l) => l.notice)
+        ? `${unavailableLines.map((l) => (l.notice ? `${l.name}: ${l.notice.toLowerCase()}` : `${l.name} is unavailable`)).join(". ")}. Change the quantity or remove ${unavailableLines.length === 1 ? "it" : "them"}, then try again.`
+        : `Currently unavailable: ${unavailableLines
+            .map((l) => l.name)
+            .join(", ")}. Remove ${unavailableLines.length === 1 ? "it" : "them"} and try again.`,
       pricing,
     };
   }
@@ -352,15 +425,27 @@ export async function submitOrderForCustomer(
       applied_offer_title: l.appliedOfferTitle,
       was_assigned: l.assigned,
       cost_cents: costs.get(l.productId) ?? null,
+      special_id: l.specialId,
     })),
   });
   if (rpcErr || !orderId) {
     console.error("[orders] submit_order_atomic failed:", rpcErr?.message);
+    // The database refused to take the special's quantity: someone else got the last units, or the special
+    // changed, between pricing this cart and writing the order. Nothing was written.
+    if (rpcErr?.message?.includes("SPECIAL_SOLD_OUT")) {
+      return {
+        ok: false,
+        code: "unavailable",
+        message: "A special in your cart just sold out or changed. Review your cart and try again.",
+      };
+    }
     if (rpcErr?.message?.includes("does not exist")) {
       return { ok: false, code: "not-configured", message: "Ordering is not enabled yet (migration 0009)." };
     }
     return { ok: false, code: "error", message: "Could not submit your order. Please try again." };
   }
 
+  // After the response: a slow or failing email must never delay or fail the customer's order.
+  after(() => notifyNewOrder(orderId as string));
   return { ok: true, orderId: orderId as string };
 }

@@ -18,7 +18,7 @@ export default async function PortalOffersPage() {
           Offers
         </h1>
         <p className="mt-2 text-sm text-muted">
-          Current promotions and account perks set up for you by your Olleik rep.
+          Current promotions and account perks set up for you by your sales rep.
         </p>
       </div>
 

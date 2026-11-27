@@ -1,5 +1,6 @@
 import type { ReportModel, ReportSection } from "@/lib/documents/report-model";
 import { DocumentShell, DocTable, docCell, docCellRight } from "./document-shell";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-8c: the ONE report renderer, composing CP-6's DocumentShell/DocTable —
 // no print CSS touched. The INTERNAL banner + watermark are driven by
@@ -12,7 +13,7 @@ import { DocumentShell, DocTable, docCell, docCellRight } from "./document-shell
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 const day = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: "America/Toronto" });
+  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: BUSINESS_TIME_ZONE });
 
 function SectionHeading({ title, period }: { title: string; period: string }) {
   return (

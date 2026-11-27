@@ -217,6 +217,7 @@ const readBody = (req) => new Promise((ok) => {
   req.on("end", () => ok(Buffer.concat(parts)));
 });
 const cors = { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS", "access-control-expose-headers": "*" };
+const sandboxInbox = []; // in memory: emptied when the stack stops
 const gw = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${GW_PORT}`);
   const raw = await readBody(req);
@@ -259,6 +260,23 @@ const gw = http.createServer(async (req, res) => {
         for (const n of names) rmSync(join(STORE, rel, n), { force: true });
         res.writeHead(200, { "content-type": "application/json", ...cors });
         return res.end("[]");
+      }
+    }
+    // Local test inbox standing in for the email service (same request shape as its POST /emails).
+    // Nothing leaves this machine. A recipient at @fail.test is refused, to exercise the failure path.
+    //   GET /email-sandbox/emails    list what was "sent"       DELETE /email-sandbox/emails    empty the inbox
+    if (url.pathname === "/email-sandbox/emails") {
+      res.setHeader("content-type", "application/json");
+      if (req.method === "GET") return res.writeHead(200, cors).end(JSON.stringify(sandboxInbox));
+      if (req.method === "DELETE") { sandboxInbox.length = 0; return res.writeHead(200, cors).end("[]"); }
+      if (req.method === "POST") {
+        const mail = JSON.parse(raw.toString() || "{}");
+        if ([mail.to].flat().some((t) => String(t).endsWith("@fail.test"))) {
+          return res.writeHead(422, cors).end(JSON.stringify({ name: "validation_error", message: "The fail.test domain is not verified." }));
+        }
+        const id = randomUUID();
+        sandboxInbox.push({ id, receivedAt: new Date().toISOString(), ...mail });
+        return res.writeHead(200, cors).end(JSON.stringify({ id }));
       }
     }
     res.writeHead(404, { "content-type": "application/json", ...cors }).end(JSON.stringify({ message: "not emulated" }));

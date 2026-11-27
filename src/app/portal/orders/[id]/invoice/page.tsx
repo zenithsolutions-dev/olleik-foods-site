@@ -36,7 +36,7 @@ export default async function PortalInvoicePage({
   }
 
   const model = buildInvoiceModel({
-    business: getBusinessIdentity(),
+    business: await getBusinessIdentity(),
     billTo: {
       businessName: customer.businessName,
       contactName: customer.contactName,

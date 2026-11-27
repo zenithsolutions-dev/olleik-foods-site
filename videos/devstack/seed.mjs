@@ -83,6 +83,11 @@ const accounts = {};
 const admin = { email: "admin@olleik-demo.test", password: pw() };
 admin.id = (await api("/admin/users", { ...admin, email_confirm: true })).id;
 accounts.admin = admin;
+// A second admin who is NOT an owner (dev.mjs lists only the first in OWNER_EMAILS): for testing that
+// cost, profit and margins stay hidden from non-owner admins.
+const staff = { email: "staff@olleik-demo.test", password: pw() };
+staff.id = (await api("/admin/users", { ...staff, email_confirm: true })).id;
+accounts.staff = staff;
 
 // ——— customers (fictional) ———
 const CUSTOMERS = [
@@ -184,5 +189,5 @@ n += 4;
 
 keys.demoAccounts = accounts;
 writeFileSync(KEYS, JSON.stringify(keys, null, 2));
-console.log(`seeded: ${CUSTOMERS.length} customers (${Object.keys(accounts).length - 1} with logins), 1 admin, ${LEADS.length + 1} leads, ${n} orders, ${products.length} products`);
+console.log(`seeded: ${CUSTOMERS.length} customers (${Object.keys(accounts).length - 2} with logins), 2 admins (1 owner), ${LEADS.length + 1} leads, ${n} orders, ${products.length} products`);
 await db.end();

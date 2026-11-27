@@ -73,7 +73,19 @@ export function CustomerDetailClient({
   pricingMeta,
   visibility,
   live,
+  showCosts,
+  earned,
 }: {
+  showCosts: boolean; // false for non-owner admins: no cost/profit/margin UI
+  // Profit actually earned from this customer's accepted orders (owner only; null for everyone else).
+  earned: {
+    orderCount: number;
+    revenueCents: number;
+    profitCents: number | null;
+    marginPct: number | null;
+    linesWithoutCost: number;
+    isTruncated: boolean;
+  } | null;
   detail: CustomerDetail;
   allProducts: Product[];
   categories: Category[];
@@ -250,11 +262,10 @@ export function CustomerDetailClient({
       "Product",
       "SKU",
       "Category",
-      "Cost",
+      ...(showCosts ? ["Cost"] : []),
       "List price",
       "Customer price",
-      "Price source",
-      "Profit",
+      ...(showCosts ? ["Price source", "Profit"] : []),
       "After offer",
     ];
     const lines = assigned.map((a) => {
@@ -265,11 +276,15 @@ export function CustomerDetailClient({
         esc(a.name),
         esc(a.sku),
         esc((a.categoryId ? catById[a.categoryId] : undefined) ?? ""),
-        esc(rp?.costCents != null ? (rp.costCents / 100).toFixed(2) : ""),
+        ...(showCosts ? [esc(rp?.costCents != null ? (rp.costCents / 100).toFixed(2) : "")] : []),
         esc((a.listPriceCents / 100).toFixed(2)),
         esc((effective / 100).toFixed(2)),
-        esc(rp?.sourceChip ?? ""),
-        esc(rp?.profitCents != null ? (rp.profitCents / 100).toFixed(2) : ""),
+        ...(showCosts
+          ? [
+              esc(rp?.sourceChip ?? ""),
+              esc(rp?.profitCents != null ? (rp.profitCents / 100).toFixed(2) : ""),
+            ]
+          : []),
         esc(op?.discounted ? (op.finalCents / 100).toFixed(2) : ""),
       ].join(",");
     });
@@ -459,6 +474,7 @@ export function CustomerDetailClient({
             >
               <FileText size={14} /> Customer copy
             </Link>
+            {showCosts && (
             <Link
               href={`/admin/customers/${customer.id}/statement/internal`}
               className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-surface px-4 py-2 text-sm font-medium text-foreground/80 hover:border-accent hover:text-accent-deep"
@@ -466,6 +482,7 @@ export function CustomerDetailClient({
             >
               <Lock size={14} /> My copy
             </Link>
+            )}
             <button
               type="button"
               onClick={() => {
@@ -543,6 +560,39 @@ export function CustomerDetailClient({
           Pricing &amp; visibility
         </h2>
         <div className="mt-2 space-y-4">
+          {showCosts && earned && (
+            <div className="rounded-2xl border border-[var(--border)] bg-surface p-5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Profit from this customer · all accepted orders
+              </p>
+              <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1">
+                <p
+                  className={`font-display text-2xl font-semibold ${
+                    earned.profitCents != null && earned.profitCents < 0 ? "text-red-700" : "text-brand-deep"
+                  }`}
+                >
+                  {earned.profitCents != null ? formatMoney(earned.profitCents) : "—"}
+                  {earned.marginPct != null && (
+                    <span className="ml-2 text-sm font-medium text-muted">
+                      {earned.marginPct.toFixed(1)}% of sales
+                    </span>
+                  )}
+                </p>
+                <p className="text-sm text-muted">
+                  {formatMoney(earned.revenueCents)} sales · {earned.orderCount} order
+                  {earned.orderCount === 1 ? "" : "s"}
+                </p>
+              </div>
+              {(earned.linesWithoutCost > 0 || earned.isTruncated) && (
+                <p className="mt-2 text-xs font-medium text-amber-700">
+                  {earned.linesWithoutCost > 0 &&
+                    `${earned.linesWithoutCost} order line${earned.linesWithoutCost === 1 ? " has" : "s have"} no recorded cost, so this profit is partial. `}
+                  {earned.isTruncated && "Only the most recent orders are included."}
+                </p>
+              )}
+            </div>
+          )}
+          {showCosts && (
           <MarginCard
             customerName={customer.businessName}
             rule={customerMarginRule}
@@ -554,6 +604,7 @@ export function CustomerDetailClient({
             }
             onToggle={(rule) => run(() => togglePricingRule(rule.id, !rule.isActive))}
           />
+          )}
           {!isArchived && (
             <VisibilityCard
               customerId={customer.id}
@@ -618,6 +669,7 @@ export function CustomerDetailClient({
             >
               Export CSV
             </button>
+            {showCosts && (
             <button
               type="button"
               onClick={() => setRecomputeOpen(true)}
@@ -625,6 +677,7 @@ export function CustomerDetailClient({
             >
               <RotateCcw size={14} /> Recompute prices
             </button>
+            )}
             <button
               type="button"
               onClick={() => setCopyOpen(true)}
@@ -657,7 +710,7 @@ export function CustomerDetailClient({
             No products assigned yet. This customer can&apos;t see anything in their portal.
           </p>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto"><table className="w-full min-w-[760px] text-sm">
             <thead>
               <tr className="border-b border-[var(--border)] bg-brand-mist/40 text-left text-[11px] font-semibold uppercase tracking-wider text-muted">
                 <th className="w-10 px-6 py-3">
@@ -674,10 +727,10 @@ export function CustomerDetailClient({
                 </th>
                 <th className="px-6 py-3">Product</th>
                 <th className="px-6 py-3">Category</th>
-                <th className="px-4 py-3 text-right">Cost</th>
+                {showCosts && <th className="px-4 py-3 text-right">Cost</th>}
                 <th className="px-4 py-3 text-right">List</th>
                 <th className="px-4 py-3 text-right">Customer price</th>
-                <th className="px-4 py-3 text-right">Profit</th>
+                {showCosts && <th className="px-4 py-3 text-right">Profit</th>}
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -690,6 +743,7 @@ export function CustomerDetailClient({
                   pricing={rowPricing[a.productId]}
                   categoryName={(a.categoryId ? catById[a.categoryId] : undefined) ?? "—"}
                   busy={busy}
+                  showCosts={showCosts}
                   selected={selected.has(a.productId)}
                   onToggleSelect={() => toggleSelected(a.productId)}
                   onSet={(cents) =>
@@ -705,11 +759,12 @@ export function CustomerDetailClient({
               <tr className="border-t-2 border-[var(--border-strong)] bg-brand-mist/30 font-semibold">
                 <td className="px-6 py-3" colSpan={3}>
                   Totals ({assigned.length} products
-                  {totals.withCost < assigned.length
+                  {showCosts && totals.withCost < assigned.length
                     ? `, ${assigned.length - totals.withCost} without cost`
                     : ""}
                   )
                 </td>
+                {showCosts && (
                 <td className="px-4 py-3 text-right font-mono">
                   {formatMoney(totals.cost)}
                   {totals.withCost < assigned.length && (
@@ -718,8 +773,10 @@ export function CustomerDetailClient({
                     </span>
                   )}
                 </td>
+                )}
                 <td className="px-4 py-3" />
                 <td className="px-4 py-3 text-right font-mono">{formatMoney(totals.sale)}</td>
+                {showCosts && (
                 <td
                   className={`px-4 py-3 text-right font-mono ${totals.profit >= 0 ? "text-emerald-700" : "text-red-700"}`}
                 >
@@ -731,10 +788,11 @@ export function CustomerDetailClient({
                     </span>
                   )}
                 </td>
+                )}
                 <td className="px-4 py-3" />
               </tr>
             </tfoot>
-          </table>
+          </table></div>
         )}
       </section>
 
@@ -905,7 +963,7 @@ export function CustomerDetailClient({
         />
       )}
 
-      {recomputeOpen && (
+      {showCosts && recomputeOpen && (
         <RecomputeModal
           customerId={customer.id}
           customerName={customer.businessName}
@@ -1056,7 +1114,9 @@ function CustomerProductRow({
   onToggleSelect,
   onSet,
   onRemove,
+  showCosts,
 }: {
+  showCosts: boolean;
   row: AssignedProduct;
   priced?: { finalCents: number; discounted: boolean; originalCents: number; appliedTitle: string | null };
   pricing?: { costCents: number | null; profitCents: number | null; sourceChip: string };
@@ -1098,9 +1158,11 @@ function CustomerProductRow({
         </p>
       </td>
       <td className="px-6 py-3 text-muted">{categoryName}</td>
+      {showCosts && (
       <td className="px-4 py-3 text-right font-mono text-muted">
         {pricing?.costCents != null ? formatMoney(pricing.costCents) : "—"}
       </td>
+      )}
       <td className="px-4 py-3 text-right font-mono text-muted">{formatMoney(row.listPriceCents)}</td>
       <td className="px-4 py-3 text-right">
         {editing ? (
@@ -1166,6 +1228,7 @@ function CustomerProductRow({
           </button>
         )}
       </td>
+      {showCosts && (
       <td className="px-4 py-3 text-right">
         {pricing?.profitCents == null ? (
           <span
@@ -1199,6 +1262,7 @@ function CustomerProductRow({
           </div>
         )}
       </td>
+      )}
       <td className="px-4 py-3 text-right">
         <button
           type="button"

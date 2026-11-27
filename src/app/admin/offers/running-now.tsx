@@ -1,13 +1,14 @@
 import Link from "next/link";
 import type { OffersOverview, OverviewOffer } from "@/lib/admin/offers-overview";
 import { formatDiscount } from "@/lib/admin/offers-format";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-8a "Running now" (gap F1): the one screen that answers "what is running,
 // on whom, until when?". Read-only server component — every row links to the
 // customer it affects. Urgency is grouping + words, never colour alone.
 
 const fmtDay = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: "America/Toronto" });
+  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: BUSINESS_TIME_ZONE });
 
 function OfferRow({ o, marker }: { o: OverviewOffer; marker?: string }) {
   const discount = formatDiscount(o.discountKind, o.discountValue);

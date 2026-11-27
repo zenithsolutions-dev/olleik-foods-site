@@ -28,7 +28,7 @@ export default async function PortalAccountPage() {
           Account
         </h1>
         <p className="mt-2 text-sm text-muted">
-          Your account details. To update anything here, contact your Olleik rep.
+          Your account details. To update anything here, contact your sales rep.
         </p>
       </div>
 

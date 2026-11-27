@@ -1,7 +1,7 @@
 import "server-only";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isAllowedAdmin } from "./auth";
+import { isAllowedAdmin, isOwner } from "./auth";
 
 // Authoritative server-side admin check. Call this in admin server components /
 // server actions — NOT just in proxy.ts. Per the Next.js docs, proxy is an
@@ -28,4 +28,17 @@ export async function requireAdmin(): Promise<string | null> {
     redirect("/admin-login");
   }
   return user!.email ?? null;
+}
+
+// Cost, profit and margins are owner-only (see isOwner). Demo mode (no Supabase) has no real data: owner.
+export async function getAdminAccess(): Promise<{ email: string | null; isOwner: boolean }> {
+  const email = await requireAdmin();
+  return { email, isOwner: email === null || isOwner(email) };
+}
+
+// For pages and actions that exist only to show or change cost, profit or margins.
+export async function requireOwner(): Promise<string | null> {
+  const { email, isOwner: owner } = await getAdminAccess();
+  if (!owner) redirect("/admin");
+  return email;
 }

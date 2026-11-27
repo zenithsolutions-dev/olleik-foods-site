@@ -10,6 +10,7 @@ import type {
   StatementOrder,
 } from "@/lib/documents/customer-statement-model";
 import { DocumentShell, DocTable, docCell, docCellRight } from "./document-shell";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-7: the ONE statement renderer. The admin's customer copy, the admin's
 // internal copy and the customer's own portal statement all render through
@@ -27,7 +28,7 @@ import { DocumentShell, DocTable, docCell, docCellRight } from "./document-shell
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 const day = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: "America/Toronto" });
+  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: BUSINESS_TIME_ZONE });
 
 function AsideSection({
   heading,

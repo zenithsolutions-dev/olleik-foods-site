@@ -22,6 +22,20 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "5mb",
     },
   },
+  // A statement link's address IS its key (0020): keep it out of other sites' referrer logs, out of search
+  // engines, and out of frames, at the HTTP level and not only through the page's own meta tags.
+  async headers() {
+    return [
+      {
+        source: "/statement/:path*",
+        headers: [
+          { key: "Referrer-Policy", value: "no-referrer" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "X-Frame-Options", value: "DENY" },
+        ],
+      },
+    ];
+  },
   images: {
     // Serve images directly instead of through Vercel's metered Image
     // Optimization. On the free plan that optimizer exhausted its quota and

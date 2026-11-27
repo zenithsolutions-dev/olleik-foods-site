@@ -20,8 +20,14 @@ Object.assign(env, {
   NEXT_PUBLIC_SUPABASE_URL: keys.url,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: keys.anonKey,
   SUPABASE_SERVICE_ROLE_KEY: keys.serviceKey,
-  ADMIN_EMAILS: DEMO_ADMIN,
+  ADMIN_EMAILS: `${DEMO_ADMIN},staff@olleik-demo.test`,
+  OWNER_EMAILS: DEMO_ADMIN, // staff@ is an admin who must not see cost, profit or margins
   NEXT_TELEMETRY_DISABLED: "1",
+  // Email goes to the stack's local test inbox (GET http://127.0.0.1:54321/email-sandbox/emails), never out.
+  EMAIL_API_URL: `${keys.url}/email-sandbox`,
+  EMAIL_API_KEY: "local-sandbox",
+  NEXT_PUBLIC_SITE_URL: "http://localhost:3100",
+  CRON_SECRET: "local-cron-secret",
   // Fictional demo business details for the documents (brief V3.2 §10.1, Pending Review). Videos only: the
   // real registered details must still be entered before handover.
   BUSINESS_LEGAL_NAME: "Olleik Foods Ltd.",
@@ -31,5 +37,6 @@ Object.assign(env, {
 });
 if (!env.NEXT_PUBLIC_SUPABASE_URL.startsWith("http://127.0.0.1:")) throw new Error("refusing to start: the database URL is not the local stand-in");
 
-const child = spawn(process.execPath, [join(ROOT, "node_modules", "next", "dist", "bin", "next"), "dev", "-p", "3100"], { cwd: ROOT, env, stdio: "inherit" });
+const child = spawn(process.execPath, [join(ROOT, "node_modules", "next", "dist", "bin", "next"), // "start" serves an already-built production bundle (for QA); the default is the dev server.
+  process.argv[2] === "start" ? "start" : "dev", "-p", "3100"], { cwd: ROOT, env, stdio: "inherit" });
 child.on("exit", (c) => process.exit(c ?? 0));

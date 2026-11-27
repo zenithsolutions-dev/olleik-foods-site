@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getCategoryChrome } from "@/lib/catalog";
+import { HomeSpecials } from "@/components/specials/home-specials";
 import {
   fetchPublicCatalog,
   visibleCategories,
@@ -18,6 +19,7 @@ export default async function Home() {
   return (
     <>
       <Hero />
+      <HomeSpecials />
       <LogoCloud />
       <WhyUs />
       <SourcingStory />
@@ -386,7 +388,7 @@ function WhyUs() {
     },
   ];
   return (
-    <section id="why" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+    <section id="why" className="reveal mx-auto max-w-7xl px-6 py-24 md:py-32">
       <div className="grid gap-10 md:grid-cols-12 md:items-end">
         <div className="md:col-span-7">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
@@ -430,7 +432,7 @@ function Categories({ categories }: { categories: PublicCategory[] }) {
   // Show up to 6 categories on the homepage; the full set lives on /catalog.
   const cats = categories.slice(0, 6);
   return (
-    <section id="categories" className="relative overflow-hidden bg-brand-mist/40 py-24 md:py-32">
+    <section id="categories" className="reveal relative overflow-hidden bg-brand-mist/40 py-24 md:py-32">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(28,77,58,0.08),_transparent_60%)]"
@@ -517,7 +519,7 @@ function HowItWorks() {
     { n: "03", title: "Order online, anytime", body: "Place, repeat, and adjust orders from your phone. Track delivery and invoices in one place." },
   ];
   return (
-    <section id="how-it-works" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+    <section id="how-it-works" className="reveal mx-auto max-w-7xl px-6 py-24 md:py-32">
       <div className="max-w-2xl">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
           How it works
@@ -755,7 +757,7 @@ function FAQ() {
     },
   ];
   return (
-    <section id="faq" className="bg-brand-mist/30 py-24 md:py-32">
+    <section id="faq" className="reveal bg-brand-mist/30 py-24 md:py-32">
       <div className="mx-auto max-w-5xl px-6">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">

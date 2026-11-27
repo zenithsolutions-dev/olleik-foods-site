@@ -51,6 +51,7 @@ function SiteHeader() {
         <nav className="hidden items-center gap-6 text-sm font-medium text-foreground/80 lg:flex">
           <Link href="/who-we-serve" className="transition hover:text-brand">Who we serve</Link>
           <Link href="/catalog" className="transition hover:text-brand">Catalog</Link>
+          <Link href="/specials" className="transition hover:text-brand">Specials</Link>
           <Link href="/delivery" className="transition hover:text-brand">Delivery</Link>
           <Link href="/about" className="transition hover:text-brand">About</Link>
           <Link href="/contact" className="transition hover:text-brand">Contact</Link>
@@ -120,6 +121,7 @@ function SiteFooter() {
             <ul className="mt-5 space-y-2.5 text-sm text-white/70">
               <li><Link href="/who-we-serve" className="hover:text-white">Who we serve</Link></li>
               <li><Link href="/catalog" className="hover:text-white">Catalog</Link></li>
+              <li><Link href="/specials" className="hover:text-white">Specials</Link></li>
               <li><Link href="/delivery" className="hover:text-white">Delivery</Link></li>
               <li><Link href="/resources" className="hover:text-white">Resources</Link></li>
               <li><Link href="/faq" className="hover:text-white">FAQ</Link></li>

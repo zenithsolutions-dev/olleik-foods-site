@@ -8,6 +8,7 @@ import { DateRangeFilter } from "@/components/date-range-filter";
 import { PrintToolbar } from "@/components/documents/print-toolbar";
 import { ProductStatementClient } from "./product-statement-client";
 import type { StatementProductInput } from "@/lib/documents/statement-models";
+import { getAdminAccess } from "@/lib/admin/require-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export default async function ProductStatementPage({
   searchParams: Promise<RangeSearchParams>;
 }) {
   const range = resolveDateRange(await searchParams);
+  const { isOwner } = await getAdminAccess();
   const [{ products }, { categories }, { costs }, inventory] = await Promise.all([
     fetchAdminProducts(),
     fetchAdminCategories(),
@@ -43,7 +45,7 @@ export default async function ProductStatementPage({
       isAvailable: true, // availability is a portal signal; the stock column carries the detail
       stockQty: inventory.stock[p.id]?.stockQty ?? null,
       lowStockThreshold: inventory.stock[p.id]?.lowStockThreshold ?? null,
-      costCents: costs[p.id] ?? null,
+      costCents: isOwner ? (costs[p.id] ?? null) : null,
     }));
 
   return (
@@ -53,9 +55,10 @@ export default async function ProductStatementPage({
         <DateRangeFilter basePath="/admin/documents/products" range={range} />
       </div>
       <ProductStatementClient
-        business={getBusinessIdentity()}
+        business={await getBusinessIdentity()}
         products={inputs}
         periodLabel={range.preset === "all" ? "All time" : range.label}
+        showCosts={isOwner}
       />
     </div>
   );

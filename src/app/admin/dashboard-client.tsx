@@ -7,6 +7,7 @@ import type { LowStockItem } from "@/lib/admin/inventory-data";
 import type { DashboardStats } from "@/lib/admin/dashboard-data";
 import type { ProductRankRow } from "@/lib/admin/analytics-math";
 import type { CustomerSalesRow } from "@/lib/admin/analytics-data";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-4 command center (approved spec): the merchant opens /admin each morning
 // and understands the day at a glance. Priority order:
@@ -33,7 +34,9 @@ export function DashboardClient({
   topProducts,
   topCustomers,
   inactiveCount,
+  showCosts,
 }: {
+  showCosts: boolean; // false for non-owner admins: no cost/profit UI
   leads: Lead[];
   products: Product[];
   customers: Customer[];
@@ -62,7 +65,7 @@ export function DashboardClient({
   const attentionEmpty =
     lowStock.length === 0 &&
     pendingActivationCount === 0 &&
-    missingCostCount === 0 &&
+    (!showCosts || missingCostCount === 0) &&
     expiringSoon.length === 0 &&
     inactiveCount === 0;
 
@@ -93,6 +96,7 @@ export function DashboardClient({
             }
             href="/admin/orders"
           />
+          {showCosts && (
           <Stat
             label={isToday ? "Today's profit" : `Profit (${stats.periodLabel})`}
             value={stats.todayProfit.profitCents != null ? formatMoney(stats.todayProfit.profitCents) : "—"}
@@ -106,6 +110,7 @@ export function DashboardClient({
                   : "all lines costed"
             }
           />
+          )}
           <Stat
             label={`Pickup / Delivery (${isToday ? "today" : stats.periodLabel})`}
             value={`${t.pickupCount} / ${t.deliveryCount}`}
@@ -146,7 +151,7 @@ export function DashboardClient({
                 : ""}
             </>
           )}
-          <span className="text-muted-soft"> · business days in America/Toronto</span>
+          <span className="text-muted-soft"> · business days in {BUSINESS_TIME_ZONE}</span>
         </p>
 
         {/* CP-8b: period-scoped top-3s — the same figures /admin/analytics
@@ -216,7 +221,7 @@ export function DashboardClient({
         </h2>
         {attentionEmpty ? (
           <p className="rounded-2xl border border-emerald-200 bg-emerald-50/60 px-5 py-4 text-sm font-medium text-emerald-800">
-            ✓ Nothing needs attention — stock is healthy, every active product has a cost, all
+            ✓ Nothing needs attention — stock is healthy, {showCosts ? "every active product has a cost, " : ""}all
             invited customers are signed in, no offer is about to expire, and nobody has gone quiet.
           </p>
         ) : (
@@ -234,7 +239,7 @@ export function DashboardClient({
                   href="/admin/customers"
                 />
               )}
-              {missingCostCount > 0 && (
+              {showCosts && missingCostCount > 0 && (
                 <AttentionCard
                   label="Products without cost"
                   value={`${missingCostCount}`}
@@ -269,7 +274,7 @@ export function DashboardClient({
       </section>
 
       {/* ---------- Row 3: context & access ---------- */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="rounded-2xl border border-[var(--border)] bg-surface p-6">
           <h2 className="font-display text-lg font-semibold text-brand-deep">Active offers</h2>
           <p className="mt-1 text-xs text-muted">What your customers currently see.</p>
@@ -463,7 +468,7 @@ function AttentionCard({
   return (
     <Link
       href={href}
-      className="rounded-2xl border border-amber-200 bg-amber-50/40 p-5 transition hover:border-amber-400"
+      className="rounded-2xl border border-amber-200 bg-amber-50/40 p-5 transition hover:border-amber-400 hover:shadow-sm"
     >
       <p className="text-xs font-medium uppercase tracking-wider text-amber-900">{label}</p>
       <p className="font-display mt-2 text-3xl font-semibold tracking-tight text-amber-900">

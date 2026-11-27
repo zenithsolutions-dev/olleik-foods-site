@@ -12,6 +12,18 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["scripts/qa-dev-server.mjs"],
       "port": 3210
+    },
+    {
+      "name": "olleik-video-demo",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["videos/devstack/dev.mjs"],
+      "port": 3100
+    },
+    {
+      "name": "olleik-local-prod",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["videos/devstack/dev.mjs", "start"],
+      "port": 3100
     }
   ]
 }

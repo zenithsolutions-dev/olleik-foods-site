@@ -69,7 +69,7 @@ export default async function SuppliersPage({
       </section>
 
       {/* What we look for */}
-      <section className="mx-auto max-w-7xl px-6 py-12">
+      <section className="reveal mx-auto max-w-7xl px-6 py-12">
         <div className="grid gap-6 md:grid-cols-3">
           {[
             {
@@ -99,7 +99,7 @@ export default async function SuppliersPage({
       </section>
 
       {/* Form */}
-      <section className="mx-auto max-w-3xl px-6 pb-24">
+      <section className="reveal mx-auto max-w-3xl px-6 pb-24">
         {sent ? (
           <div className="rounded-3xl border border-brand/30 bg-brand-mist/50 p-8 text-center">
             <span

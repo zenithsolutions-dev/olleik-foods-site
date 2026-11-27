@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { notifyLowStock } from "@/lib/email/notify";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { guardAction } from "@/lib/admin/action-guard";
@@ -201,6 +203,7 @@ export async function receiveStock(
   lowStockThreshold: number,
 ): Promise<ReceiveStockResult> {
   await requireAdmin();
+  after(notifyLowStock); // once the response is out: alert on products that just went low, re-arm restocked ones
   return guardAction("receiveStock", async () => {
     const admin = getAdminClient();
     if (!admin) return { ok: false, message: "Supabase is not configured." };
@@ -319,6 +322,7 @@ export async function setProductInventory(
   lowStockThreshold: number,
 ): Promise<ActionResult> {
   await requireAdmin();
+  after(notifyLowStock); // once the response is out: alert on products that just went low, re-arm restocked ones
   return guardAction("setProductInventory", async () => {
     const admin = getAdminClient();
     if (!admin) return { ok: false, message: "Supabase is not configured." };

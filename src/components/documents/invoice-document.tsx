@@ -1,5 +1,6 @@
 import type { InvoiceModel } from "@/lib/documents/invoice-model";
 import { DocumentShell, DocTable, docCell, docCellRight } from "./document-shell";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-6: the ONE invoice renderer — the admin order page and the customer
 // portal render the SAME component from the SAME cost-free model. Pure
@@ -12,7 +13,7 @@ export function InvoiceDocument({ model }: { model: InvoiceModel }) {
     <DocumentShell
       business={model.business}
       title="Invoice"
-      subtitle={`${model.documentNumber} · ${new Date(model.issuedAt).toLocaleDateString("en-CA", { dateStyle: "long", timeZone: "America/Toronto" })}`}
+      subtitle={`${model.documentNumber} · ${new Date(model.issuedAt).toLocaleDateString("en-CA", { dateStyle: "long", timeZone: BUSINESS_TIME_ZONE })}`}
       watermark={model.cancelled ? "Cancelled" : null}
       footerNote={`${model.business.displayName} · ${model.documentNumber} · full reference ${model.orderIdFull}`}
     >

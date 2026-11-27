@@ -33,7 +33,13 @@ const STATUS_CHIP: Record<string, string> = {
   cancelled: "bg-zinc-100 text-zinc-500",
 };
 
-export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
+export function OrderDetailClient({
+  order,
+  showCosts,
+}: {
+  order: AdminOrderDetail;
+  showCosts: boolean;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -321,15 +327,19 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
 
       {/* Lines with cost + profit (admin-only) */}
       <div className="overflow-x-auto rounded-2xl border border-[var(--border)] bg-surface">
-        <table className="w-full min-w-[640px] text-sm">
+        <table className={`w-full ${showCosts ? "min-w-[640px]" : "min-w-[440px]"} text-sm`}>
           <thead>
             <tr className="border-b border-[var(--border)] text-left text-xs uppercase tracking-wider text-muted">
               <th className="px-5 py-3">Product</th>
               <th className="px-3 py-3 text-right">Qty</th>
               <th className="px-3 py-3 text-right">Price</th>
               <th className="px-3 py-3 text-right">Line total</th>
-              <th className="px-3 py-3 text-right">Cost</th>
-              <th className="px-5 py-3 text-right">Profit</th>
+              {showCosts && (
+                <>
+                  <th className="px-3 py-3 text-right">Cost</th>
+                  <th className="px-5 py-3 text-right">Profit</th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -388,20 +398,30 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
                   <td className="px-3 py-3 text-right font-mono font-semibold">
                     {formatMoney(l.lineTotalCents)}
                   </td>
-                  <td className="px-3 py-3 text-right font-mono text-muted">
-                    {l.costCents != null ? formatMoney(l.qty * l.costCents) : "—"}
-                  </td>
-                  <td
-                    className={`px-5 py-3 text-right font-mono font-semibold ${
-                      profit == null
-                        ? "text-muted"
-                        : profit >= 0
-                          ? "text-emerald-700"
-                          : "text-red-600"
-                    }`}
-                  >
-                    {profit != null ? formatMoney(profit) : "no cost"}
-                  </td>
+                  {showCosts && (
+                    <>
+                      <td className="px-3 py-3 text-right font-mono text-muted">
+                        {l.costCents != null ? formatMoney(l.qty * l.costCents) : "—"}
+                      </td>
+                      <td
+                        className={`px-5 py-3 text-right font-mono font-semibold ${
+                          profit == null
+                            ? "text-muted"
+                            : profit >= 0
+                              ? "text-emerald-700"
+                              : "text-red-600"
+                        }`}
+                      >
+                        {profit != null ? formatMoney(profit) : "no cost"}
+                        {/* Same basis as the order total below: profit as a % of cost. */}
+                        {profit != null && l.costCents != null && l.costCents > 0 && (
+                          <span className="ml-1 text-[10px] font-medium">
+                            ({((profit / (l.qty * l.costCents)) * 100).toFixed(1)}%)
+                          </span>
+                        )}
+                      </td>
+                    </>
+                  )}
                 </tr>
               );
             })}
@@ -414,24 +434,28 @@ export function OrderDetailClient({ order }: { order: AdminOrderDetail }) {
               </td>
               <td />
               <td className="px-3 py-3 text-right font-mono">{formatMoney(order.totalCents)}</td>
-              <td className="px-3 py-3 text-right font-mono text-muted">
-                {order.totalCostCents != null ? formatMoney(order.totalCostCents) : "—"}
-              </td>
-              <td className="px-5 py-3 text-right font-mono text-emerald-700">
-                {order.totalProfitCents != null ? (
-                  <>
-                    {formatMoney(order.totalProfitCents)}
-                    {profitPct && <span className="ml-1 text-[10px]">({profitPct}%)</span>}
-                  </>
-                ) : (
-                  "—"
-                )}
-              </td>
+              {showCosts && (
+                <>
+                  <td className="px-3 py-3 text-right font-mono text-muted">
+                    {order.totalCostCents != null ? formatMoney(order.totalCostCents) : "—"}
+                  </td>
+                  <td className="px-5 py-3 text-right font-mono text-emerald-700">
+                    {order.totalProfitCents != null ? (
+                      <>
+                        {formatMoney(order.totalProfitCents)}
+                        {profitPct && <span className="ml-1 text-[10px]">({profitPct}%)</span>}
+                      </>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                </>
+              )}
             </tr>
           </tfoot>
         </table>
       </div>
-      {order.linesWithoutCost > 0 && (
+      {showCosts && order.linesWithoutCost > 0 && (
         <p className="text-xs text-muted-soft">
           {order.linesWithoutCost} {order.linesWithoutCost === 1 ? "line has" : "lines have"} no
           cost snapshot (no purchase cost was recorded when the order was placed) — profit

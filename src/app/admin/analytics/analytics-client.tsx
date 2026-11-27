@@ -19,6 +19,7 @@ import type { BucketSize, RevenueBucket } from "@/lib/admin/analytics-buckets";
 import { BestSellersChart, RevenueTrendChart } from "./analytics-charts";
 import { DegradedHint, useLiveRefresh } from "@/lib/poll/use-live-refresh";
 import { pollAdminDashboardSignature } from "../live-actions";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-8b analytics UI. Every section's heading carries the period label (CP-5
 // rule) — a screenshot is never ambiguous about what it covers. Sorting is
@@ -26,7 +27,7 @@ import { pollAdminDashboardSignature } from "../live-actions";
 // module, so what the tests rank is what the screen shows.
 
 const fmtDay = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: "America/Toronto" });
+  new Date(iso).toLocaleDateString("en-CA", { dateStyle: "medium", timeZone: BUSINESS_TIME_ZONE });
 
 function SortHeader({
   label,
@@ -95,7 +96,9 @@ export function AnalyticsClient({
   revenueSeries,
   bucket,
   rangeFilter,
+  showCosts,
 }: {
+  showCosts: boolean; // false for non-owner admins: no profit UI
   periodLabel: string;
   periodNotice: string | null;
   quiet: InactiveThreshold;
@@ -130,8 +133,9 @@ export function AnalyticsClient({
   const [showAllSlow, setShowAllSlow] = useState(false);
 
   const rankedProducts = useMemo(
-    () => rankProducts(productSales, productSort),
-    [productSales, productSort],
+    // Non-owners can never rank by profit (header hidden; guard anyway).
+    () => rankProducts(productSales, !showCosts && productSort === "profit" ? "revenue" : productSort),
+    [productSales, productSort, showCosts],
   );
   const rankedCustomers = useMemo(
     () => rankCustomers(customerSales, customerSort),
@@ -204,9 +208,13 @@ export function AnalyticsClient({
       <Card
         title="Best sellers"
         period={periodLabel}
-        blurb="Units, revenue and profit side by side — a cheap high-volume item and an expensive rare one are both worth knowing about. Click a column to re-rank."
+        blurb={
+          showCosts
+            ? "Units, revenue and profit side by side — a cheap high-volume item and an expensive rare one are both worth knowing about. Click a column to re-rank."
+            : "Units and revenue side by side — a cheap high-volume item and an expensive rare one are both worth knowing about. Click a column to re-rank."
+        }
       >
-        {anyProfitIncomplete && (
+        {showCosts && anyProfitIncomplete && (
           <p className="border-b border-[var(--border)] bg-amber-50 px-5 py-2 text-xs font-medium text-amber-800">
             Some lines have no recorded purchase cost — the Profit column covers costed lines only
             and understates true profit. Treat it as partial, not as ranking truth.
@@ -226,7 +234,9 @@ export function AnalyticsClient({
                   </th>
                   <SortHeader label="Units" active={productSort === "units"} onClick={() => setProductSort("units")} />
                   <SortHeader label="Revenue" active={productSort === "revenue"} onClick={() => setProductSort("revenue")} />
-                  <SortHeader label="Profit" active={productSort === "profit"} onClick={() => setProductSort("profit")} />
+                  {showCosts && (
+                    <SortHeader label="Profit" active={productSort === "profit"} onClick={() => setProductSort("profit")} />
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -239,6 +249,7 @@ export function AnalyticsClient({
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono">{r.units}</td>
                     <td className="px-4 py-2.5 text-right font-mono">{formatMoney(r.revenueCents)}</td>
+                    {showCosts && (
                     <td className="px-4 py-2.5 text-right font-mono">
                       {r.profitCents == null ? (
                         <span className="text-muted" title="No line has a recorded cost">
@@ -255,6 +266,7 @@ export function AnalyticsClient({
                         </>
                       )}
                     </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

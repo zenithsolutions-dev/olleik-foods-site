@@ -7,6 +7,7 @@ import { CustomerStatementDocument } from "@/components/documents/customer-state
 import { PrintToolbar } from "@/components/documents/print-toolbar";
 import { DateRangeFilter } from "@/components/date-range-filter";
 import { rangeQueryString, resolveDateRange, type RangeSearchParams } from "@/lib/dates";
+import { SendStatement } from "./send-statement";
 
 export const dynamic = "force-dynamic";
 
@@ -54,7 +55,7 @@ export default async function CustomerStatementPage({
   const c = detail.customer;
   const model = buildCustomerStatement({
     orders: data.orders,
-    business: getBusinessIdentity(),
+    business: await getBusinessIdentity(),
     statementFor: {
       businessName: c.businessName,
       contactName: c.contactName,
@@ -77,6 +78,12 @@ export default async function CustomerStatementPage({
           basePath={`/admin/customers/${id}/statement`}
           range={range}
           defaultPreset="this-month"
+        />
+        {/* Sends a secure, expiring link to exactly this period of the customer copy. */}
+        <SendStatement
+          customerId={id}
+          range={hasRangeInput ? { range: sp.range, from: sp.from, to: sp.to } : { range: "this-month" }}
+          customerEmail={c.email || null}
         />
         <p className="text-xs text-muted">
           This is the <strong>customer copy</strong> — no cost or profit anywhere.{" "}

@@ -194,7 +194,7 @@ export function OrderAlertsProvider({ children }: { children: React.ReactNode })
     let flip = false;
     const t = setInterval(() => {
       flip = !flip;
-      document.title = flip ? `(${unseenCount} new) Olleik Admin` : original;
+      document.title = flip ? `(${unseenCount} new) ${original}` : original;
     }, 1200);
     return () => {
       clearInterval(t);

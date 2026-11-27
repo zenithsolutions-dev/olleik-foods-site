@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { notifyLowStock } from "@/lib/email/notify";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/admin/require-admin";
 import { guardAction } from "@/lib/admin/action-guard";
@@ -88,6 +90,7 @@ export async function confirmOrder(
   allowOversell = false,
 ): Promise<OrderActionResult> {
   await requireAdmin();
+  after(notifyLowStock); // once the response is out: alert on products that just went low, re-arm restocked ones
   return guardAction("confirmOrder", async () => {
     if (!UUID_RE.test(orderId)) return { ok: false, message: "Invalid order id." };
     const admin = getAdminClient();
@@ -304,6 +307,7 @@ export async function cancelOrder(
   adminNote?: string,
 ): Promise<OrderActionResult> {
   await requireAdmin();
+  after(notifyLowStock); // once the response is out: alert on products that just went low, re-arm restocked ones
   return guardAction("cancelOrder", async () => {
     if (!UUID_RE.test(orderId)) return { ok: false, message: "Invalid order id." };
     const admin = getAdminClient();

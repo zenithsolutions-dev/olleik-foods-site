@@ -207,4 +207,6 @@ check("marginSourceLabel covers product chips", () => {
 });
 
 console.log(`\n=== PRICING-ENGINE TESTS: PASS (${passed} checks) ===`);
-process.exit(0);
+// Not process.exit(): on Windows (Node 24) it aborts with a libuv assertion after every check has passed,
+// turning a green run red. A failed assert above throws, which already exits non-zero.
+process.exitCode = 0;

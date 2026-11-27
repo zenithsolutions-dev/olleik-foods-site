@@ -54,7 +54,7 @@ export default function AboutPage() {
       </section>
 
       {/* Story */}
-      <section className="mx-auto max-w-3xl px-6 py-12 md:py-16">
+      <section className="reveal mx-auto max-w-3xl px-6 py-12 md:py-16">
         <div className="space-y-6 text-lg leading-relaxed text-muted">
           <p>
             We started Olleik Foods because the big national distributors treat
@@ -78,7 +78,7 @@ export default function AboutPage() {
       </section>
 
       {/* Stats */}
-      <section className="bg-brand-mist/40 py-16 md:py-20">
+      <section className="reveal bg-brand-mist/40 py-16 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <dl className="grid grid-cols-2 gap-6 md:grid-cols-4">
             {stats.map((s) => (
@@ -96,7 +96,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="mx-auto max-w-7xl px-6 py-20 md:py-24">
+      <section className="reveal mx-auto max-w-7xl px-6 py-20 md:py-24">
         <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
             What we stand for
@@ -121,7 +121,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="px-6 pb-24">
+      <section className="reveal px-6 pb-24">
         <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] bg-brand-deep px-8 py-14 text-white shadow-[0_40px_80px_-30px_rgba(20,53,39,0.55)] md:px-16 md:py-16">
           <div className="absolute inset-0 grain" aria-hidden />
           <div className="relative grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">

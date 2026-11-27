@@ -33,7 +33,7 @@ export default async function AdminInvoicePage({
   }
 
   const model = buildInvoiceModel({
-    business: getBusinessIdentity(),
+    business: await getBusinessIdentity(),
     billTo: order.customer
       ? {
           businessName: order.customer.businessName,

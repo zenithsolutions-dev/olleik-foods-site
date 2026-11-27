@@ -21,16 +21,22 @@ export function ProductStatementClient({
   business,
   products,
   periodLabel,
+  showCosts,
 }: {
+  showCosts: boolean; // false for non-owner admins: no cost toggle, no cost columns
   business: BusinessIdentity;
   products: StatementProductInput[];
   periodLabel: string;
 }) {
   const [includeCosts, setIncludeCosts] = useState(false); // ALWAYS starts off
-  const model = buildProductStatementModel(products, { includeCosts, periodLabel });
+  const model = buildProductStatementModel(products, {
+    includeCosts: showCosts && includeCosts,
+    periodLabel,
+  });
 
   return (
     <div>
+      {showCosts && (
       <div className="doc-chrome-hidden mx-auto mt-2 flex max-w-3xl items-center justify-end print:hidden">
         <label className="flex items-center gap-2 rounded-full border border-amber-400 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900">
           <input
@@ -41,6 +47,7 @@ export function ProductStatementClient({
           Include cost &amp; profit columns (INTERNAL — resets on every visit)
         </label>
       </div>
+      )}
 
       <DocumentShell
         business={business}

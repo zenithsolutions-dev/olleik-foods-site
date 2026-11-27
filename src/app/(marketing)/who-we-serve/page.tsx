@@ -59,12 +59,12 @@ export default function WhoWeServePage() {
       </section>
 
       {/* Segments */}
-      <section className="mx-auto max-w-7xl px-6 py-12 md:py-16">
+      <section className="reveal mx-auto max-w-7xl px-6 py-12 md:py-16">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {segments.map((s) => (
             <div
               key={s.title}
-              className="rounded-3xl border border-[var(--border)] bg-surface p-7 transition hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-[0_30px_60px_-30px_rgba(20,53,39,0.25)]"
+              className="rounded-3xl border border-[var(--border)] bg-surface p-7 lift"
             >
               <h3 className="font-display text-xl font-semibold tracking-tight text-brand-deep">
                 {s.title}
@@ -76,7 +76,7 @@ export default function WhoWeServePage() {
       </section>
 
       {/* Reassurance band */}
-      <section className="bg-brand-mist/40 py-20 md:py-24">
+      <section className="reveal bg-brand-mist/40 py-20 md:py-24">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-deep">
             One supplier, your way

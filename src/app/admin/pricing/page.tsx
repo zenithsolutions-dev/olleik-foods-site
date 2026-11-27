@@ -3,6 +3,7 @@ import { fetchPricingRules } from "@/lib/admin/pricing-data";
 import { fetchAdminCategories } from "@/lib/admin/categories-data";
 import { fetchAdminCustomers } from "@/lib/admin/customers-data";
 import { fetchAdminProducts } from "@/lib/admin/products-data";
+import { requireOwner } from "@/lib/admin/require-admin";
 
 export const dynamic = "force-dynamic";
 // D6: rule saves can sweep every computed price (global scope) — give the
@@ -10,6 +11,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 export default async function PricingPage() {
+  await requireOwner(); // margins are owner-only
   const [{ rules, live }, { categories }, { customers }, { products }] = await Promise.all([
     fetchPricingRules(),
     fetchAdminCategories(),

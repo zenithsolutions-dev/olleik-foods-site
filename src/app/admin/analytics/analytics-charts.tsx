@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { formatMoney } from "@/lib/admin/store";
 import { BUCKET_LABELS, type BucketSize, type RevenueBucket } from "@/lib/admin/analytics-buckets";
+import { BUSINESS_TIME_ZONE } from "@/lib/dates";
 
 // CP-8 charts follow-on — SCREEN ONLY (print:hidden; documents stay tables,
 // per CP-6). Exactly two charts, as ruled:
@@ -83,7 +84,7 @@ export function RevenueTrendChart({
     <ChartCard
       title="Revenue trend"
       period={periodLabel}
-      note={`${BUCKET_LABELS[bucket]} · America/Toronto · accepted orders`}
+      note={`${BUCKET_LABELS[bucket]} · ${BUSINESS_TIME_ZONE} · accepted orders`}
     >
       {series.length === 0 || !hasRevenue ? (
         <EmptyChart message={`No counted revenue in this period (${periodLabel}).`} />

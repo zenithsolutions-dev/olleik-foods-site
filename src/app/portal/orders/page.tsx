@@ -34,7 +34,7 @@ export default async function PortalOrdersPage({
           My orders
         </h1>
         <p className="mt-2 text-sm text-muted">
-          Orders can&apos;t be edited after submission — call your Olleik rep for any change.
+          Orders can&apos;t be edited after submission — call your sales rep for any change.
         </p>
         {/* CP-3d: status changes appear here on their own (30s poll). */}
         <PortalOrdersLive />
@@ -42,7 +42,7 @@ export default async function PortalOrdersPage({
           <DateRangeFilter basePath="/portal/orders" range={range} />
         </div>
         {/* CP-7 (D-S6): print your own statement for any period — the same
-            document your Olleik rep prints, built from these same orders. */}
+            document your sales rep prints, built from these same orders. */}
         <p className="mt-3 text-xs text-muted">
           <Link
             href={`/portal/orders/statement${rangeQueryString(sp)}`}

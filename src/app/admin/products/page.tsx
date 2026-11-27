@@ -6,6 +6,7 @@ import { fetchProductCosts } from "@/lib/admin/pricing-data";
 import { fetchProductInventory } from "@/lib/admin/inventory-data";
 import { isoInRange, resolveDateRange, type RangeSearchParams } from "@/lib/dates";
 import { DateRangeFilter } from "@/components/date-range-filter";
+import { getAdminAccess } from "@/lib/admin/require-admin";
 
 export const dynamic = "force-dynamic";
 // D6: cost/rule saves from this page trigger autopilot price sweeps.
@@ -16,6 +17,7 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<{ stock?: string } & RangeSearchParams>;
 }) {
+  const { isOwner } = await getAdminAccess();
   const [{ products: allProducts, live }, { categories }, { costs }, inventory, params] =
     await Promise.all([
       fetchAdminProducts(),
@@ -75,7 +77,8 @@ export default async function ProductsPage({
       <ProductsClient
         products={products}
         categories={categories}
-        costs={costs}
+        costs={isOwner ? costs : {}}
+        showCosts={isOwner}
         live={live}
         stock={inventory.stock}
         inventoryEnabled={inventory.migrationApplied}
