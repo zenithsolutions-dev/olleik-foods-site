@@ -197,6 +197,39 @@ export function buildDailyReportEmail(args: {
   return { subject, html: layout(subject, html.join(""), businessName), text: text.join("\n") };
 }
 
+// ---------- account statement ----------
+
+// Sent to a customer: a link to their statement. Account activity only — never cost, profit or margin.
+export function buildStatementEmail(args: {
+  customerName: string;
+  businessName: string;
+  periodLabel: string;
+  url: string;
+  expiresLabel: string;
+}): Email {
+  const subject = `Your statement from ${args.businessName} — ${args.periodLabel}`;
+  const html = layout(
+    subject,
+    [
+      heading("Your account statement"),
+      `<p style="margin:0">Hello ${escapeHtml(args.customerName)},</p>`,
+      `<p style="margin:12px 0 0">Here is your statement for <strong>${escapeHtml(args.periodLabel)}</strong>. You can read it on your phone, print it, or save it as a PDF.</p>`,
+      button(args.url, "Open my statement"),
+      `<p style="margin:16px 0 0;font-size:13px;color:#78716c">The link works until ${escapeHtml(args.expiresLabel)}. If you did not expect this email, you can ignore it.</p>`,
+    ].join(""),
+    args.businessName,
+  );
+  const text = [
+    `Hello ${args.customerName},`,
+    "",
+    `Here is your statement from ${args.businessName} for ${args.periodLabel}:`,
+    args.url,
+    "",
+    `The link works until ${args.expiresLabel}.`,
+  ].join("\n");
+  return { subject, html, text };
+}
+
 // ---------- settings ----------
 
 export type NotificationSettingsRow = {
