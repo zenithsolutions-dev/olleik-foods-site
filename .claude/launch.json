@@ -12,6 +12,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["videos/devstack/dev.mjs"],
       "port": 3100
+    },
+    {
+      "name": "olleik-local-prod",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["videos/devstack/dev.mjs", "start"],
+      "port": 3100
     }
   ]
 }

@@ -37,5 +37,6 @@ Object.assign(env, {
 });
 if (!env.NEXT_PUBLIC_SUPABASE_URL.startsWith("http://127.0.0.1:")) throw new Error("refusing to start: the database URL is not the local stand-in");
 
-const child = spawn(process.execPath, [join(ROOT, "node_modules", "next", "dist", "bin", "next"), "dev", "-p", "3100"], { cwd: ROOT, env, stdio: "inherit" });
+const child = spawn(process.execPath, [join(ROOT, "node_modules", "next", "dist", "bin", "next"), // "start" serves an already-built production bundle (for QA); the default is the dev server.
+  process.argv[2] === "start" ? "start" : "dev", "-p", "3100"], { cwd: ROOT, env, stdio: "inherit" });
 child.on("exit", (c) => process.exit(c ?? 0));

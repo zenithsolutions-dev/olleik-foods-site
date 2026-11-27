@@ -114,6 +114,8 @@ body {
     max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
+    /* On a phone screen the sheet scrolls sideways for a wide table; paper never clips. */
+    overflow: visible !important;
   }
 }
 
