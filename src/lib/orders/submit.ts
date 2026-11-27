@@ -48,6 +48,7 @@ export type PricedCartLine = {
   sku: string;
   unit: ProductUnit;
   unitSize: string;
+  imageUrl: string | null;
   qty: number;
   assigned: boolean;
   // CP-3b (D-O6): the boolean availability signal — never a quantity. An
@@ -103,6 +104,7 @@ type ProductRow = {
   unit: ProductUnit;
   unit_size: string;
   list_price_cents: number;
+  image_url: string | null;
 };
 
 type OfferRow = {
@@ -142,7 +144,7 @@ export async function resolveCartPricing(lines: CartLineInput[]): Promise<CartPr
       // RLS: only products visible under the caller's CP-2 mode come back.
       supabase
         .from("products")
-        .select("id, name, sku, unit, unit_size, list_price_cents")
+        .select("id, name, sku, unit, unit_size, list_price_cents, image_url")
         .in("id", ids)
         .eq("is_active", true),
       supabase.from("customer_products").select("product_id, price_cents"),
@@ -211,7 +213,7 @@ export async function resolveCartPricing(lines: CartLineInput[]): Promise<CartPr
     if (hiddenIds.length > 0) {
       const { data: hiddenRows } = await admin
         .from("products")
-        .select("id, name, sku, unit, unit_size, list_price_cents, is_available")
+        .select("id, name, sku, unit, unit_size, list_price_cents, is_available, image_url")
         .in("id", hiddenIds)
         .eq("is_active", true);
       for (const p of (hiddenRows as (ProductRow & { is_available: boolean })[]) ?? []) {
@@ -269,6 +271,7 @@ export async function resolveCartPricing(lines: CartLineInput[]): Promise<CartPr
       sku: p.sku,
       unit: p.unit,
       unitSize: p.unit_size,
+      imageUrl: p.image_url,
       qty: l.qty,
       assigned,
       available: !unavailable.has(p.id) && pick.kind !== "short",

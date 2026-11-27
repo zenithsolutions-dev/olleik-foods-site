@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { formatMoney } from "@/lib/portal/format";
@@ -124,6 +125,9 @@ export default function CartPage() {
                 key={l.productId}
                 className="flex flex-wrap items-center gap-3 border-b border-[var(--border)] px-5 py-4 last:border-b-0"
               >
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-brand-mist">
+                  {l.imageUrl && (<Image src={l.imageUrl} alt="" fill sizes="56px" className="object-cover" />)}
+                </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-foreground">
                     {l.name}

@@ -348,10 +348,17 @@ export function ProductsClient({
               <tr key={p.id} className="border-b border-[var(--border)] last:border-0 hover:bg-brand-mist/30">
                 <td className="px-4 py-3 font-mono text-xs text-muted">{p.sku}</td>
                 <td className="px-4 py-3">
-                  <p className="font-medium text-foreground">{p.name}</p>
-                  {p.description && (
-                    <p className="text-xs text-muted">{p.description}</p>
-                  )}
+                  <div className="flex items-center gap-3">
+                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-brand-mist">
+                      {p.imageUrl && (<Image src={p.imageUrl} alt="" fill sizes="40px" className="object-cover" />)}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground">{p.name}</p>
+                      {p.description && (
+                        <p className="text-xs text-muted">{p.description}</p>
+                      )}
+                    </div>
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-muted">{p.categoryId ? (catLookup[p.categoryId] ?? "—") : "—"}</td>
                 <td className="px-4 py-3 text-muted">
